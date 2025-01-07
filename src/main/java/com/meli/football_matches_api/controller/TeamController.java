@@ -21,4 +21,9 @@ public class TeamController {
     public ResponseEntity<TeamDTO> create(@RequestBody TeamDTO team) {
         return teamService.create(team);
     }
+
+    @PutMapping
+    public ResponseEntity<TeamDTO> update(@RequestBody TeamDTO team) {
+        return teamService.update(team);
+    }
 }
