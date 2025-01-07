@@ -43,4 +43,9 @@ public class TeamController {
     public ResponseEntity<List<TeamDTO>> list(@RequestParam String name) {
         return teamService.list(name);
     }
+
+    @GetMapping(value = "/list", params = "isActive")
+    public ResponseEntity<List<TeamDTO>> list(@RequestParam Boolean isActive) {
+        return teamService.list(isActive);
+    }
 }
