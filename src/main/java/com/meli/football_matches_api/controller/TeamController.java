@@ -33,4 +33,9 @@ public class TeamController {
     public ResponseEntity<TeamDTO> get(@RequestParam int id) {
         return teamService.get(id);
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<TeamDTO>> list() {
+        return teamService.list();
+    }
 }
