@@ -28,6 +28,9 @@ public class TeamService {
     };
 
     private void validateFields(TeamDTO teamDTO) {
+        if (teamDTO.getName() == null || teamDTO.getName().isEmpty()) throw new FieldException("Field name cannot be empty");
+        if (teamDTO.getIsActive() == null) throw new FieldException("Field isActive cannot be null");
+
         validateDateCreated(teamDTO.getDateCreated());
         validateState(teamDTO.getState());
     };
@@ -43,9 +46,9 @@ public class TeamService {
     };
 
     private void validateState(String state) {
-        if (state == null || state.isEmpty()) throw new FieldException("field state cannot be empty");
+        if (state == null || state.isEmpty()) throw new FieldException("Field state cannot be empty");
 
-        if (state.length() != 2) throw new FieldException("field state must contain 2 characters");
+        if (state.length() != 2) throw new FieldException("Field state must contain 2 characters");
 
         if (!Utils.validateState(state)) throw new FieldException("state is not a valid");
     };
