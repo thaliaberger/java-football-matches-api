@@ -40,8 +40,13 @@ public class TeamController {
     }
 
     @GetMapping(value = "/list", params = "name")
-    public ResponseEntity<List<TeamDTO>> list(@RequestParam String name) {
-        return teamService.list(name);
+    public ResponseEntity<List<TeamDTO>> listByName(@RequestParam String name) {
+        return teamService.list(name, true);
+    }
+
+    @GetMapping(value = "/list", params = "state")
+    public ResponseEntity<List<TeamDTO>> listByState(@RequestParam String state) {
+        return teamService.list(state, false);
     }
 
     @GetMapping(value = "/list", params = "isActive")

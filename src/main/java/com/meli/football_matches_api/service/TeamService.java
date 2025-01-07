@@ -54,8 +54,14 @@ public class TeamService {
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }
 
-    public ResponseEntity<List<TeamDTO>> list(String name) {
-        List<Team> teams = repository.findAllByName(name);
+    public ResponseEntity<List<TeamDTO>> list(String param, Boolean isNameSearch) {
+        List<Team> teams;
+
+        if (isNameSearch) {
+            teams = repository.findAllByName(param);
+        } else {
+            teams = repository.findAllByState(param);
+        }
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }
 
