@@ -1,6 +1,7 @@
 package com.meli.football_matches_api.service;
 
 import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.ITeam;
@@ -22,6 +23,8 @@ public class TeamService {
     public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
         validateFields(teamDTO);
 
+        validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState());
+
         Team newTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(newTeam));
         return ResponseEntity.status(201).body(savedTeam);
@@ -36,13 +39,9 @@ public class TeamService {
     };
 
     private void validateDateCreated(LocalDate date) {
-        if (date == null) {
-            throw new FieldException("dateCreated cannot be null");
-        }
+        if (date == null) throw new FieldException("dateCreated cannot be null");
 
-        if (date.isAfter(LocalDate.now())) {
-            throw new FieldException("dateCreated cannot be in the future");
-        }
+        if (date.isAfter(LocalDate.now())) throw new FieldException("dateCreated cannot be in the future");
     };
 
     private void validateState(String state) {
@@ -52,4 +51,10 @@ public class TeamService {
 
         if (!Utils.validateState(state)) throw new FieldException("state is not a valid");
     };
+
+    private void validateIfTeamAlreadyExists(String teamName, String state) {
+        Team existingTeam = repository.findByNameAndState(teamName, state);
+
+        if (existingTeam != null) throw new ConflictException("Already existing team with name [" + teamName + "] and state [" + state + "]");
+    }
 }
