@@ -7,6 +7,8 @@ import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.ITeam;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.Validations;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,12 @@ public class TeamService {
 
     public ResponseEntity<List<TeamDTO>> list() {
         List<Team> teams = repository.findAll();
+        return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
+    }
+
+    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage) {
+        Pageable pageable = PageRequest.of(page, itemsPerPage);
+        List<Team> teams = repository.findAll(pageable).getContent();
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }
 

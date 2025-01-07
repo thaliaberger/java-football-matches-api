@@ -39,6 +39,14 @@ public class TeamController {
         return teamService.list();
     }
 
+    @GetMapping(value = "/list", params = "page")
+    public ResponseEntity<List<TeamDTO>> list(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage
+    ) {
+        return teamService.list(page, itemsPerPage);
+    }
+
     @GetMapping(value = "/list", params = "name")
     public ResponseEntity<List<TeamDTO>> listByName(@RequestParam String name) {
         return teamService.list(name, true);
@@ -53,4 +61,5 @@ public class TeamController {
     public ResponseEntity<List<TeamDTO>> list(@RequestParam Boolean isActive) {
         return teamService.list(isActive);
     }
+
 }
