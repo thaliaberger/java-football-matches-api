@@ -6,10 +6,10 @@ import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.ITeam;
 import com.meli.football_matches_api.utils.Utils;
+import com.meli.football_matches_api.validations.Validations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,7 +22,7 @@ public class TeamService {
     };
 
     public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
-        Utils.validateFields(teamDTO);
+        Validations.validateFields(teamDTO);
         validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState());
 
         Team newTeam = new Team(teamDTO);
@@ -33,7 +33,7 @@ public class TeamService {
     public ResponseEntity<TeamDTO> update(TeamDTO teamDTO) {
         repository.findById(teamDTO.getId()).orElseThrow(() -> new NotFoundException("Team not found"));
 
-        Utils.validateFields(teamDTO);
+        Validations.validateFields(teamDTO);
         validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState());
 
         Team updatedTeam = new Team(teamDTO);
