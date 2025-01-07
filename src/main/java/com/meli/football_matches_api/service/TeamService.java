@@ -54,6 +54,11 @@ public class TeamService {
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }
 
+    public ResponseEntity<List<TeamDTO>> list(String name) {
+        List<Team> teams = repository.findAllByName(name);
+        return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
+    }
+
     private void validateIfTeamAlreadyExists(String teamName, String state) {
         Team existingTeam = repository.findByNameAndState(teamName, state);
 

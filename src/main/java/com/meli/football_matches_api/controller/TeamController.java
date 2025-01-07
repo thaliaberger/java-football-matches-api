@@ -38,4 +38,9 @@ public class TeamController {
     public ResponseEntity<List<TeamDTO>> list() {
         return teamService.list();
     }
+
+    @GetMapping(value = "/list", params = "name")
+    public ResponseEntity<List<TeamDTO>> list(@RequestParam String name) {
+        return teamService.list(name);
+    }
 }
