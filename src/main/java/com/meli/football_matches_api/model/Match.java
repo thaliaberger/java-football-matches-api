@@ -1,9 +1,11 @@
 package com.meli.football_matches_api.model;
 
+import com.meli.football_matches_api.DTO.MatchDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 
@@ -37,6 +39,14 @@ public class Match {
 
     @Column(name = "matchDateTime", nullable = true)
     private LocalDateTime matchDateTime;
+
+    public Match() {
+
+    }
+
+    public Match(MatchDTO matchDTO) {
+        BeanUtils.copyProperties(matchDTO, this);
+    }
 
     public Long getMatchId() {
         return matchId;
