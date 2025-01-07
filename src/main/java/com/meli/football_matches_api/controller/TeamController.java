@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/team")
 public class TeamController {
@@ -25,5 +27,10 @@ public class TeamController {
     @PutMapping
     public ResponseEntity<TeamDTO> update(@RequestBody TeamDTO team) {
         return teamService.update(team);
+    }
+
+    @GetMapping
+    public ResponseEntity<TeamDTO> get(@RequestParam int id) {
+        return teamService.get(id);
     }
 }
