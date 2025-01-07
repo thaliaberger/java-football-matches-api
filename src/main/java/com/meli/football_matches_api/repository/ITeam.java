@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ITeam extends JpaRepository<Team, Integer> {
 
+    Team findById(int id);
+
     Team findByNameAndState(String name, String state);
 }
