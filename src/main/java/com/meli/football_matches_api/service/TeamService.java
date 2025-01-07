@@ -78,6 +78,11 @@ public class TeamService {
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }
 
+    public ResponseEntity<String> delete(int id) {
+        repository.deleteById(id);
+        return ResponseEntity.status(204).body("");
+    }
+
     private void validateIfTeamAlreadyExists(String teamName, String state) {
         Team existingTeam = repository.findByNameAndState(teamName, state);
 
