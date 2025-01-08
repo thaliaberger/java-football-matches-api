@@ -7,14 +7,12 @@ import java.time.LocalDateTime;
 
 public class MatchDTO {
 
-    private Long matchId;
-    private String homeTeam;
-    private String awayTeam;
-    private Long homeTeamId;
-    private Long awayTeamId;
+    private Long id;
+    private Long idHomeTeam;
+    private Long idAwayTeam;
     private int homeGoals;
     private int awayGoals;
-    private String stadium;
+    private String estadio;
     private LocalDateTime matchDateTime;
 
     public MatchDTO() {}
@@ -22,33 +20,24 @@ public class MatchDTO {
     public MatchDTO(Match match) {
         BeanUtils.copyProperties(match, this);
     }
-
-    public Long getMatchId() {
-        return matchId;
+    public Long getId() {
+        return id;
     }
 
-    public String getHomeTeam() {
-        return homeTeam;
+    public Long getIdHomeTeam() {
+        return idHomeTeam;
     }
 
-    public void setHomeTeam(String homeTeam) {
-        this.homeTeam = homeTeam;
+    public void setIdHomeTeam(Long idHomeTeam) {
+        this.idHomeTeam = idHomeTeam;
     }
 
-    public String getAwayTeam() {
-        return awayTeam;
+    public Long getIdAwayTeam() {
+        return idAwayTeam;
     }
 
-    public void setAwayTeam(String awayTeam) {
-        this.awayTeam = awayTeam;
-    }
-
-    public Long getHomeTeamId() {
-        return homeTeamId;
-    }
-
-    public Long getAwayTeamId() {
-        return awayTeamId;
+    public void setIdAwayTeam(Long idAwayTeam) {
+        this.idAwayTeam = idAwayTeam;
     }
 
     public int getHomeGoals() {
@@ -67,12 +56,12 @@ public class MatchDTO {
         this.awayGoals = awayGoals;
     }
 
-    public String getStadium() {
-        return stadium;
+    public String getEstadio() {
+        return estadio;
     }
 
-    public void setStadium(String stadium) {
-        this.stadium = stadium;
+    public void setEstadio(String estadio) {
+        this.estadio = estadio;
     }
 
     public LocalDateTime getMatchDateTime() {
