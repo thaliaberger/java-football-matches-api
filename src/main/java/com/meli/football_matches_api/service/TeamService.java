@@ -6,7 +6,7 @@ import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.ITeam;
 import com.meli.football_matches_api.utils.Utils;
-import com.meli.football_matches_api.validations.Validations;
+import com.meli.football_matches_api.validations.TeamValidations;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class TeamService {
     };
 
     public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
-        Validations.validateFields(teamDTO);
+        TeamValidations.validateFields(teamDTO);
         validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState());
 
         Team newTeam = new Team(teamDTO);
@@ -35,7 +35,7 @@ public class TeamService {
     public ResponseEntity<TeamDTO> update(TeamDTO teamDTO) {
         repository.findById(teamDTO.getId()).orElseThrow(() -> new NotFoundException("Team not found"));
 
-        Validations.validateFields(teamDTO);
+        TeamValidations.validateFields(teamDTO);
         validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState());
 
         Team updatedTeam = new Team(teamDTO);
@@ -56,8 +56,8 @@ public class TeamService {
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }
 
-    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage) {
-        Pageable pageable = PageRequest.of(page, itemsPerPage);
+    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort) {
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
         List<Team> teams = repository.findAll(pageable).getContent();
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }

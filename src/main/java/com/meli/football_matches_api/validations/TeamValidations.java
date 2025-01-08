@@ -6,7 +6,7 @@ import com.meli.football_matches_api.exception.FieldException;
 import java.time.LocalDate;
 import java.util.Arrays;
 
-public class Validations {
+public class TeamValidations {
     private final static String[] STATES = { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "TO" };
 
     public static boolean isValidState(String state) {
