@@ -56,6 +56,10 @@ public class TeamService {
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }
 
+    public ResponseEntity<List<TeamDTO>> list(String sort) {
+        return list(0, 1000, sort);
+    }
+
     public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
         List<Team> teams = repository.findAll(pageable).getContent();

@@ -42,9 +42,15 @@ public class TeamController {
     @GetMapping(value = "/list", params = "page")
     public ResponseEntity<List<TeamDTO>> list(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage
+            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
+            @RequestParam(name = "sort", defaultValue="id") String sort
     ) {
-        return teamService.list(page, itemsPerPage);
+        return teamService.list(page, itemsPerPage, sort);
+    }
+
+    @GetMapping(value = "/list", params = "sort")
+    public ResponseEntity<List<TeamDTO>> list(@RequestParam(name = "sort", defaultValue="id") String sort) {
+        return teamService.list(sort);
     }
 
     @GetMapping(value = "/list", params = "name")
