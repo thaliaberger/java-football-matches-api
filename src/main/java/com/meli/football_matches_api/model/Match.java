@@ -28,8 +28,8 @@ public class Match {
     @Column(name = "awayGoals", nullable = true)
     private Integer awayGoals;
 
-    @Column(name = "estadio", length = 60, nullable = true)
-    private String estadio;
+    @Column(name = "idStadium", nullable = true)
+    private Long idStadium;
 
     @Column(name = "matchDateTime", nullable = true)
     private LocalDateTime matchDateTime;
@@ -46,12 +46,12 @@ public class Match {
         return id;
     }
 
-    public String getEstadio() {
-        return estadio;
+    public Long getIdStadium() {
+        return idStadium;
     }
 
-    public void setEstadio(String estadio) {
-        this.estadio = estadio;
+    public void setIdStadium(Long idStadium) {
+        this.idStadium = idStadium;
     }
 
     public Long getIdHomeTeam() {

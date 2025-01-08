@@ -10,9 +10,9 @@ public class MatchDTO {
     private Long id;
     private Long idHomeTeam;
     private Long idAwayTeam;
-    private int homeGoals;
-    private int awayGoals;
-    private String estadio;
+    private Integer homeGoals;
+    private Integer awayGoals;
+    private Long idStadium;
     private LocalDateTime matchDateTime;
 
     public MatchDTO() {}
@@ -40,7 +40,7 @@ public class MatchDTO {
         this.idAwayTeam = idAwayTeam;
     }
 
-    public int getHomeGoals() {
+    public Integer getHomeGoals() {
         return homeGoals;
     }
 
@@ -48,7 +48,7 @@ public class MatchDTO {
         this.homeGoals = homeGoals;
     }
 
-    public int getAwayGoals() {
+    public Integer getAwayGoals() {
         return awayGoals;
     }
 
@@ -56,12 +56,20 @@ public class MatchDTO {
         this.awayGoals = awayGoals;
     }
 
-    public String getEstadio() {
-        return estadio;
+    public Long getIdStadium() {
+        return idStadium;
     }
 
-    public void setEstadio(String estadio) {
-        this.estadio = estadio;
+    public void setIdStadium(Long idStadium) {
+        this.idStadium = idStadium;
+    }
+
+    public void setAwayGoals(Integer awayGoals) {
+        this.awayGoals = awayGoals;
+    }
+
+    public void setHomeGoals(Integer homeGoals) {
+        this.homeGoals = homeGoals;
     }
 
     public LocalDateTime getMatchDateTime() {
