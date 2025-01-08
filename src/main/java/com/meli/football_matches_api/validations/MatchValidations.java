@@ -8,14 +8,20 @@ import java.time.LocalDateTime;
 public class MatchValidations {
 
     public static void validateFields(MatchDTO matchDTO) {
-        if (matchDTO.getHomeGoals() == null) throw new FieldException("[awayGoals] cannot be null");
-        if (matchDTO.getAwayGoals() == null) throw new FieldException("[homeGoals] cannot be null");
         if (matchDTO.getIdStadium() == null) throw new FieldException("[idStadium] cannot be null");
         if (matchDTO.getMatchDateTime() == null) throw new FieldException("[matchDateTime] cannot be null");
 
+        validateGoals(matchDTO.getHomeGoals(), matchDTO.getAwayGoals());
         validateTeams(matchDTO.getIdHomeTeam(), matchDTO.getIdAwayTeam());
         validateDateTime(matchDTO.getMatchDateTime());
     };
+
+    private static void validateGoals(Integer homeGoals, Integer awayGoals) {
+        if (homeGoals == null) throw new FieldException("[homeGoals] cannot be null");
+        if (awayGoals == null) throw new FieldException("[awayGoals] cannot be null");
+        if (homeGoals < 0) throw new FieldException("[homeGoals] cannot be negative");
+        if (awayGoals < 0) throw new FieldException("[awayGoals] cannot be negative");
+    }
 
     private static void validateTeams(Long homeTeamId, Long awayTeamId) {
         if (homeTeamId == null) throw new FieldException("[homeTeamId] cannot be null");
