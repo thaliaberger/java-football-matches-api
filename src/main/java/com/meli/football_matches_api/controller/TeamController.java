@@ -68,7 +68,7 @@ public class TeamController {
         return teamService.list(isActive);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping(params = "id")
     public ResponseEntity<String> delete(@RequestParam int id) {
         return teamService.delete(id);
     }

@@ -83,7 +83,9 @@ public class TeamService {
     }
 
     public ResponseEntity<String> delete(int id) {
-        repository.deleteById(id);
+        Team team = repository.findById(id);
+        team.setIsActive(false);
+        repository.save(team);
         return ResponseEntity.status(204).body("");
     }
 
