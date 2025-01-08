@@ -1,41 +1,35 @@
 package com.meli.football_matches_api.model;
 
 import com.meli.football_matches_api.DTO.MatchDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "match_")
 
 public class Match {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "matchId")
-    private Long matchId;
+    @Column(name = "id")
+    private Long id;
 
-    @Column(name = "homeTeam", length = 100, nullable = true)
-    private String homeTeam;
+    @Column(name = "idHomeTeam", nullable = true)
+    private Long idHomeTeam;
 
-    @Column(name = "awayTeam", length = 100, nullable = true)
-    private String awayTeam;
-
-    @Column(name = "homeTeamId")
-    private Long homeTeamId;
-
-    @Column(name = "awayTeamId")
-    private Long awayTeamId;
+    @Column(name = "idAwayTeam", nullable = true)
+    private Long idAwayTeam;
 
     @Column(name = "homeGoals", nullable = true)
-    private int homeGoals;
+    private Integer homeGoals;
 
     @Column(name = "awayGoals", nullable = true)
-    private int awayGoals;
+    private Integer awayGoals;
 
-    @Column(name = "stadium", nullable = true)
-    private String stadium;
+    @Column(name = "estadio", length = 60, nullable = true)
+    private String estadio;
 
     @Column(name = "matchDateTime", nullable = true)
     private LocalDateTime matchDateTime;
@@ -48,56 +42,32 @@ public class Match {
         BeanUtils.copyProperties(matchDTO, this);
     }
 
-    public Long getMatchId() {
-        return matchId;
+    public Long getId() {
+        return id;
     }
 
-    public String getHomeTeam() {
-        return homeTeam;
+    public String getEstadio() {
+        return estadio;
     }
 
-    public void setHomeTeam(String homeTeam) {
-        this.homeTeam = homeTeam;
+    public void setEstadio(String estadio) {
+        this.estadio = estadio;
     }
 
-    public String getAwayTeam() {
-        return awayTeam;
+    public Long getIdHomeTeam() {
+        return idHomeTeam;
     }
 
-    public void setAwayTeam(String awayTeam) {
-        this.awayTeam = awayTeam;
+    public void setIdHomeTeam(Long idHomeTeam) {
+        this.idHomeTeam = idHomeTeam;
     }
 
-    public Long getHomeTeamId() {
-        return homeTeamId;
+    public Long getIdAwayTeam() {
+        return idAwayTeam;
     }
 
-    public Long getAwayTeamId() {
-        return awayTeamId;
-    }
-
-    public int getHomeGoals() {
-        return homeGoals;
-    }
-
-    public void setHomeGoals(int homeGoals) {
-        this.homeGoals = homeGoals;
-    }
-
-    public int getAwayGoals() {
-        return awayGoals;
-    }
-
-    public void setAwayGoals(int awayGoals) {
-        this.awayGoals = awayGoals;
-    }
-
-    public String getStadium() {
-        return stadium;
-    }
-
-    public void setStadium(String stadium) {
-        this.stadium = stadium;
+    public void setIdAwayTeam(Long idAwayTeam) {
+        this.idAwayTeam = idAwayTeam;
     }
 
     public LocalDateTime getMatchDateTime() {
@@ -107,4 +77,21 @@ public class Match {
     public void setMatchDateTime(LocalDateTime matchDateTime) {
         this.matchDateTime = matchDateTime;
     }
+
+    public Integer getAwayGoals() {
+        return awayGoals;
+    }
+
+    public void setAwayGoals(Integer awayGoals) {
+        this.awayGoals = awayGoals;
+    }
+
+    public Integer getHomeGoals() {
+        return homeGoals;
+    }
+
+    public void setHomeGoals(Integer homeGoals) {
+        this.homeGoals = homeGoals;
+    }
+
 }
