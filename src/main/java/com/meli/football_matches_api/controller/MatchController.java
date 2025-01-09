@@ -1,6 +1,7 @@
 package com.meli.football_matches_api.controller;
 
 import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class MatchController {
     }
 
     @GetMapping("/list")
-    public List<Match> list() {
+    public ResponseEntity<List<MatchDTO>> list() {
         return matchService.list();
     }
 }
