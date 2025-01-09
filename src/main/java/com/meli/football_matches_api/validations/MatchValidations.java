@@ -4,15 +4,19 @@ import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
+import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
+import com.meli.football_matches_api.repository.IMatch;
 import com.meli.football_matches_api.repository.ITeam;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MatchValidations {
 
-    public static void validateFields(MatchDTO matchDTO, ITeam teamRepository) {
+    public static void validateFields(MatchDTO matchDTO, IMatch matchRepository, ITeam teamRepository) {
         Long homeTeamId = matchDTO.getIdHomeTeam();
         Long awayTeamId = matchDTO.getIdAwayTeam();
 
@@ -25,11 +29,18 @@ public class MatchValidations {
         if (awayTeam == null) throw new NotFoundException("awayTeam not found");
 
         if (matchDTO.getIdStadium() == null) throw new FieldException("[idStadium] cannot be null");
-        if (matchDTO.getMatchDateTime() == null) throw new FieldException("[matchDateTime] cannot be null");
 
         validateGoals(matchDTO.getHomeGoals(), matchDTO.getAwayGoals());
         validateTeams(homeTeam, awayTeam);
-        validateDateTime(matchDTO.getMatchDateTime(), homeTeam.getDateCreated(), awayTeam.getDateCreated());
+
+        LocalDateTime matchDateTime = matchDTO.getMatchDateTime();
+        validateDateTime(matchDateTime, homeTeam.getDateCreated(), awayTeam.getDateCreated());
+
+        List<Match> homeTeamMatches = matchRepository.findAllByIdAwayTeam(homeTeamId);
+        validateConflictMatches(matchDateTime, homeTeamMatches);
+
+        List<Match> awayTeamMatches = matchRepository.findAllByIdAwayTeam(awayTeamId);
+        validateConflictMatches(matchDateTime, awayTeamMatches);
     };
 
     private static void validateGoals(Integer homeGoals, Integer awayGoals) {
@@ -56,4 +67,12 @@ public class MatchValidations {
         if (dateTime.isBefore(homeTeamDate.atStartOfDay())) throw new ConflictException("[matchDateTime] cannot be before [homeTeamDateCreated]");
         if (dateTime.isBefore(awayTeamDate.atStartOfDay())) throw new ConflictException("[matchDateTime] cannot be before [awayTeamDateCreated]");
     };
+
+    private static void validateConflictMatches(LocalDateTime dateTime, List<Match> matches) {
+        matches.forEach(match -> {
+            if (Duration.between(dateTime, match.getMatchDateTime()).toHours() < 48) {
+                throw new ConflictException("Cannot create a match when one of the teams already has a match in less than 48 hours");
+            };
+        });
+    }
 }
