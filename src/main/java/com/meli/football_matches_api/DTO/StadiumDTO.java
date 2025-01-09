@@ -9,6 +9,8 @@ public class StadiumDTO {
 
     private String name;
 
+    private Long homeTeamId;
+
     public StadiumDTO() {}
 
     public StadiumDTO(Stadium stadium) {
@@ -29,5 +31,13 @@ public class StadiumDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getHomeTeamId() {
+        return homeTeamId;
+    }
+
+    public void setHomeTeamId(Long homeTeamId) {
+        this.homeTeamId = homeTeamId;
     }
 }

@@ -16,6 +16,9 @@ public class Stadium {
     @Column(name = "name", length = 60, nullable = true)
     private String name;
 
+    @Column(name = "homeTeamId")
+    private Long homeTeamId;
+
     public Stadium() {}
 
     public Stadium(StadiumDTO stadiumDTO) {
@@ -36,5 +39,13 @@ public class Stadium {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getHomeTeamId() {
+        return homeTeamId;
+    }
+
+    public void setHomeTeamId(Long homeTeamId) {
+        this.homeTeamId = homeTeamId;
     }
 }
