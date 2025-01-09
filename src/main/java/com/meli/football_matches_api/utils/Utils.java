@@ -1,8 +1,10 @@
 package com.meli.football_matches_api.utils;
 
 import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.DTO.StadiumDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.model.Match;
+import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
 import org.springframework.data.domain.Sort;
 
@@ -36,5 +38,16 @@ public class Utils {
         }
 
         return matchDTOS;
+    }
+
+    public static List<StadiumDTO> convertToStadiumDTO(List<Stadium> stadiums) {
+        List<StadiumDTO> stadiumDTOS = new ArrayList<>();
+
+        for (Stadium stadium : stadiums) {
+            StadiumDTO stadiumDTO = new StadiumDTO(stadium);
+            stadiumDTOS.add(stadiumDTO);
+        }
+
+        return stadiumDTOS;
     }
 }
