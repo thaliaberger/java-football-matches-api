@@ -29,7 +29,7 @@ public class MatchService {
     };
 
     public ResponseEntity<MatchDTO> update(MatchDTO matchDTO) {
-        matchRepository.findById(matchDTO.getId().intValue()).orElseThrow(() -> new NotFoundException("Match not found"));
+        MatchValidations.validateIfMatchExists(matchDTO.getId().intValue(), matchRepository);
         return createOrUpdate(matchDTO, true);
     }
 
@@ -43,5 +43,11 @@ public class MatchService {
         MatchDTO savedMatch = new MatchDTO(matchRepository.save(newMatch));
         int statusCode = isUpdate ? 200 : 201;
         return ResponseEntity.status(statusCode).body(savedMatch);
+    }
+
+    public ResponseEntity<String> delete(int id) {
+        MatchValidations.validateIfMatchExists(id, matchRepository);
+        matchRepository.deleteById(id);
+        return ResponseEntity.status(204).body("");
     }
 }

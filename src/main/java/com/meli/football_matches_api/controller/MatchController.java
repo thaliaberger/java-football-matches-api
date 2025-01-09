@@ -30,6 +30,11 @@ public class MatchController {
         return matchService.update(match);
     }
 
+    @DeleteMapping(params = "id")
+    public ResponseEntity<String> delete(@RequestParam int id) {
+        return matchService.delete(id);
+    }
+
     @GetMapping("/list")
     public List<Match> list() {
         return matchService.list();
