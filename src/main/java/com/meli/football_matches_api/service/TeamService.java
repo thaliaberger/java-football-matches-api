@@ -4,7 +4,7 @@ import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Team;
-import com.meli.football_matches_api.repository.ITeam;
+import com.meli.football_matches_api.repository.TeamRepository;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.TeamValidations;
 import org.springframework.data.domain.PageRequest;
@@ -17,9 +17,9 @@ import java.util.List;
 @Service
 public class TeamService {
 
-    private final ITeam repository;
+    private final TeamRepository repository;
 
-    public TeamService(ITeam repository) {
+    public TeamService(TeamRepository repository) {
         this.repository = repository;
     };
 

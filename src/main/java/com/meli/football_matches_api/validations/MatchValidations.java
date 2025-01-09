@@ -6,8 +6,8 @@ import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
-import com.meli.football_matches_api.repository.IMatch;
-import com.meli.football_matches_api.repository.ITeam;
+import com.meli.football_matches_api.repository.MatchRepository;
+import com.meli.football_matches_api.repository.TeamRepository;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MatchValidations {
 
-    public static void validateFields(MatchDTO matchDTO, IMatch matchRepository, ITeam teamRepository) {
+    public static void validateFields(MatchDTO matchDTO, MatchRepository matchRepository, TeamRepository teamRepository) {
         Long homeTeamId = matchDTO.getIdHomeTeam();
         Long awayTeamId = matchDTO.getIdAwayTeam();
 

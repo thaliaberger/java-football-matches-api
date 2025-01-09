@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ITeam extends JpaRepository<Team, Integer> {
+public interface TeamRepository extends JpaRepository<Team, Integer> {
 
     Team findById(int id);
 
