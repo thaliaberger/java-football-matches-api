@@ -46,6 +46,10 @@ public class MatchValidations {
         validateConflictMatches(matchId, matchDateTime, awayTeamMatches);
     };
 
+    public static void validateIfMatchExists(int matchId, MatchRepository matchRepository) {
+        matchRepository.findById(matchId).orElseThrow(() -> new NotFoundException("Match not found"));
+    }
+
     private static void validateGoals(Integer homeGoals, Integer awayGoals) {
         if (homeGoals == null) throw new FieldException("[homeGoals] cannot be null");
         if (awayGoals == null) throw new FieldException("[awayGoals] cannot be null");
