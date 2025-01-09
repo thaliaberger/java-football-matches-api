@@ -73,7 +73,7 @@ public class MatchValidations {
 
     private static void validateConflictMatches(Long matchId, LocalDateTime dateTime, List<Match> matches) {
         matches.forEach(match -> {
-            if (Duration.between(dateTime, match.getMatchDateTime()).toHours() < 48 && (Objects.equals(match.getId(), matchId))) {
+            if (Duration.between(dateTime, match.getMatchDateTime()).toHours() < 48 && (!Objects.equals(match.getId(), matchId))) {
                 throw new ConflictException("Cannot create a match when one of the teams already has a match in less than 48 hours");
             };
         });
