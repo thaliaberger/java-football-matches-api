@@ -35,6 +35,11 @@ public class MatchController {
         return matchService.delete(id);
     }
 
+    @GetMapping
+    public ResponseEntity<MatchDTO> get(@RequestParam Long id) {
+        return matchService.get(id);
+    }
+
     @GetMapping("/list")
     public List<Match> list() {
         return matchService.list();

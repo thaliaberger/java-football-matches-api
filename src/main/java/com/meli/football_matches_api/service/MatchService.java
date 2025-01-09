@@ -50,4 +50,12 @@ public class MatchService {
         matchRepository.deleteById(id);
         return ResponseEntity.status(204).body("");
     }
+
+    public ResponseEntity<MatchDTO> get(Long id) {
+        Match match = matchRepository.findById(id);
+        if (match == null) throw new NotFoundException("Match not found");
+
+        MatchDTO matchDTO = new MatchDTO(match);
+        return ResponseEntity.status(200).body(matchDTO);
+    }
 }
