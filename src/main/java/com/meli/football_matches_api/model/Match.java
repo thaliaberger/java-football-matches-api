@@ -16,12 +16,6 @@ public class Match {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "idHomeTeam", nullable = true)
-    private Long idHomeTeam;
-
-    @Column(name = "idAwayTeam", nullable = true)
-    private Long idAwayTeam;
-
     @Column(name = "homeGoals", nullable = true)
     private Integer homeGoals;
 
@@ -33,6 +27,14 @@ public class Match {
 
     @Column(name = "matchDateTime", nullable = true)
     private LocalDateTime matchDateTime;
+
+    @OneToOne
+    @JoinColumn(name = "fk_home_team")
+    private Team homeTeam;
+
+    @OneToOne
+    @JoinColumn(name = "fk_away_team")
+    private Team awayTeam;
 
     public Match() {
 
@@ -56,22 +58,6 @@ public class Match {
 
     public void setIdStadium(Long idStadium) {
         this.idStadium = idStadium;
-    }
-
-    public Long getIdHomeTeam() {
-        return idHomeTeam;
-    }
-
-    public void setIdHomeTeam(Long idHomeTeam) {
-        this.idHomeTeam = idHomeTeam;
-    }
-
-    public Long getIdAwayTeam() {
-        return idAwayTeam;
-    }
-
-    public void setIdAwayTeam(Long idAwayTeam) {
-        this.idAwayTeam = idAwayTeam;
     }
 
     public LocalDateTime getMatchDateTime() {
@@ -98,4 +84,19 @@ public class Match {
         this.homeGoals = homeGoals;
     }
 
+    public Team getHomeTeam() {
+        return homeTeam;
+    }
+
+    public void setHomeTeam(Team homeTeam) {
+        this.homeTeam = homeTeam;
+    }
+
+    public Team getAwayTeam() {
+        return awayTeam;
+    }
+
+    public void setAwayTeam(Team awayTeam) {
+        this.awayTeam = awayTeam;
+    }
 }
