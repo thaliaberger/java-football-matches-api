@@ -1,6 +1,9 @@
 package com.meli.football_matches_api.service;
 
+import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.DTO.StadiumDTO;
+import com.meli.football_matches_api.exception.NotFoundException;
+import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.validations.StadiumValidations;
@@ -32,4 +35,12 @@ public class StadiumService {
         int statusCode = isUpdate ? 200 : 201;
         return ResponseEntity.status(statusCode).body(savedStadium);
     };
+
+    public ResponseEntity<StadiumDTO> get(Long id) {
+        Stadium stadium = stadiumRepository.findById(id);
+        if (stadium == null) throw new NotFoundException("Stadium not found");
+
+        StadiumDTO stadiumDTO = new StadiumDTO(stadium);
+        return ResponseEntity.status(200).body(stadiumDTO);
+    }
 }

@@ -1,5 +1,6 @@
 package com.meli.football_matches_api.controller;
 
+import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.DTO.StadiumDTO;
 import com.meli.football_matches_api.service.StadiumService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +27,10 @@ public class StadiumController {
     @PutMapping
     public ResponseEntity<StadiumDTO> update(@RequestBody StadiumDTO stadiumDTO) {
         return stadiumService.update(stadiumDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<StadiumDTO> get(@RequestParam Long id) {
+        return stadiumService.get(id);
     }
 }
