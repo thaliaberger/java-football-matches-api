@@ -25,6 +25,11 @@ public class MatchController {
         return matchService.create(match);
     }
 
+    @PutMapping
+    public ResponseEntity<MatchDTO> update(@RequestBody MatchDTO match) {
+        return matchService.update(match);
+    }
+
     @GetMapping("/list")
     public List<Match> list() {
         return matchService.list();
