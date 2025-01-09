@@ -17,9 +17,19 @@ public class StadiumService {
     };
 
     public ResponseEntity<StadiumDTO> create(StadiumDTO stadiumDTO) {
+        return createOrUpdate(stadiumDTO, false);
+    };
+
+    public ResponseEntity<StadiumDTO> update(StadiumDTO stadiumDTO) {
+        StadiumValidations.validateIfStadiumExists(stadiumDTO.getId().intValue(), stadiumRepository);
+        return createOrUpdate(stadiumDTO, true);
+    };
+
+    public ResponseEntity<StadiumDTO> createOrUpdate(StadiumDTO stadiumDTO, Boolean isUpdate) {
         StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository);
         Stadium newStadium = new Stadium(stadiumDTO);
         StadiumDTO savedStadium = new StadiumDTO(stadiumRepository.save(newStadium));
-        return ResponseEntity.status(201).body(savedStadium);
+        int statusCode = isUpdate ? 200 : 201;
+        return ResponseEntity.status(statusCode).body(savedStadium);
     };
 }
