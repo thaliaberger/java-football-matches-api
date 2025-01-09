@@ -1,6 +1,7 @@
 package com.meli.football_matches_api.DTO;
 
 import com.meli.football_matches_api.model.Stadium;
+import com.meli.football_matches_api.model.Team;
 import org.springframework.beans.BeanUtils;
 
 public class StadiumDTO {
@@ -9,7 +10,7 @@ public class StadiumDTO {
 
     private String name;
 
-    private Long homeTeamId;
+    private Team homeTeam;
 
     public StadiumDTO() {}
 
@@ -33,11 +34,11 @@ public class StadiumDTO {
         this.name = name;
     }
 
-    public Long getHomeTeamId() {
-        return homeTeamId;
+    public Team getHomeTeam() {
+        return homeTeam;
     }
 
-    public void setHomeTeamId(Long homeTeamId) {
-        this.homeTeamId = homeTeamId;
+    public void setHomeTeam(Team homeTeam) {
+        this.homeTeam = homeTeam;
     }
 }

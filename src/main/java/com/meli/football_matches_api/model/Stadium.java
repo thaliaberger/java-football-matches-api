@@ -16,8 +16,9 @@ public class Stadium {
     @Column(name = "name", length = 60, nullable = true)
     private String name;
 
-    @Column(name = "homeTeamId")
-    private Long homeTeamId;
+    @OneToOne
+    @JoinColumn(name = "fk_home_team_id")
+    private Team homeTeam;
 
     public Stadium() {}
 
@@ -41,11 +42,11 @@ public class Stadium {
         this.name = name;
     }
 
-    public Long getHomeTeamId() {
-        return homeTeamId;
+    public Team getHomeTeam() {
+        return homeTeam;
     }
 
-    public void setHomeTeamId(Long homeTeamId) {
-        this.homeTeamId = homeTeamId;
+    public void setHomeTeam(Team homeTeam) {
+        this.homeTeam = homeTeam;
     }
 }
