@@ -1,5 +1,6 @@
 package com.meli.football_matches_api.service;
 
+import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.NotFoundException;
@@ -87,6 +88,14 @@ public class TeamService {
         team.setIsActive(false);
         repository.save(team);
         return ResponseEntity.status(204).body("");
+    }
+
+    public ResponseEntity<RetrospectDTO> getRetrospect(int id) {
+        Team team = repository.findById(id);
+        if (team == null) throw new NotFoundException("Team not found");
+
+        RetrospectDTO retrospectDTO = new RetrospectDTO(team);
+        return ResponseEntity.status(200).body(retrospectDTO);
     }
 
     private void validateIfTeamAlreadyExists(String teamName, String state) {

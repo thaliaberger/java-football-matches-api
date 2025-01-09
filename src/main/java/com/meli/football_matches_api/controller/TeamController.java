@@ -1,5 +1,6 @@
 package com.meli.football_matches_api.controller;
 
+import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,5 +72,10 @@ public class TeamController {
     @DeleteMapping(params = "id")
     public ResponseEntity<String> delete(@RequestParam int id) {
         return teamService.delete(id);
+    }
+
+    @GetMapping(value = "/retrospect", params = "id")
+    public ResponseEntity<RetrospectDTO> retrospect(@RequestParam int id) {
+        return teamService.getRetrospect(id);
     }
 }
