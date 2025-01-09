@@ -24,6 +24,10 @@ public class MatchDTO {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getIdHomeTeam() {
         return idHomeTeam;
     }
