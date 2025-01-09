@@ -8,6 +8,8 @@ import com.meli.football_matches_api.repository.TeamRepository;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.MatchValidations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -60,4 +62,15 @@ public class MatchService {
         List<Match> matches = matchRepository.findAll();
         return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
     }
+
+    public ResponseEntity<List<MatchDTO>> list(String sort) {
+        return list(0, 1000, sort);
+    }
+
+    public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort) {
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
+        List<Match> matches = matchRepository.findAll(pageable).getContent();
+        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
+    }
+
 }

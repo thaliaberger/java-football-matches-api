@@ -1,6 +1,7 @@
 package com.meli.football_matches_api.controller;
 
 import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +43,19 @@ public class MatchController {
     @GetMapping("/list")
     public ResponseEntity<List<MatchDTO>> list() {
         return matchService.list();
+    }
+
+    @GetMapping(value = "/list", params = "sort")
+    public ResponseEntity<List<MatchDTO>> list(@RequestParam(name = "sort", defaultValue="id,asc") String sort) {
+        return matchService.list(sort);
+    }
+
+    @GetMapping(value = "/list", params = "page")
+    public ResponseEntity<List<MatchDTO>> list(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
+            @RequestParam(name = "sort", defaultValue="id,asc") String sort
+    ) {
+        return matchService.list(page, itemsPerPage, sort);
     }
 }
