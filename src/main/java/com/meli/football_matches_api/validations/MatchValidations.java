@@ -13,6 +13,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class MatchValidations {
 
@@ -36,11 +37,13 @@ public class MatchValidations {
         LocalDateTime matchDateTime = matchDTO.getMatchDateTime();
         validateDateTime(matchDateTime, homeTeam.getDateCreated(), awayTeam.getDateCreated());
 
+        Long matchId = matchDTO.getId();
+
         List<Match> homeTeamMatches = matchRepository.findAllByIdAwayTeam(homeTeamId);
-        validateConflictMatches(matchDateTime, homeTeamMatches);
+        validateConflictMatches(matchId, matchDateTime, homeTeamMatches);
 
         List<Match> awayTeamMatches = matchRepository.findAllByIdAwayTeam(awayTeamId);
-        validateConflictMatches(matchDateTime, awayTeamMatches);
+        validateConflictMatches(matchId, matchDateTime, awayTeamMatches);
     };
 
     private static void validateGoals(Integer homeGoals, Integer awayGoals) {
@@ -68,9 +71,9 @@ public class MatchValidations {
         if (dateTime.isBefore(awayTeamDate.atStartOfDay())) throw new ConflictException("[matchDateTime] cannot be before [awayTeamDateCreated]");
     };
 
-    private static void validateConflictMatches(LocalDateTime dateTime, List<Match> matches) {
+    private static void validateConflictMatches(Long matchId, LocalDateTime dateTime, List<Match> matches) {
         matches.forEach(match -> {
-            if (Duration.between(dateTime, match.getMatchDateTime()).toHours() < 48) {
+            if (Duration.between(dateTime, match.getMatchDateTime()).toHours() < 48 && (Objects.equals(match.getId(), matchId))) {
                 throw new ConflictException("Cannot create a match when one of the teams already has a match in less than 48 hours");
             };
         });
