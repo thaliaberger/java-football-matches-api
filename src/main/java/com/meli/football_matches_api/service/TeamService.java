@@ -94,7 +94,7 @@ public class TeamService {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");
 
-        RetrospectDTO retrospectDTO = new RetrospectDTO(team);
+        RetrospectDTO retrospectDTO = new RetrospectDTO(team.getHomeMatches(), team.getAwayMatches());
         return ResponseEntity.status(200).body(retrospectDTO);
     }
 
