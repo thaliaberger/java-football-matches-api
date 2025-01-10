@@ -1,31 +1,21 @@
 package com.meli.football_matches_api.DTO;
 
+import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class TeamDTO {
 
     private Integer id;
-
     private String name;
-
     private String state;
-
     private LocalDate dateCreated;
-
     private Boolean isActive;
-
-    private Integer wins;
-
-    private Integer losses;
-
-    private Integer draws;
-
-    private Integer scoredGoals;
-
-    private Integer concededGoals;
+    private List<Match> homeMatches;
+    private List<Match> awayMatches;
 
     public TeamDTO() {}
 
@@ -73,43 +63,19 @@ public class TeamDTO {
         this.isActive = active;
     }
 
-    public Integer getWins() {
-        return wins;
+    public List<Match> getHomeMatches() {
+        return homeMatches;
     }
 
-    public void setWins(Integer wins) {
-        this.wins = wins;
+    public void setHomeMatches(List<Match> homeMatches) {
+        this.homeMatches = homeMatches;
     }
 
-    public Integer getLosses() {
-        return losses;
+    public List<Match> getAwayMatches() {
+        return awayMatches;
     }
 
-    public void setLosses(Integer losses) {
-        this.losses = losses;
-    }
-
-    public Integer getDraws() {
-        return draws;
-    }
-
-    public void setDraws(Integer draws) {
-        this.draws = draws;
-    }
-
-    public Integer getScoredGoals() {
-        return scoredGoals;
-    }
-
-    public void setScoredGoals(Integer scoredGoals) {
-        this.scoredGoals = scoredGoals;
-    }
-
-    public Integer getConcededGoals() {
-        return concededGoals;
-    }
-
-    public void setConcededGoals(Integer concededGoals) {
-        this.concededGoals = concededGoals;
+    public void setAwayMatches(List<Match> awayMatches) {
+        this.awayMatches = awayMatches;
     }
 }

@@ -1,14 +1,15 @@
 package com.meli.football_matches_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import jakarta.persistence.*;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
-@Table(name = "team")
-
+@Table
 public class Team {
 
     @Id
@@ -16,32 +17,25 @@ public class Team {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "name", length = 100, nullable = true)
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
 
-    @Column(name = "state", length = 2, nullable = true)
+    @Column(name = "state", length = 2, nullable = false)
     private String state;
 
-    @Column(name = "dateCreated", nullable = true)
+    @Column(name = "dateCreated", nullable = false)
     private LocalDate dateCreated;
 
-    @Column(name = "isActive", nullable = true)
+    @Column(name = "isActive", nullable = false)
     private Boolean isActive;
 
-    @Column(name = "wins")
-    private Integer wins;
+    @JsonIgnore
+    @OneToMany(mappedBy = "homeTeam")
+    private List<Match> homeMatches;
 
-    @Column(name = "losses")
-    private Integer losses;
-
-    @Column(name = "draws")
-    private Integer draws;
-
-    @Column(name = "scoredGoals")
-    private Integer scoredGoals;
-
-    @Column(name = "concededGoals")
-    private Integer concededGoals;
+    @JsonIgnore
+    @OneToMany(mappedBy = "awayTeam")
+    private List<Match> awayMatches;
 
     public Team() {
 
@@ -91,40 +85,19 @@ public class Team {
         this.isActive = isActive;
     }
 
-    public Integer getWins() {
-        return wins;
+    public List<Match> getHomeMatches() {
+        return homeMatches;
     }
 
-    public void setWins(Integer wins) { this.wins = wins; }
-
-    public Integer getLosses() {
-        return losses;
-    }
-    public void setLosses(Integer losses) {
-        this.losses = losses;
+    public void setHomeMatches(List<Match> homeMatches) {
+        this.homeMatches = homeMatches;
     }
 
-    public Integer getDraws() {
-        return draws;
+    public List<Match> getAwayMatches() {
+        return awayMatches;
     }
 
-    public void setDraws(Integer draws) {
-        this.draws = draws;
-    }
-
-    public Integer getScoredGoals() {
-        return scoredGoals;
-    }
-
-    public void setScoredGoals(Integer scoredGoals) {
-        this.scoredGoals = scoredGoals;
-    }
-
-    public Integer getConcededGoals() {
-        return concededGoals;
-    }
-
-    public void setConcededGoals(Integer concededGoals) {
-        this.concededGoals = concededGoals;
+    public void setAwayMatches(List<Match> awayMatches) {
+        this.awayMatches = awayMatches;
     }
 }
