@@ -4,6 +4,7 @@ import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.NotFoundException;
+import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.TeamRepository;
 import com.meli.football_matches_api.utils.Utils;
@@ -95,6 +96,20 @@ public class TeamService {
         if (team == null) throw new NotFoundException("Team not found");
 
         RetrospectDTO retrospectDTO = new RetrospectDTO(team.getHomeMatches(), team.getAwayMatches());
+        return ResponseEntity.status(200).body(retrospectDTO);
+    }
+
+    public ResponseEntity<RetrospectDTO> getRetrospect(int id, int opponentId) {
+        Team team = repository.findById(id);
+        if (team == null) throw new NotFoundException("Team not found");
+
+        Team opponentTeam = repository.findById(opponentId);
+        if (opponentTeam == null) throw new NotFoundException("Opponent team not found");
+
+        List<Match> homeMatchesAgainstOpponent = team.getHomeMatches().stream().filter(match -> match.getAwayTeam().getId() == opponentId).toList();
+        List<Match> awayMatchesAgainstOpponent = team.getAwayMatches().stream().filter(match -> match.getHomeTeam().getId() == opponentId).toList();
+
+        RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatchesAgainstOpponent, awayMatchesAgainstOpponent);
         return ResponseEntity.status(200).body(retrospectDTO);
     }
 

@@ -78,4 +78,9 @@ public class TeamController {
     public ResponseEntity<RetrospectDTO> retrospect(@RequestParam int id) {
         return teamService.getRetrospect(id);
     }
+
+    @GetMapping(value = "/retrospect", params = { "id" , "opponentId"})
+    public ResponseEntity<RetrospectDTO> retrospect(@RequestParam int id, @RequestParam int opponentId) {
+        return teamService.getRetrospect(id, opponentId);
+    }
 }

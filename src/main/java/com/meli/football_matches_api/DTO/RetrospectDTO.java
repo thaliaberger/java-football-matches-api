@@ -5,6 +5,7 @@ import com.meli.football_matches_api.model.Team;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class RetrospectDTO {
 
@@ -18,6 +19,8 @@ public class RetrospectDTO {
 
     private Integer concededGoals = 0;
 
+    private List<Match> matches;
+
     public RetrospectDTO() {}
 
     public RetrospectDTO(Team team) {
@@ -27,6 +30,7 @@ public class RetrospectDTO {
     public RetrospectDTO(List<Match> homeMatches, List<Match> awayMatches) {
         processMatches(homeMatches, true);
         processMatches(awayMatches, false);
+        setMatches(Stream.concat(homeMatches.stream(), awayMatches.stream()).toList());
     }
 
     private void processMatches(List<Match> matches, boolean isHomeMatch) {
@@ -100,5 +104,13 @@ public class RetrospectDTO {
 
     public void setConcededGoals(Integer concededGoals) {
         this.concededGoals = concededGoals;
+    }
+
+    public List<Match> getMatches() {
+        return matches;
+    }
+
+    public void setMatches(List<Match> matches) {
+        this.matches = matches;
     }
 }
