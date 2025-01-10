@@ -1,6 +1,7 @@
 package com.meli.football_matches_api.DTO;
 
 import com.meli.football_matches_api.model.Match;
+import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
 import org.springframework.beans.BeanUtils;
 
@@ -11,10 +12,10 @@ public class MatchDTO {
     private Long id;
     private Integer homeGoals;
     private Integer awayGoals;
-    private Long idStadium;
     private LocalDateTime matchDateTime;
     private Team homeTeam;
     private Team awayTeam;
+    private Stadium stadium;
 
     public MatchDTO() {}
 
@@ -43,14 +44,6 @@ public class MatchDTO {
 
     public void setAwayGoals(int awayGoals) {
         this.awayGoals = awayGoals;
-    }
-
-    public Long getIdStadium() {
-        return idStadium;
-    }
-
-    public void setIdStadium(Long idStadium) {
-        this.idStadium = idStadium;
     }
 
     public void setAwayGoals(Integer awayGoals) {
@@ -83,5 +76,13 @@ public class MatchDTO {
 
     public void setAwayTeam(Team awayTeam) {
         this.awayTeam = awayTeam;
+    }
+
+    public Stadium getStadium() {
+        return stadium;
+    }
+
+    public void setStadium(Stadium stadium) {
+        this.stadium = stadium;
     }
 }
