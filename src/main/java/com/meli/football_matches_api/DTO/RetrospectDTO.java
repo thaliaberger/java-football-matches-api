@@ -27,43 +27,38 @@ public class RetrospectDTO {
         BeanUtils.copyProperties(team, this);
     }
 
+    public RetrospectDTO(Match match, Boolean isHomeMatch) {
+        processMatch(match, isHomeMatch);
+    }
+
     public RetrospectDTO(List<Match> homeMatches, List<Match> awayMatches) {
-        processMatches(homeMatches, true);
-        processMatches(awayMatches, false);
+        homeMatches.forEach(match -> processMatch(match, true));
+        awayMatches.forEach(match -> processMatch(match, false));
         setMatches(Stream.concat(homeMatches.stream(), awayMatches.stream()).toList());
     }
 
-    private void processMatches(List<Match> matches, boolean isHomeMatch) {
-        int wins = 0;
-        int losses = 0;
-        int draws = 0;
-        int scoredGoals = 0;
-        int concededGoals = 0;
+    private void processMatch(Match match, boolean isHomeMatch) {
+        int homeGoals = match.getHomeGoals();
+        int awayGoals = match.getAwayGoals();
 
-        for (Match match : matches) {
-            int homeGoals = match.getHomeGoals();
-            int awayGoals = match.getAwayGoals();
+        int teamScoredGoals = isHomeMatch ? homeGoals : awayGoals;
+        int teamConcededGoals = isHomeMatch ? awayGoals : homeGoals;
 
-            int teamScoredGoals = isHomeMatch ? homeGoals : awayGoals;
-            int teamConcededGoals = isHomeMatch ? awayGoals : homeGoals;
-
-            if (teamScoredGoals > teamConcededGoals) {
-                wins++;
-            } else if (teamScoredGoals < teamConcededGoals) {
-                losses++;
-            } else {
-                draws++;
-            }
-
-            scoredGoals += teamScoredGoals;
-            concededGoals += teamConcededGoals;
+        if (teamScoredGoals > teamConcededGoals) {
+            wins++;
+        } else if (teamScoredGoals < teamConcededGoals) {
+            losses++;
+        } else {
+            draws++;
         }
 
-        setWins(getWins() + wins);
-        setLosses(getLosses() + losses);
-        setDraws(getDraws() + draws);
-        setScoredGoals(getScoredGoals() + scoredGoals);
-        setConcededGoals(getConcededGoals() + concededGoals);
+        scoredGoals += teamScoredGoals;
+        concededGoals += teamConcededGoals;
+    }
+
+    public static RetrospectDTO update(RetrospectDTO retrospectDTO, Match match, Boolean isHomeMatch) {
+        retrospectDTO.processMatch(match, isHomeMatch);
+        return retrospectDTO;
     }
 
     public Integer getWins() {
