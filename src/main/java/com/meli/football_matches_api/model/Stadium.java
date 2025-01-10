@@ -4,8 +4,10 @@ import com.meli.football_matches_api.DTO.StadiumDTO;
 import jakarta.persistence.*;
 import org.springframework.beans.BeanUtils;
 
+import java.util.List;
+
 @Entity
-@Table(name = "stadium")
+@Table
 public class Stadium {
 
     @Id
@@ -13,12 +15,15 @@ public class Stadium {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", length = 60, nullable = true)
+    @Column(name = "name", length = 60, nullable = false)
     private String name;
 
     @OneToOne
     @JoinColumn(name = "fk_home_team_id")
     private Team homeTeam;
+
+    @OneToMany
+    private List<Match> match;
 
     public Stadium() {}
 
