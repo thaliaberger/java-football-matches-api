@@ -18,8 +18,8 @@ import java.util.Objects;
 public class MatchValidations {
 
     public static void validateFields(MatchDTO matchDTO, MatchRepository matchRepository, TeamRepository teamRepository) {
-        Long homeTeamId = matchDTO.getIdHomeTeam();
-        Long awayTeamId = matchDTO.getIdAwayTeam();
+        Long homeTeamId = matchDTO.getHomeTeam().getId().longValue();
+        Long awayTeamId = matchDTO.getAwayTeam().getId().longValue();
 
         validateIds(homeTeamId, awayTeamId);
 
@@ -29,7 +29,9 @@ public class MatchValidations {
         Team awayTeam = teamRepository.findById(awayTeamId.intValue());
         if (awayTeam == null) throw new NotFoundException("awayTeam not found");
 
-        if (matchDTO.getIdStadium() == null) throw new FieldException("[idStadium] cannot be null");
+        if (matchDTO.getStadium() == null) throw new FieldException("[stadium] cannot be null");
+
+        if (matchDTO.getStadium().getId() == null) throw new FieldException("[stadium.id] cannot be null");
 
         validateGoals(matchDTO.getHomeGoals(), matchDTO.getAwayGoals());
         validateTeams(homeTeam, awayTeam);
@@ -39,10 +41,10 @@ public class MatchValidations {
 
         Long matchId = matchDTO.getId();
 
-        List<Match> homeTeamMatches = matchRepository.findAllByIdAwayTeam(homeTeamId);
+        List<Match> homeTeamMatches = matchRepository.findAllByHomeTeam(homeTeam);
         validateConflictMatches(matchId, matchDateTime, homeTeamMatches);
 
-        List<Match> awayTeamMatches = matchRepository.findAllByIdAwayTeam(awayTeamId);
+        List<Match> awayTeamMatches = matchRepository.findAllByAwayTeam(awayTeam);
         validateConflictMatches(matchId, matchDateTime, awayTeamMatches);
     };
 
