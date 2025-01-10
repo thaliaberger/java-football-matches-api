@@ -1,7 +1,10 @@
 package com.meli.football_matches_api.DTO;
 
+import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import org.springframework.beans.BeanUtils;
+
+import java.util.List;
 
 public class RetrospectDTO {
 
@@ -19,6 +22,44 @@ public class RetrospectDTO {
 
     public RetrospectDTO(Team team) {
         BeanUtils.copyProperties(team, this);
+    }
+
+    public RetrospectDTO(List<Match> homeMatches, List<Match> awayMatches) {
+        processMatches(homeMatches, true);
+        processMatches(awayMatches, false);
+    }
+
+    private void processMatches(List<Match> matches, boolean isHomeMatch) {
+        int wins = 0;
+        int losses = 0;
+        int draws = 0;
+        int scoredGoals = 0;
+        int concededGoals = 0;
+
+        for (Match match : matches) {
+            int homeGoals = match.getHomeGoals();
+            int awayGoals = match.getAwayGoals();
+
+            int teamScoredGoals = isHomeMatch ? homeGoals : awayGoals;
+            int teamConcededGoals = isHomeMatch ? awayGoals : homeGoals;
+
+            if (teamScoredGoals > teamConcededGoals) {
+                wins++;
+            } else if (teamScoredGoals < teamConcededGoals) {
+                losses++;
+            } else {
+                draws++;
+            }
+
+            scoredGoals += teamScoredGoals;
+            concededGoals += teamConcededGoals;
+        }
+
+        setWins(getWins() + wins);
+        setLosses(getLosses() + losses);
+        setDraws(getDraws() + draws);
+        setScoredGoals(getScoredGoals() + scoredGoals);
+        setConcededGoals(getConcededGoals() + concededGoals);
     }
 
     public Integer getWins() {
