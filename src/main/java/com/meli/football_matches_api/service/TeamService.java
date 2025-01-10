@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -111,6 +112,39 @@ public class TeamService {
 
         RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatchesAgainstOpponent, awayMatchesAgainstOpponent);
         return ResponseEntity.status(200).body(retrospectDTO);
+    }
+
+    public ResponseEntity<HashMap<String, RetrospectDTO>> getRetrospectAgainstAll(int id) {
+        Team team = repository.findById(id);
+        if (team == null) throw new NotFoundException("Team not found");
+
+        List<Match> homeMatches = team.getHomeMatches();
+        List<Match> awayMatches = team.getAwayMatches();
+
+        HashMap<String, RetrospectDTO> retrospectsByOpponent = new HashMap<>();
+
+        processMatches(homeMatches, true, retrospectsByOpponent);
+        processMatches(awayMatches, false, retrospectsByOpponent);
+
+        return ResponseEntity.status(200).body(retrospectsByOpponent);
+    }
+
+    private void processMatches(List<Match> matches, boolean isHomeMatch, HashMap<String, RetrospectDTO> retrospectsByOpponent) {
+        for (Match match : matches) {
+            String currentOpponent = isHomeMatch ? match.getAwayTeam().getName() : match.getHomeTeam().getName();
+
+            RetrospectDTO newDTO;
+
+            if (retrospectsByOpponent.containsKey(currentOpponent)) {
+                newDTO = RetrospectDTO.update(retrospectsByOpponent.get(currentOpponent), match, isHomeMatch);
+                retrospectsByOpponent.put(currentOpponent, newDTO);
+            } else {
+                newDTO = new RetrospectDTO(match, isHomeMatch);
+                retrospectsByOpponent.put(currentOpponent, newDTO);
+            }
+
+            retrospectsByOpponent.put(currentOpponent, newDTO);
+        }
     }
 
     private void validateIfTeamAlreadyExists(String teamName, String state) {

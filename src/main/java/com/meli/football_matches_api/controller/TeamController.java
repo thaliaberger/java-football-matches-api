@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -79,7 +80,12 @@ public class TeamController {
         return teamService.getRetrospect(id);
     }
 
-    @GetMapping(value = "/retrospect", params = { "id" , "opponentId"})
+    @GetMapping(value = "/retrospect/all", params = "id")
+    public ResponseEntity<HashMap<String, RetrospectDTO>> retrospectAll(@RequestParam int id) {
+        return teamService.getRetrospectAgainstAll(id);
+    }
+
+    @GetMapping(value = "/retrospect", params = { "id" , "opponentId" })
     public ResponseEntity<RetrospectDTO> retrospect(@RequestParam int id, @RequestParam int opponentId) {
         return teamService.getRetrospect(id, opponentId);
     }
