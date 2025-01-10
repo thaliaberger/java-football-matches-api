@@ -43,8 +43,6 @@ public class MatchService {
         Match newMatch = new Match(matchDTO);
         MatchDTO savedMatch = new MatchDTO(matchRepository.save(newMatch));
 
-        handleScoreAndUpdateTeams(matchDTO.getIdHomeTeam(), matchDTO.getHomeGoals(), matchDTO.getIdAwayTeam(), matchDTO.getAwayGoals());
-
         int statusCode = isUpdate ? 200 : 201;
         return ResponseEntity.status(statusCode).body(savedMatch);
     }
@@ -76,34 +74,5 @@ public class MatchService {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
         List<Match> matches = matchRepository.findAll(pageable).getContent();
         return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
-    }
-
-    private void handleScoreAndUpdateTeams(Long homeTeamId, Integer homeTeamGoals, Long awayTeamId, Integer awayTeamGoals) {
-        Team homeTeam = teamRepository.findById(homeTeamId.intValue());
-        Team awayTeam = teamRepository.findById(awayTeamId.intValue());
-
-        if (homeTeamGoals > 0) {
-            homeTeam.setScoredGoals(homeTeam.getScoredGoals() + homeTeamGoals);
-            awayTeam.setConcededGoals(awayTeam.getConcededGoals() + awayTeamGoals);
-        }
-
-        if (awayTeamGoals > 0) {
-            awayTeam.setScoredGoals(awayTeam.getScoredGoals() + awayTeamGoals);
-            homeTeam.setConcededGoals(homeTeam.getConcededGoals() + homeTeamGoals);
-        }
-
-        if (homeTeamGoals > awayTeamGoals) {
-            homeTeam.setWins(homeTeam.getWins() + 1);
-            awayTeam.setLosses(awayTeam.getLosses() + 1);
-        } else if (awayTeamGoals > homeTeamGoals) {
-            awayTeam.setWins(awayTeam.getWins() + 1);
-            homeTeam.setLosses(homeTeam.getLosses() + 1);
-        } else {
-            homeTeam.setDraws(homeTeam.getDraws() + 1);
-            awayTeam.setDraws(awayTeam.getDraws() + 1);
-        }
-
-        teamRepository.save(awayTeam);
-        teamRepository.save(homeTeam);
     }
 }
