@@ -1,5 +1,6 @@
 package com.meli.football_matches_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meli.football_matches_api.DTO.MatchDTO;
 import jakarta.persistence.*;
 import org.springframework.beans.BeanUtils;
@@ -8,7 +9,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "match_")
-
 public class Match {
 
     @Id
@@ -16,25 +16,28 @@ public class Match {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "homeGoals", nullable = true)
+    @Column(name = "homeGoals", nullable = false)
     private Integer homeGoals;
 
-    @Column(name = "awayGoals", nullable = true)
+    @Column(name = "awayGoals", nullable = false)
     private Integer awayGoals;
 
-    @Column(name = "idStadium", nullable = true)
-    private Long idStadium;
-
-    @Column(name = "matchDateTime", nullable = true)
+    @Column(name = "matchDateTime", nullable = false)
     private LocalDateTime matchDateTime;
 
-    @OneToOne
+    @JsonIgnore
+    @ManyToOne
     @JoinColumn(name = "fk_home_team")
     private Team homeTeam;
 
-    @OneToOne
+    @JsonIgnore
+    @ManyToOne
     @JoinColumn(name = "fk_away_team")
     private Team awayTeam;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_stadium")
+    private Stadium stadium;
 
     public Match() {
 
@@ -50,14 +53,6 @@ public class Match {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getIdStadium() {
-        return idStadium;
-    }
-
-    public void setIdStadium(Long idStadium) {
-        this.idStadium = idStadium;
     }
 
     public LocalDateTime getMatchDateTime() {
@@ -98,5 +93,13 @@ public class Match {
 
     public void setAwayTeam(Team awayTeam) {
         this.awayTeam = awayTeam;
+    }
+
+    public Stadium getStadium() {
+        return stadium;
+    }
+
+    public void setStadium(Stadium stadium) {
+        this.stadium = stadium;
     }
 }
