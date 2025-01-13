@@ -2,6 +2,7 @@ package com.meli.football_matches_api.controller;
 
 import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.PriorityQueue;
 
 @RestController
 @RequestMapping("/team")
@@ -88,5 +90,10 @@ public class TeamController {
     @GetMapping(value = "/retrospect", params = { "id" , "opponentId" })
     public ResponseEntity<RetrospectDTO> retrospect(@RequestParam int id, @RequestParam int opponentId) {
         return teamService.getRetrospect(id, opponentId);
+    }
+
+    @GetMapping(value = "/ranking", params = "rankBy" )
+    public ResponseEntity<PriorityQueue<Team>> ranking(@RequestParam String rankBy) {
+        return teamService.ranking(rankBy);
     }
 }

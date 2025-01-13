@@ -2,11 +2,11 @@ package com.meli.football_matches_api.service;
 
 import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
-import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.TeamRepository;
+import com.meli.football_matches_api.utils.TeamFilter;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.TeamValidations;
 import org.springframework.data.domain.PageRequest;
@@ -14,8 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class TeamService {
@@ -28,7 +27,7 @@ public class TeamService {
 
     public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
         TeamValidations.validateFields(teamDTO);
-        validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState());
+        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState(), repository);
 
         Team newTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(newTeam));
@@ -39,7 +38,7 @@ public class TeamService {
         repository.findById(teamDTO.getId()).orElseThrow(() -> new NotFoundException("Team not found"));
 
         TeamValidations.validateFields(teamDTO);
-        validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState());
+        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState(), repository);
 
         Team updatedTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(updatedTeam));
@@ -147,9 +146,57 @@ public class TeamService {
         }
     }
 
-    private void validateIfTeamAlreadyExists(String teamName, String state) {
-        Team existingTeam = repository.findByNameAndState(teamName, state);
+    public ResponseEntity<PriorityQueue<Team>> ranking(String rankBy) {
+        PriorityQueue<Team> priorityTeams = new PriorityQueue<>();
 
-        if (existingTeam != null) throw new ConflictException("Already existing team with name [" + teamName + "] and state [" + state + "]");
+        TeamFilter filter = null;
+
+        switch (rankBy) {
+            case "matches":
+                priorityTeams = new PriorityQueue<>(Comparator.comparing(Team::getNumberOfMatches).reversed());
+                priorityTeams.addAll(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull());
+                break;
+            case "wins":
+                filter = filterByWins();
+                priorityTeams = buildPriorityQueue(repository.findByHomeMatchesHomeGoalsNotNullOrAwayMatchesAwayGoalsNotNull(), Comparator.comparing(Team::getWins).reversed(), filter);
+                break;
+            case "goals":
+                filter = filterByScoredGoals();
+                priorityTeams = buildPriorityQueue(repository.findByHomeMatchesHomeGoalsNotNullOrAwayMatchesAwayGoalsNotNull(), Comparator.comparing(Team::getScoredGoals).reversed(), filter);
+                break;
+            case "score":
+                filter = filterByScore();
+                priorityTeams = buildPriorityQueue(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull(), Comparator.comparing(Team::getScore).reversed(), filter);
+                break;
+        }
+
+        return ResponseEntity.status(200).body(priorityTeams);
     }
+
+    private PriorityQueue<Team> buildPriorityQueue(List<Team> teams, Comparator<Team> comparator, TeamFilter filter) {
+        PriorityQueue<Team> maxHeap = new PriorityQueue<>(comparator);
+
+        for (Team team : teams) {
+            if (filter.filter(team)) maxHeap.add(team);
+        }
+
+        return maxHeap;
+    }
+
+    public TeamFilter filterByNumberOfMatches() {
+        return team -> team.getNumberOfMatches() != 0;
+    }
+
+    public TeamFilter filterByWins() {
+        return team -> team.getWins() != 0;
+    }
+
+    public TeamFilter filterByScoredGoals() {
+        return team -> team.getScoredGoals() != 0;
+    }
+
+    public TeamFilter filterByScore() {
+        return team -> team.getScore() != 0;
+    }
+
 }
