@@ -113,6 +113,22 @@ public class TeamService {
         return ResponseEntity.status(200).body(retrospectDTO);
     }
 
+    public ResponseEntity<RetrospectDTO> getRetrospect(int id, int opponentId, boolean isHammering) {
+        if (!isHammering) return getRetrospect(id, opponentId);
+
+        Team team = repository.findById(id);
+        if (team == null) throw new NotFoundException("Team not found");
+
+        Team opponentTeam = repository.findById(opponentId);
+        if (opponentTeam == null) throw new NotFoundException("Opponent team not found");
+
+        List<Match> homeMatchesAgainstOpponent = team.getHomeMatches().stream().filter(match -> match.getAwayTeam().getId() == opponentId && match.isHammering()).toList();
+        List<Match> awayMatchesAgainstOpponent = team.getAwayMatches().stream().filter(match -> match.getHomeTeam().getId() == opponentId && match.isHammering()).toList();
+
+        RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatchesAgainstOpponent, awayMatchesAgainstOpponent);
+        return ResponseEntity.status(200).body(retrospectDTO);
+    }
+
     public ResponseEntity<HashMap<String, RetrospectDTO>> getRetrospectAgainstAll(int id) {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");

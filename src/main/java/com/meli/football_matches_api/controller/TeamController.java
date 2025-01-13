@@ -92,6 +92,15 @@ public class TeamController {
         return teamService.getRetrospect(id, opponentId);
     }
 
+    @GetMapping(value = "/retrospect", params = { "id" , "opponentId", "hammering" })
+    public ResponseEntity<RetrospectDTO> retrospect(
+            @RequestParam int id,
+            @RequestParam int opponentId,
+            @RequestParam(name = "hammering", defaultValue="true") boolean isHammering
+    ) {
+        return teamService.getRetrospect(id, opponentId, isHammering);
+    }
+
     @GetMapping(value = "/ranking", params = "rankBy" )
     public ResponseEntity<PriorityQueue<Team>> ranking(@RequestParam String rankBy) {
         return teamService.ranking(rankBy);
