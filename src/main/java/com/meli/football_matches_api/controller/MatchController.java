@@ -51,7 +51,7 @@ public class MatchController {
     }
 
     @GetMapping(value = "/list", params = "hammering")
-    public ResponseEntity<List<MatchDTO>> list(@RequestParam(name = "hammering", defaultValue="false") Boolean isHammering) {
+    public ResponseEntity<List<MatchDTO>> list(@RequestParam(name = "hammering", defaultValue="true") Boolean isHammering) {
         return matchService.list(isHammering);
     }
 
