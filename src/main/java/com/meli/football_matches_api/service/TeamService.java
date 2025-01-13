@@ -183,10 +183,6 @@ public class TeamService {
         return maxHeap;
     }
 
-    public TeamFilter filterByNumberOfMatches() {
-        return team -> team.getNumberOfMatches() != 0;
-    }
-
     public TeamFilter filterByWins() {
         return team -> team.getWins() != 0;
     }
