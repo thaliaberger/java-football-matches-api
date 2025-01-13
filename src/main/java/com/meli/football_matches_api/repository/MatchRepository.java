@@ -15,4 +15,9 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
     List<Match> findAllByHomeTeam(Team homeTeam);
 
     List<Match> findAllByHomeGoalsNotNullOrAwayGoalsNotNull();
+
+    List<Match> findAllByHomeTeamIdOrAwayTeamId(Integer homeTeamId, Integer awayTeamId);
+
+    List<Match> findAllByStadiumId(Long stadiumId);
+
 }

@@ -45,6 +45,16 @@ public class MatchController {
         return matchService.list();
     }
 
+    @GetMapping(value ="/list", params = "teamId")
+    public ResponseEntity<List<MatchDTO>> listByTeam(@RequestParam(name = "teamId") Long teamId) {
+        return matchService.listByTeam(teamId);
+    }
+
+    @GetMapping(value ="/list", params = "stadiumId")
+    public ResponseEntity<List<MatchDTO>> listByStadium(@RequestParam(name = "stadiumId") Long stadiumId) {
+        return matchService.listByStadium(stadiumId);
+    }
+
     @GetMapping(value = "/list", params = "sort")
     public ResponseEntity<List<MatchDTO>> list(@RequestParam(name = "sort", defaultValue="id,asc") String sort) {
         return matchService.list(sort);

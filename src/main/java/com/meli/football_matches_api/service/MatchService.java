@@ -71,6 +71,16 @@ public class MatchService {
         return list(0, 1000, sort);
     }
 
+    public ResponseEntity<List<MatchDTO>> listByTeam(Long teamId) {
+        List<Match> matches = matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId.intValue(), teamId.intValue());
+        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
+    }
+
+    public ResponseEntity<List<MatchDTO>> listByStadium(Long stadiumId) {
+        List<Match> matches = matchRepository.findAllByStadiumId(stadiumId);
+        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
+    }
+
     public ResponseEntity<List<MatchDTO>> list(Boolean isHammering) {
         if (!isHammering) return list();
 
