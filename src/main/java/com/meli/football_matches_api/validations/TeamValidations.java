@@ -1,7 +1,10 @@
 package com.meli.football_matches_api.validations;
 
 import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
+import com.meli.football_matches_api.model.Team;
+import com.meli.football_matches_api.repository.TeamRepository;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -20,6 +23,11 @@ public class TeamValidations {
         validateDateCreated(teamDTO.getDateCreated());
         validateState(teamDTO.getState());
     };
+
+    public static void validateIfTeamAlreadyExists(String teamName, String state, TeamRepository repository) {
+        Team existingTeam = repository.findByNameAndState(teamName, state);
+        if (existingTeam != null) throw new ConflictException("Already existing team with name [" + teamName + "] and state [" + state + "]");
+    }
 
     private static void validateDateCreated(LocalDate date) {
         if (date == null) throw new FieldException("dateCreated cannot be null");
