@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -68,6 +69,18 @@ public class MatchService {
 
     public ResponseEntity<List<MatchDTO>> list(String sort) {
         return list(0, 1000, sort);
+    }
+
+    public ResponseEntity<List<MatchDTO>> list(Boolean isHammering) {
+        if (!isHammering) return list();
+
+        List<Match> hammeringMatches = new ArrayList<>();
+
+        for (Match match : matchRepository.findAllByHomeGoalsNotNullOrAwayGoalsNotNull()) {
+           if (match.isHammering()) hammeringMatches.add(match);
+        }
+
+        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(hammeringMatches));
     }
 
     public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort) {

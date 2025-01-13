@@ -50,6 +50,11 @@ public class MatchController {
         return matchService.list(sort);
     }
 
+    @GetMapping(value = "/list", params = "hammering")
+    public ResponseEntity<List<MatchDTO>> list(@RequestParam(name = "hammering", defaultValue="false") Boolean isHammering) {
+        return matchService.list(isHammering);
+    }
+
     @GetMapping(value = "/list", params = "page")
     public ResponseEntity<List<MatchDTO>> list(
             @RequestParam(name = "page", defaultValue = "0") int page,

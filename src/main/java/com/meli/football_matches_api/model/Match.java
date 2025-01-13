@@ -102,4 +102,8 @@ public class Match {
     public void setStadium(Stadium stadium) {
         this.stadium = stadium;
     }
+
+    public boolean isHammering() {
+        return Math.abs(homeGoals - awayGoals) >= 3;
+    }
 }
