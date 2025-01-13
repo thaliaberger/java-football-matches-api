@@ -1,40 +1,36 @@
 package com.meli.football_matches_api.DTO;
 
 import com.meli.football_matches_api.model.Match;
-import com.meli.football_matches_api.model.Team;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RetrospectDTO {
 
     private Integer wins = 0;
-
     private Integer losses = 0;
-
     private Integer draws = 0;
-
     private Integer scoredGoals = 0;
-
     private Integer concededGoals = 0;
-
+    private Integer score = 0;
     private List<Match> matches;
-
-    public RetrospectDTO() {}
-
-    public RetrospectDTO(Team team) {
-        BeanUtils.copyProperties(team, this);
-    }
 
     public RetrospectDTO(Match match, Boolean isHomeMatch) {
         processMatch(match, isHomeMatch);
     }
 
     public RetrospectDTO(List<Match> homeMatches, List<Match> awayMatches) {
-        homeMatches.forEach(match -> processMatch(match, true));
-        awayMatches.forEach(match -> processMatch(match, false));
-        setMatches(Stream.concat(homeMatches.stream(), awayMatches.stream()).toList());
+        if (homeMatches != null) homeMatches.forEach(match -> processMatch(match, true));
+        if (awayMatches != null) awayMatches.forEach(match -> processMatch(match, false));
+
+        List<Match> allMatches = Stream.of(homeMatches, awayMatches)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        setMatches(allMatches);
     }
 
     private void processMatch(Match match, boolean isHomeMatch) {
@@ -46,10 +42,12 @@ public class RetrospectDTO {
 
         if (teamScoredGoals > teamConcededGoals) {
             wins++;
+            score += 3;
         } else if (teamScoredGoals < teamConcededGoals) {
             losses++;
         } else {
             draws++;
+            score++;
         }
 
         scoredGoals += teamScoredGoals;
@@ -107,5 +105,13 @@ public class RetrospectDTO {
 
     public void setMatches(List<Match> matches) {
         this.matches = matches;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 }
