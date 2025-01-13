@@ -16,4 +16,8 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     List<Team> findAllByName(String name);
 
     List<Team> findAllByIsActive(boolean isActive);
+
+    List<Team> findByHomeMatchesNotNullOrAwayMatchesNotNull();
+
+    List<Team> findByHomeMatchesHomeGoalsNotNullOrAwayMatchesAwayGoalsNotNull();
 }
