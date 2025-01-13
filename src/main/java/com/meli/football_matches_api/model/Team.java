@@ -1,12 +1,15 @@
 package com.meli.football_matches_api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import jakarta.persistence.*;
 import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @Entity
 @Table
@@ -99,5 +102,32 @@ public class Team {
 
     public void setAwayMatches(List<Match> awayMatches) {
         this.awayMatches = awayMatches;
+    }
+
+    public Integer getNumberOfMatches() {
+        int numberOfMatches = 0;
+
+        if (homeMatches != null) numberOfMatches += homeMatches.size();
+        if (awayMatches != null) numberOfMatches += awayMatches.size();
+
+        return numberOfMatches;
+    }
+
+    public Integer getScoredGoals() {
+        return Stream.of(homeMatches, awayMatches)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .mapToInt(match -> match.getHomeTeam().getId().equals(getId()) ? match.getHomeGoals() : match.getAwayGoals())
+                .sum();
+    }
+
+    public Integer getWins() {
+        RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatches, awayMatches);
+        return retrospectDTO.getWins();
+    }
+
+    public Integer getScore() {
+        RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatches, awayMatches);
+        return retrospectDTO.getScore();
     }
 }
