@@ -82,6 +82,14 @@ public class TeamController {
         return teamService.getRetrospect(id);
     }
 
+    @GetMapping(value = "/retrospect", params = { "id", "matchLocation" })
+    public ResponseEntity<RetrospectDTO> retrospect(
+            @RequestParam int id,
+            @RequestParam String matchLocation
+    ) {
+        return teamService.getRetrospect(id, matchLocation);
+    }
+
     @GetMapping(value = "/retrospect/all", params = "id")
     public ResponseEntity<HashMap<String, RetrospectDTO>> retrospectAll(@RequestParam int id) {
         return teamService.getRetrospectAgainstAll(id);
@@ -104,5 +112,13 @@ public class TeamController {
     @GetMapping(value = "/ranking", params = "rankBy" )
     public ResponseEntity<PriorityQueue<Team>> ranking(@RequestParam String rankBy) {
         return teamService.ranking(rankBy);
+    }
+
+    @GetMapping(value = "/ranking", params = { "rankBy", "matchLocation" } )
+    public ResponseEntity<PriorityQueue<Team>> ranking(
+            @RequestParam String rankBy,
+            @RequestParam String matchLocation
+    ) {
+        return teamService.ranking(rankBy, matchLocation);
     }
 }

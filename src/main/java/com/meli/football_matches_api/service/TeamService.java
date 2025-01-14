@@ -26,8 +26,8 @@ public class TeamService {
     };
 
     public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
-        TeamValidations.validateFields(teamDTO);
-        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState(), repository);
+        TeamValidations.validateFields(teamDTO, repository);
+        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), repository);
 
         Team newTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(newTeam));
@@ -37,8 +37,8 @@ public class TeamService {
     public ResponseEntity<TeamDTO> update(TeamDTO teamDTO) {
         repository.findById(teamDTO.getId()).orElseThrow(() -> new NotFoundException("Team not found"));
 
-        TeamValidations.validateFields(teamDTO);
-        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getName(), teamDTO.getState(), repository);
+        TeamValidations.validateFields(teamDTO, repository);
+        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), repository);
 
         Team updatedTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(updatedTeam));
@@ -92,11 +92,22 @@ public class TeamService {
     }
 
     public ResponseEntity<RetrospectDTO> getRetrospect(int id) {
+        return ResponseEntity.ok(getRetrospectDTO(id, null));
+    }
+
+    public ResponseEntity<RetrospectDTO> getRetrospect(int id, String matchLocation) {
+        return ResponseEntity.ok(getRetrospectDTO(id, matchLocation));
+    }
+
+    private RetrospectDTO getRetrospectDTO(int id, String matchLocation) {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");
 
-        RetrospectDTO retrospectDTO = new RetrospectDTO(team.getHomeMatches(), team.getAwayMatches());
-        return ResponseEntity.status(200).body(retrospectDTO);
+        if (matchLocation == null || matchLocation.isEmpty()) return new RetrospectDTO(team.getHomeMatches(), team.getAwayMatches());
+
+        if (matchLocation.equals("home")) return new RetrospectDTO(team.getHomeMatches(), null);
+
+        return new RetrospectDTO(null, team.getAwayMatches());
     }
 
     public ResponseEntity<RetrospectDTO> getRetrospect(int id, int opponentId) {
@@ -163,37 +174,76 @@ public class TeamService {
     }
 
     public ResponseEntity<PriorityQueue<Team>> ranking(String rankBy) {
-        PriorityQueue<Team> priorityTeams = new PriorityQueue<>();
+        return ranking(rankBy, null);
+    }
 
-        TeamFilter filter = null;
+    public ResponseEntity<PriorityQueue<Team>> ranking(String rankBy, String matchLocation) {
+        TeamFilter filter = getFilter(rankBy);
+        Comparator<Team> comparator = getComparator(rankBy);
+        List<Team> teams = getTeamsByMatchLocation(rankBy, matchLocation);
 
+        PriorityQueue<Team> rankedTeams = buildPriorityQueue(teams, comparator, filter);
+
+        return ResponseEntity.status(200).body(rankedTeams);
+    }
+
+    private TeamFilter getFilter(String rankBy) {
+        switch (rankBy) {
+            case "wins":
+                return filterByWins();
+            case "goals":
+                return filterByScoredGoals();
+            case "score":
+                return filterByScore();
+            default:
+                return null;
+        }
+    }
+
+    private Comparator<Team> getComparator(String rankBy) {
         switch (rankBy) {
             case "matches":
-                priorityTeams = new PriorityQueue<>(Comparator.comparing(Team::getNumberOfMatches).reversed());
-                priorityTeams.addAll(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull());
-                break;
+                return Comparator.comparing(Team::getNumberOfMatches).reversed();
             case "wins":
-                filter = filterByWins();
-                priorityTeams = buildPriorityQueue(repository.findByHomeMatchesHomeGoalsNotNullOrAwayMatchesAwayGoalsNotNull(), Comparator.comparing(Team::getWins).reversed(), filter);
-                break;
+                return Comparator.comparing(Team::getWins).reversed();
             case "goals":
-                filter = filterByScoredGoals();
-                priorityTeams = buildPriorityQueue(repository.findByHomeMatchesHomeGoalsNotNullOrAwayMatchesAwayGoalsNotNull(), Comparator.comparing(Team::getScoredGoals).reversed(), filter);
-                break;
+                return Comparator.comparing(Team::getScoredGoals).reversed();
             case "score":
-                filter = filterByScore();
-                priorityTeams = buildPriorityQueue(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull(), Comparator.comparing(Team::getScore).reversed(), filter);
-                break;
+                return Comparator.comparing(Team::getScore).reversed();
+            default:
+                throw new IllegalArgumentException("Invalid rank type: " + rankBy);
         }
+    }
 
-        return ResponseEntity.status(200).body(priorityTeams);
+    private List<Team> getTeamsByMatchLocation(String rankBy, String matchLocation) {
+        switch (rankBy) {
+            case "matches":
+            case "score":
+                if ("home".equals(matchLocation)) {
+                    return repository.findByHomeMatchesNotNull();
+                } else if ("away".equals(matchLocation)) {
+                    return repository.findByAwayMatchesNotNull();
+                } else {
+                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
+                }
+            case "wins":
+            case "goals":
+                if ("home".equals(matchLocation)) {
+                    return repository.findByHomeMatchesHomeGoalsNotNull();
+                } else if ("away".equals(matchLocation)) {
+                    return repository.findByAwayMatchesHomeGoalsNotNull();
+                } else {
+                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
+                }
+            default:
+                throw new IllegalArgumentException("Invalid ranking criteria: " + rankBy);
+        }
     }
 
     private PriorityQueue<Team> buildPriorityQueue(List<Team> teams, Comparator<Team> comparator, TeamFilter filter) {
         PriorityQueue<Team> maxHeap = new PriorityQueue<>(comparator);
-
         for (Team team : teams) {
-            if (filter.filter(team)) maxHeap.add(team);
+            if (filter == null || filter.filter(team)) maxHeap.add(team);
         }
 
         return maxHeap;
