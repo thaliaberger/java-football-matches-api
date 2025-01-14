@@ -50,6 +50,14 @@ public class MatchController {
         return matchService.listByTeam(teamId);
     }
 
+    @GetMapping(value ="/list", params = { "teamId", "matchLocation" })
+    public ResponseEntity<List<MatchDTO>> listByTeam(
+            @RequestParam(name = "teamId") Long teamId,
+            @RequestParam String matchLocation
+    ) {
+        return matchService.listByTeam(teamId, matchLocation);
+    }
+
     @GetMapping(value ="/list", params = "stadiumId")
     public ResponseEntity<List<MatchDTO>> listByStadium(@RequestParam(name = "stadiumId") Long stadiumId) {
         return matchService.listByStadium(stadiumId);

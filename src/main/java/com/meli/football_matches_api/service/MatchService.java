@@ -74,8 +74,25 @@ public class MatchService {
     }
 
     public ResponseEntity<List<MatchDTO>> listByTeam(Long teamId) {
-        List<Match> matches = matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId.intValue(), teamId.intValue());
-        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
+        return ResponseEntity.ok(getMatchesByTeam(teamId, null));
+    }
+
+    public ResponseEntity<List<MatchDTO>> listByTeam(Long teamId, String matchLocation) {
+        return ResponseEntity.ok(getMatchesByTeam(teamId, matchLocation));
+    }
+
+    private List<MatchDTO> getMatchesByTeam(Long teamId, String matchLocation) {
+        List<Match> matches;
+
+        if (matchLocation.equals("home")) {
+            matches = matchRepository.findAllByHomeTeamId(teamId.intValue());
+        } else if (matchLocation.equals("away")) {
+            matches = matchRepository.findAllByAwayTeamId(teamId.intValue());
+        } else {
+            matches = matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId.intValue(), teamId.intValue());
+        }
+
+        return Utils.convertToMatchDTO(matches);
     }
 
     public ResponseEntity<List<MatchDTO>> listByStadium(Long stadiumId) {
