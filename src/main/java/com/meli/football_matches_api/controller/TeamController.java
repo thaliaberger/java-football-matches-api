@@ -2,7 +2,6 @@ package com.meli.football_matches_api.controller;
 
 import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
-import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -110,12 +109,12 @@ public class TeamController {
     }
 
     @GetMapping(value = "/ranking", params = "rankBy" )
-    public ResponseEntity<PriorityQueue<Team>> ranking(@RequestParam String rankBy) {
+    public ResponseEntity<PriorityQueue<TeamDTO>> ranking(@RequestParam String rankBy) {
         return teamService.ranking(rankBy);
     }
 
     @GetMapping(value = "/ranking", params = { "rankBy", "matchLocation" } )
-    public ResponseEntity<PriorityQueue<Team>> ranking(
+    public ResponseEntity<PriorityQueue<TeamDTO>> ranking(
             @RequestParam String rankBy,
             @RequestParam String matchLocation
     ) {

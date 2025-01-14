@@ -173,51 +173,38 @@ public class TeamService {
         }
     }
 
-    public ResponseEntity<PriorityQueue<Team>> ranking(String rankBy) {
+    public ResponseEntity<PriorityQueue<TeamDTO>> ranking(String rankBy) {
         return ranking(rankBy, null);
     }
 
-    public ResponseEntity<PriorityQueue<Team>> ranking(String rankBy, String matchLocation) {
-        TeamFilter filter = getFilter(rankBy);
-        Comparator<Team> comparator = getComparator(rankBy, matchLocation);
+    public ResponseEntity<PriorityQueue<TeamDTO>> ranking(String rankBy, String matchLocation) {
+        TeamFilter filter = Utils.getFilter(rankBy);
+        Comparator<TeamDTO> comparator = getComparator(rankBy, matchLocation);
         List<Team> teams = getTeamsByMatchLocation(rankBy, matchLocation);
 
-        PriorityQueue<Team> rankedTeams = buildPriorityQueue(teams, comparator, filter);
+        PriorityQueue<TeamDTO> rankedTeams = buildPriorityQueue(Utils.convertToDTO(teams), comparator, filter);
 
         return ResponseEntity.status(200).body(rankedTeams);
     }
 
-    private TeamFilter getFilter(String rankBy) {
-        switch (rankBy) {
-            case "wins":
-                return filterByWins();
-            case "goals":
-                return filterByScoredGoals();
-            case "score":
-                return filterByScore();
-            default:
-                return null;
-        }
-    }
-
-    private Comparator<Team> getComparator(String rankBy, String matchLocation) {
+    private Comparator<TeamDTO> getComparator(String rankBy, String matchLocation) {
         switch (rankBy) {
             case "matches":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(Team::getNumberOfMatches).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(Team::getNumberOfHomeMatches).reversed();
-                return Comparator.comparing(Team::getNumberOfAwayMatches).reversed();
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getNumberOfMatches).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getNumberOfHomeMatches).reversed();
+                return Comparator.comparing(TeamDTO::getNumberOfAwayMatches).reversed();
             case "wins":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(Team::getWins).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(Team::getHomeWins).reversed();
-                return Comparator.comparing(Team::getAwayWins).reversed();
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getWins).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeWins).reversed();
+                return Comparator.comparing(TeamDTO::getAwayWins).reversed();
             case "goals":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(Team::getAllScoredGoals).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(Team::getHomeScoredGoals).reversed();
-                return Comparator.comparing(Team::getAwayScoredGoals).reversed();
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getAllScoredGoals).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeScoredGoals).reversed();
+                return Comparator.comparing(TeamDTO::getAwayScoredGoals).reversed();
             case "score":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(Team::getScore).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(Team::getScoreFromHomeMatches).reversed();
-                return Comparator.comparing(Team::getScoreFromAwayMatches).reversed();
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getScore).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getScoreFromHomeMatches).reversed();
+                return Comparator.comparing(TeamDTO::getScoreFromAwayMatches).reversed();
             default:
                 throw new IllegalArgumentException("Invalid rank type: " + rankBy);
         }
@@ -248,25 +235,13 @@ public class TeamService {
         }
     }
 
-    private PriorityQueue<Team> buildPriorityQueue(List<Team> teams, Comparator<Team> comparator, TeamFilter filter) {
-        PriorityQueue<Team> maxHeap = new PriorityQueue<>(comparator);
-        for (Team team : teams) {
+    private PriorityQueue<TeamDTO> buildPriorityQueue(List<TeamDTO> teams, Comparator<TeamDTO> comparator, TeamFilter filter) {
+        PriorityQueue<TeamDTO> maxHeap = new PriorityQueue<>(comparator);
+        for (TeamDTO team : teams) {
             if (filter == null || filter.filter(team)) maxHeap.add(team);
         }
 
         return maxHeap;
-    }
-
-    public TeamFilter filterByWins() {
-        return team -> team.getWins() != 0;
-    }
-
-    public TeamFilter filterByScoredGoals() {
-        return team -> team.getAllScoredGoals() != 0;
-    }
-
-    public TeamFilter filterByScore() {
-        return team -> team.getScore() != 0;
     }
 
 }
