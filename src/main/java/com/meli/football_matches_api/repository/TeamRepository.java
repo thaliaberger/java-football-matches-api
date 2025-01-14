@@ -1,5 +1,6 @@
 package com.meli.football_matches_api.repository;
 
+import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -19,5 +20,12 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
 
     List<Team> findByHomeMatchesNotNullOrAwayMatchesNotNull();
 
-    List<Team> findByHomeMatchesHomeGoalsNotNullOrAwayMatchesAwayGoalsNotNull();
+    List<Team> findByHomeMatchesNotNull();
+
+    List<Team> findByAwayMatchesNotNull();
+
+    List<Team> findByHomeMatchesHomeGoalsNotNull();
+
+    List<Team> findByAwayMatchesHomeGoalsNotNull();
+
 }
