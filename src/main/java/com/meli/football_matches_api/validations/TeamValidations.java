@@ -16,23 +16,27 @@ public class TeamValidations {
         return Arrays.asList(STATES).contains(state);
     }
 
-    public static void validateFields(TeamDTO teamDTO) {
+    public static void validateFields(TeamDTO teamDTO, TeamRepository teamRepository) {
         if (teamDTO.getName() == null || teamDTO.getName().isEmpty()) throw new FieldException("Field name cannot be empty");
         if (teamDTO.getIsActive() == null) throw new FieldException("Field isActive cannot be null");
 
-        validateDateCreated(teamDTO.getDateCreated());
+        validateDateCreated(teamDTO.getDateCreated(), teamRepository);
         validateState(teamDTO.getState());
     };
 
-    public static void validateIfTeamAlreadyExists(String teamName, String state, TeamRepository repository) {
-        Team existingTeam = repository.findByNameAndState(teamName, state);
+    public static void validateIfTeamAlreadyExists(int id, String teamName, String state, TeamRepository repository) {
+        Team existingTeam = repository.findByNameAndStateAndIdNot(teamName, state, id);
         if (existingTeam != null) throw new ConflictException("Already existing team with name [" + teamName + "] and state [" + state + "]");
     }
 
-    private static void validateDateCreated(LocalDate date) {
+    private static void validateDateCreated(LocalDate date, TeamRepository teamRepository) {
         if (date == null) throw new FieldException("dateCreated cannot be null");
 
         if (date.isAfter(LocalDate.now())) throw new FieldException("dateCreated cannot be in the future");
+
+        if (!teamRepository.findByHomeMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new FieldException("dateCreated cannot be after match date");
+
+        if (!teamRepository.findByAwayMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new FieldException("dateCreated cannot be after match date");
     };
 
     private static void validateState(String state) {
