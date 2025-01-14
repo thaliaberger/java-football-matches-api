@@ -5,8 +5,10 @@ import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
+import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.MatchRepository;
+import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.repository.TeamRepository;
 
 import java.time.Duration;
@@ -17,7 +19,7 @@ import java.util.Objects;
 
 public class MatchValidations {
 
-    public static void validateFields(MatchDTO matchDTO, MatchRepository matchRepository, TeamRepository teamRepository) {
+    public static void validateFields(MatchDTO matchDTO, MatchRepository matchRepository, TeamRepository teamRepository, StadiumRepository stadiumRepository) {
         Long homeTeamId = matchDTO.getHomeTeam().getId().longValue();
         Long awayTeamId = matchDTO.getAwayTeam().getId().longValue();
 
@@ -46,6 +48,8 @@ public class MatchValidations {
 
         List<Match> awayTeamMatches = matchRepository.findAllByAwayTeam(awayTeam);
         validateConflictMatches(matchId, matchDateTime, awayTeamMatches);
+
+        validateStadium(matchDTO.getStadium().getId(), stadiumRepository);
     };
 
     public static void validateIfMatchExists(int matchId, MatchRepository matchRepository) {
@@ -79,9 +83,14 @@ public class MatchValidations {
 
     private static void validateConflictMatches(Long matchId, LocalDateTime dateTime, List<Match> matches) {
         matches.forEach(match -> {
-            if (Duration.between(dateTime, match.getMatchDateTime()).toHours() < 48 && (!Objects.equals(match.getId(), matchId))) {
+            if (Math.abs(Duration.between(dateTime, match.getMatchDateTime()).toHours()) < 48 && (!Objects.equals(match.getId(), matchId))) {
                 throw new ConflictException("Cannot create a match when one of the teams already has a match in less than 48 hours");
             };
         });
+    }
+
+    private static void validateStadium(Long stadiumId, StadiumRepository stadiumRepository) {
+        Stadium stadium = stadiumRepository.findById(stadiumId);
+        if (stadium == null) throw new FieldException("Stadium not found");
     }
 }
