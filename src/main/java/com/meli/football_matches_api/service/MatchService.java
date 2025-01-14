@@ -74,25 +74,19 @@ public class MatchService {
     }
 
     public ResponseEntity<List<MatchDTO>> listByTeam(Long teamId) {
-        return ResponseEntity.ok(getMatchesByTeam(teamId, null));
+        return ResponseEntity.ok(Utils.convertToMatchDTO(getMatchesByTeam(teamId, null)));
     }
 
     public ResponseEntity<List<MatchDTO>> listByTeam(Long teamId, String matchLocation) {
-        return ResponseEntity.ok(getMatchesByTeam(teamId, matchLocation));
+        return ResponseEntity.ok(Utils.convertToMatchDTO(getMatchesByTeam(teamId, matchLocation)));
     }
 
-    private List<MatchDTO> getMatchesByTeam(Long teamId, String matchLocation) {
-        List<Match> matches;
+    private List<Match> getMatchesByTeam(Long teamId, String matchLocation) {
+        if (matchLocation == null || matchLocation.isEmpty()) return matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId.intValue(), teamId.intValue());
 
-        if (matchLocation.equals("home")) {
-            matches = matchRepository.findAllByHomeTeamId(teamId.intValue());
-        } else if (matchLocation.equals("away")) {
-            matches = matchRepository.findAllByAwayTeamId(teamId.intValue());
-        } else {
-            matches = matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId.intValue(), teamId.intValue());
-        }
+        if (matchLocation.equals("home")) return matchRepository.findAllByHomeTeamId(teamId.intValue());
 
-        return Utils.convertToMatchDTO(matches);
+        return matchRepository.findAllByAwayTeamId(teamId.intValue());
     }
 
     public ResponseEntity<List<MatchDTO>> listByStadium(Long stadiumId) {
