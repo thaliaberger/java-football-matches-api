@@ -34,9 +34,9 @@ public class TeamValidations {
 
         if (date.isAfter(LocalDate.now())) throw new FieldException("dateCreated cannot be in the future");
 
-        if (!teamRepository.findByHomeMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new FieldException("dateCreated cannot be after match date");
+        if (!teamRepository.findByHomeMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new ConflictException("dateCreated cannot be after match date");
 
-        if (!teamRepository.findByAwayMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new FieldException("dateCreated cannot be after match date");
+        if (!teamRepository.findByAwayMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new ConflictException("dateCreated cannot be after match date");
     };
 
     private static void validateState(String state) {
