@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class TeamDTO {
 
-    private Integer id;
+    private Long id;
     private String name;
     private String state;
     private LocalDate dateCreated;
@@ -28,11 +28,11 @@ public class TeamDTO {
         BeanUtils.copyProperties(team, this);
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

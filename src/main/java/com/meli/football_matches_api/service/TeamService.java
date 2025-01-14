@@ -27,7 +27,7 @@ public class TeamService {
 
     public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
         TeamValidations.validateFields(teamDTO, repository);
-        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), repository);
+        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId().intValue(), teamDTO.getName(), teamDTO.getState(), repository);
 
         Team newTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(newTeam));
@@ -35,10 +35,11 @@ public class TeamService {
     };
 
     public ResponseEntity<TeamDTO> update(TeamDTO teamDTO) {
-        repository.findById(teamDTO.getId()).orElseThrow(() -> new NotFoundException("Team not found"));
+        Team team = repository.findById(teamDTO.getId().intValue());
+        if (team == null) throw new NotFoundException("Team not found");
 
         TeamValidations.validateFields(teamDTO, repository);
-        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), repository);
+        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId().intValue(), teamDTO.getName(), teamDTO.getState(), repository);
 
         Team updatedTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(updatedTeam));
