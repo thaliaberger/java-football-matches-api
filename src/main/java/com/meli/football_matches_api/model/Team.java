@@ -105,6 +105,18 @@ public class Team {
     }
 
     public Integer getNumberOfMatches() {
+        return getNumberOfMatches(homeMatches, awayMatches);
+    }
+
+    public Integer getNumberOfHomeMatches() {
+        return getNumberOfMatches(homeMatches, null);
+    }
+
+    public Integer getNumberOfAwayMatches() {
+        return getNumberOfMatches(null, awayMatches);
+    }
+
+    private Integer getNumberOfMatches(List<Match> homeMatches, List<Match> awayMatches) {
         int numberOfMatches = 0;
 
         if (homeMatches != null) numberOfMatches += homeMatches.size();
@@ -113,7 +125,19 @@ public class Team {
         return numberOfMatches;
     }
 
-    public Integer getScoredGoals() {
+    public Integer getAllScoredGoals() {
+        return getScoredGoals(homeMatches, awayMatches);
+    }
+
+    public Integer getHomeScoredGoals() {
+        return getScoredGoals(homeMatches, null);
+    }
+
+    public Integer getAwayScoredGoals() {
+        return getScoredGoals(null, awayMatches);
+    }
+
+    public Integer getScoredGoals(List<Match> homeMatches, List<Match> awayMatches) {
         return Stream.of(homeMatches, awayMatches)
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
@@ -122,11 +146,35 @@ public class Team {
     }
 
     public Integer getWins() {
+        return getWins(homeMatches, awayMatches);
+    }
+
+    public Integer getHomeWins() {
+        return getWins(homeMatches, null);
+    }
+
+    public Integer getAwayWins() {
+        return getWins(null, awayMatches);
+    }
+
+    private Integer getWins(List<Match> homeMatches, List<Match> awayMatches) {
         RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatches, awayMatches);
         return retrospectDTO.getWins();
     }
 
     public Integer getScore() {
+        return getScore(homeMatches, awayMatches);
+    }
+
+    public Integer getScoreFromHomeMatches() {
+        return getScore(homeMatches, null);
+    }
+
+    public Integer getScoreFromAwayMatches() {
+        return getScore(null, awayMatches);
+    }
+
+    private Integer getScore(List<Match> homeMatches, List<Match> awayMatches) {
         RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatches, awayMatches);
         return retrospectDTO.getScore();
     }
