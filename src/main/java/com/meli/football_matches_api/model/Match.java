@@ -35,6 +35,7 @@ public class Match {
     @JoinColumn(name = "fk_away_team")
     private Team awayTeam;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "fk_stadium")
     private Stadium stadium;

@@ -22,8 +22,8 @@ public class Stadium {
     @JoinColumn(name = "fk_home_team_id")
     private Team homeTeam;
 
-    @OneToMany
-    private List<Match> match;
+    @OneToMany(mappedBy = "stadium")
+    private List<Match> matches;
 
     public Stadium() {}
 
@@ -53,5 +53,13 @@ public class Stadium {
 
     public void setHomeTeam(Team homeTeam) {
         this.homeTeam = homeTeam;
+    }
+
+    public List<Match> getMatches() {
+        return matches;
+    }
+
+    public void setMatches(List<Match> matches) {
+        this.matches = matches;
     }
 }

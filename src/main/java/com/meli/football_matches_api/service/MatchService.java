@@ -3,8 +3,8 @@ package com.meli.football_matches_api.service;
 import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
-import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.MatchRepository;
+import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.repository.TeamRepository;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.MatchValidations;
@@ -24,6 +24,8 @@ public class MatchService {
 
     @Autowired
     private TeamRepository teamRepository;
+    @Autowired
+    private StadiumRepository stadiumRepository;
 
     public MatchService(MatchRepository repository) {
         this.matchRepository = repository;
@@ -39,7 +41,7 @@ public class MatchService {
     }
 
     private ResponseEntity<MatchDTO> createOrUpdate(MatchDTO matchDTO, Boolean isUpdate) {
-        MatchValidations.validateFields(matchDTO, matchRepository, teamRepository);
+        MatchValidations.validateFields(matchDTO, matchRepository, teamRepository, stadiumRepository);
 
         Match newMatch = new Match(matchDTO);
         MatchDTO savedMatch = new MatchDTO(matchRepository.save(newMatch));
