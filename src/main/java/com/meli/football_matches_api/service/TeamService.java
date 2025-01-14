@@ -179,7 +179,7 @@ public class TeamService {
 
     public ResponseEntity<PriorityQueue<Team>> ranking(String rankBy, String matchLocation) {
         TeamFilter filter = getFilter(rankBy);
-        Comparator<Team> comparator = getComparator(rankBy);
+        Comparator<Team> comparator = getComparator(rankBy, matchLocation);
         List<Team> teams = getTeamsByMatchLocation(rankBy, matchLocation);
 
         PriorityQueue<Team> rankedTeams = buildPriorityQueue(teams, comparator, filter);
@@ -200,16 +200,24 @@ public class TeamService {
         }
     }
 
-    private Comparator<Team> getComparator(String rankBy) {
+    private Comparator<Team> getComparator(String rankBy, String matchLocation) {
         switch (rankBy) {
             case "matches":
-                return Comparator.comparing(Team::getNumberOfMatches).reversed();
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(Team::getNumberOfMatches).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(Team::getNumberOfHomeMatches).reversed();
+                return Comparator.comparing(Team::getNumberOfAwayMatches).reversed();
             case "wins":
-                return Comparator.comparing(Team::getWins).reversed();
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(Team::getWins).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(Team::getHomeWins).reversed();
+                return Comparator.comparing(Team::getAwayWins).reversed();
             case "goals":
-                return Comparator.comparing(Team::getScoredGoals).reversed();
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(Team::getAllScoredGoals).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(Team::getHomeScoredGoals).reversed();
+                return Comparator.comparing(Team::getAwayScoredGoals).reversed();
             case "score":
-                return Comparator.comparing(Team::getScore).reversed();
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(Team::getScore).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(Team::getScoreFromHomeMatches).reversed();
+                return Comparator.comparing(Team::getScoreFromAwayMatches).reversed();
             default:
                 throw new IllegalArgumentException("Invalid rank type: " + rankBy);
         }
@@ -254,7 +262,7 @@ public class TeamService {
     }
 
     public TeamFilter filterByScoredGoals() {
-        return team -> team.getScoredGoals() != 0;
+        return team -> team.getAllScoredGoals() != 0;
     }
 
     public TeamFilter filterByScore() {
