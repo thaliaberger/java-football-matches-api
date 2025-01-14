@@ -11,9 +11,7 @@ import com.meli.football_matches_api.repository.MatchRepository;
 import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.repository.TeamRepository;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,7 +47,7 @@ public class MatchValidations {
         List<Match> awayTeamMatches = matchRepository.findAllByAwayTeam(awayTeam);
         validateConflictMatches(matchId, matchDateTime, awayTeamMatches);
 
-        validateStadium(matchDTO.getStadium().getId(), stadiumRepository);
+        validateStadium(matchDTO.getStadium().getId(), stadiumRepository, matchDateTime);
     };
 
     public static void validateIfMatchExists(int matchId, MatchRepository matchRepository) {
@@ -89,8 +87,17 @@ public class MatchValidations {
         });
     }
 
-    private static void validateStadium(Long stadiumId, StadiumRepository stadiumRepository) {
+    private static void validateStadium(Long stadiumId, StadiumRepository stadiumRepository, LocalDateTime dateTime) {
         Stadium stadium = stadiumRepository.findById(stadiumId);
         if (stadium == null) throw new FieldException("Stadium not found");
+
+        List<Match> matches = stadium.getMatches();
+
+        for (Match match : matches) {
+            LocalDate newMatchDate = dateTime.toLocalDate();
+            LocalDate oldMatchDate = match.getMatchDateTime().toLocalDate();
+
+            if (newMatchDate.equals(oldMatchDate)) throw new ConflictException("Stadium already has a match on this date");
+        }
     }
 }
