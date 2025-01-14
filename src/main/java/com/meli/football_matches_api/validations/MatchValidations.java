@@ -29,10 +29,6 @@ public class MatchValidations {
         Team awayTeam = teamRepository.findById(awayTeamId.intValue());
         if (awayTeam == null) throw new NotFoundException("awayTeam not found");
 
-        if (matchDTO.getStadium() == null) throw new FieldException("[stadium] cannot be null");
-
-        if (matchDTO.getStadium().getId() == null) throw new FieldException("[stadium.id] cannot be null");
-
         validateGoals(matchDTO.getHomeGoals(), matchDTO.getAwayGoals());
         validateTeams(homeTeam, awayTeam);
 
@@ -47,7 +43,7 @@ public class MatchValidations {
         List<Match> awayTeamMatches = matchRepository.findAllByAwayTeam(awayTeam);
         validateConflictMatches(matchId, matchDateTime, awayTeamMatches);
 
-        validateStadium(matchDTO.getStadium().getId(), stadiumRepository, matchDateTime);
+        validateStadium(matchDTO.getStadium(), stadiumRepository, matchDateTime);
     };
 
     public static void validateIfMatchExists(int matchId, MatchRepository matchRepository) {
@@ -87,7 +83,12 @@ public class MatchValidations {
         });
     }
 
-    private static void validateStadium(Long stadiumId, StadiumRepository stadiumRepository, LocalDateTime dateTime) {
+    private static void validateStadium(Stadium stadiumObj, StadiumRepository stadiumRepository, LocalDateTime dateTime) {
+        if (stadiumObj == null) throw new FieldException("[stadium] cannot be null");
+
+        Long stadiumId = stadiumObj.getId();
+        if (stadiumId == null) throw new FieldException("[stadium.id] cannot be null");
+
         Stadium stadium = stadiumRepository.findById(stadiumId);
         if (stadium == null) throw new FieldException("Stadium not found");
 
