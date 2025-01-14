@@ -50,4 +50,27 @@ public class Utils {
 
         return stadiumDTOS;
     }
+
+    public static TeamFilter getFilter(String rankBy) {
+        switch (rankBy) {
+            case "wins":
+                return filterByWins();
+            case "goals":
+                return filterByScoredGoals();
+            case "score":
+                return filterByScore();
+            default:
+                return null;
+        }
+    }
+
+    private static TeamFilter filterByWins() {
+        return team -> team.getWins() != 0;
+    }
+
+    private static TeamFilter filterByScoredGoals() { return team -> team.getAllScoredGoals() != 0; }
+
+    private static TeamFilter filterByScore() {
+        return team -> team.getScore() != 0;
+    }
 }
