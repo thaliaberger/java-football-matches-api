@@ -27,12 +27,12 @@ public class StadiumService {
     };
 
     public ResponseEntity<StadiumDTO> update(StadiumDTO stadiumDTO) {
-        StadiumValidations.validateIfStadiumExists(stadiumDTO.getId().intValue(), stadiumRepository);
+        StadiumValidations.validateIfStadiumExists(stadiumDTO, stadiumRepository);
         return createOrUpdate(stadiumDTO, true);
     };
 
     public ResponseEntity<StadiumDTO> createOrUpdate(StadiumDTO stadiumDTO, Boolean isUpdate) {
-        StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository);
+        StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, isUpdate);
         Stadium newStadium = new Stadium(stadiumDTO);
         StadiumDTO savedStadium = new StadiumDTO(stadiumRepository.save(newStadium));
         int statusCode = isUpdate ? 200 : 201;
