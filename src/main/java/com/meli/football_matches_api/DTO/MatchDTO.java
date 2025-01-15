@@ -19,6 +19,16 @@ public class MatchDTO {
 
     public MatchDTO() {}
 
+    public MatchDTO(Long id, Integer homeGoals, Integer awayGoals, LocalDateTime matchDateTime, Team homeTeam, Team awayTeam, Stadium stadium) {
+        setId(id);
+        setHomeGoals(homeGoals);
+        setAwayGoals(awayGoals);
+        setMatchDateTime(matchDateTime);
+        setHomeTeam(homeTeam);
+        setAwayTeam(awayTeam);
+        setStadium(stadium);
+    }
+
     public MatchDTO(Match match) {
         BeanUtils.copyProperties(match, this);
     }

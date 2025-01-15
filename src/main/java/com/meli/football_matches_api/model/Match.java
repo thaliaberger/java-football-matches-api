@@ -40,8 +40,16 @@ public class Match {
     @JoinColumn(name = "fk_stadium")
     private Stadium stadium;
 
-    public Match() {
+    public Match() {}
 
+    public Match(Long id, Integer homeGoals, Integer awayGoals, LocalDateTime matchDateTime, Team homeTeam, Team awayTeam, Stadium stadium) {
+        setId(id);
+        setHomeGoals(homeGoals);
+        setAwayGoals(awayGoals);
+        setMatchDateTime(matchDateTime);
+        setHomeTeam(homeTeam);
+        setAwayTeam(awayTeam);
+        setStadium(stadium);
     }
 
     public Match(MatchDTO matchDTO) {
