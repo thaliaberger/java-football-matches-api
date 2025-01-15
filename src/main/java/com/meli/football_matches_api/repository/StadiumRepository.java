@@ -7,4 +7,6 @@ public interface StadiumRepository extends JpaRepository<Stadium, Integer> {
     Stadium findById(Long id);
 
     Boolean existsByName(String name);
+
+    Boolean existsById(Long id);
 }
