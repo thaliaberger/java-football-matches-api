@@ -82,11 +82,11 @@ public class MatchService {
     }
 
     private List<Match> getMatchesByTeam(Long teamId, String matchLocation) {
-        if (matchLocation == null || matchLocation.isEmpty()) return matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId.intValue(), teamId.intValue());
+        if (matchLocation == null || matchLocation.isEmpty()) return matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId, teamId);
 
-        if (matchLocation.equals("home")) return matchRepository.findAllByHomeTeamId(teamId.intValue());
+        if (matchLocation.equals("home")) return matchRepository.findAllByHomeTeamId(teamId);
 
-        return matchRepository.findAllByAwayTeamId(teamId.intValue());
+        return matchRepository.findAllByAwayTeamId(teamId);
     }
 
     public ResponseEntity<List<MatchDTO>> listByStadium(Long stadiumId) {
