@@ -18,6 +18,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -178,5 +180,24 @@ class StadiumServiceTest {
         });
 
         Assertions.assertEquals("Stadium not found", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should get all Stadiums successfully")
+    void listCaseSuccess() {
+        List<Stadium> stadiumList = new ArrayList<>();
+        Stadium stadium = new Stadium(1L, "Maracanã", null, null);
+        Stadium stadium2 = new Stadium(2L, "Morumbi", null, null);
+        stadiumList.add(stadium);
+        stadiumList.add(stadium2);
+
+        when(stadiumRepository.findAll()).thenReturn(stadiumList);
+
+        ResponseEntity<List<StadiumDTO>> response = stadiumService.list();
+
+        Assertions.assertEquals(200, response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals("Maracanã", response.getBody().get(0).getName());
+        Assertions.assertEquals("Morumbi", response.getBody().get(1).getName());
     }
 }
