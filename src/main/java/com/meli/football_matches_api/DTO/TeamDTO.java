@@ -24,6 +24,14 @@ public class TeamDTO {
 
     public TeamDTO() {}
 
+    public TeamDTO(Long id, String name, String state, LocalDate dateCreated, Boolean isActive) {
+        setId(id);
+        setName(name);
+        setState(state);
+        setDateCreated(dateCreated);
+        setIsActive(isActive);
+    }
+
     public TeamDTO(Team team) {
         BeanUtils.copyProperties(team, this);
     }

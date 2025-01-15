@@ -37,8 +37,14 @@ public class Team {
     @OneToMany(mappedBy = "awayTeam")
     private List<Match> awayMatches;
 
-    public Team() {
+    public Team() {}
 
+    public Team(Long id, String name, String state, LocalDate dateCreated, Boolean isActive) {
+        setId(id);
+        setName(name);
+        setState(state);
+        setDateCreated(dateCreated);
+        setIsActive(isActive);
     }
 
     public Team(TeamDTO teamDTO) {
