@@ -27,6 +27,13 @@ public class Stadium {
 
     public Stadium() {}
 
+    public Stadium(Long id, String name, Team homeTeam, List<Match> matches) {
+        setId(id);
+        setName(name);
+        setHomeTeam(homeTeam);
+        setMatches(matches);
+    }
+
     public Stadium(StadiumDTO stadiumDTO) {
         BeanUtils.copyProperties(stadiumDTO, this);
     }
