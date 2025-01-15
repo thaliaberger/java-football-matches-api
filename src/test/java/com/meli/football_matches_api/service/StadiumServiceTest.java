@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 
@@ -38,11 +39,14 @@ class StadiumServiceTest {
     @DisplayName("Should create Stadium successfully")
     void createCaseSuccess() {
         StadiumDTO stadiumDTO = new StadiumDTO(1L, "Maracanã", null, null);
-        StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, false);
-        Stadium newStadium = new Stadium(stadiumDTO);
-        stadiumRepository.save(newStadium);
 
-        verify(stadiumRepository, times(1)).save(any());
+        when(stadiumRepository.save(any(Stadium.class))).thenReturn(new Stadium(stadiumDTO));
+
+        ResponseEntity<StadiumDTO> response = stadiumService.create(stadiumDTO);
+
+        Assertions.assertEquals(201, response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals("Maracanã", response.getBody().getName());
     }
 
     @Test
@@ -88,12 +92,16 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should update Stadium successfully")
     void updateCaseSuccess() {
-        StadiumDTO stadiumDTO = new StadiumDTO(1L, "Maracanã", null, null);
-        StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, true);
-        Stadium newStadium = new Stadium(stadiumDTO);
-        stadiumRepository.save(newStadium);
+        StadiumDTO stadiumDTO = new StadiumDTO(1L, "Morumbi", null, null);
 
-        verify(stadiumRepository, times(1)).save(any());
+        when(stadiumRepository.existsById(1L)).thenReturn(true);
+        when(stadiumRepository.save(any(Stadium.class))).thenReturn(new Stadium(stadiumDTO));
+
+        ResponseEntity<StadiumDTO> response = stadiumService.update(stadiumDTO);
+
+        Assertions.assertEquals(200, response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals("Morumbi", response.getBody().getName());
     }
 
     @Test
@@ -139,6 +147,34 @@ class StadiumServiceTest {
         NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
             StadiumDTO stadiumDTO = new StadiumDTO(1L, "Maracanã", null, null);
             StadiumValidations.validateIfStadiumExists(stadiumDTO, stadiumRepository);
+        });
+
+        Assertions.assertEquals("Stadium not found", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should get Stadium successfully")
+    void getCaseSuccess() {
+        Long stadiumId = 1L;
+        Stadium stadium = new Stadium(stadiumId, "Maracanã", null, null);
+        when(stadiumRepository.findById(stadiumId)).thenReturn(stadium);
+
+        ResponseEntity<StadiumDTO> response = stadiumService.get(stadiumId);
+
+        Assertions.assertEquals(200, response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(stadiumId, response.getBody().getId());
+        Assertions.assertEquals("Maracanã", response.getBody().getName());
+    }
+
+    @Test
+    @DisplayName("Should throw NotFoundException when stadium does not exist")
+    void getStadiumCaseStadiumDoesNotExist() {
+        Long stadiumId = 1L;
+        when(stadiumRepository.findById(stadiumId)).thenReturn(null);
+
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
+            stadiumService.get(stadiumId);
         });
 
         Assertions.assertEquals("Stadium not found", thrown.getMessage());
