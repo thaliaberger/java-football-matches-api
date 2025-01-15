@@ -18,15 +18,15 @@ import java.util.Objects;
 public class MatchValidations {
 
     public static void validateFields(MatchDTO matchDTO, MatchRepository matchRepository, TeamRepository teamRepository, StadiumRepository stadiumRepository) {
-        Long homeTeamId = matchDTO.getHomeTeam().getId().longValue();
-        Long awayTeamId = matchDTO.getAwayTeam().getId().longValue();
+        Long homeTeamId = matchDTO.getHomeTeam().getId();
+        Long awayTeamId = matchDTO.getAwayTeam().getId();
 
         validateIds(homeTeamId, awayTeamId);
 
-        Team homeTeam = teamRepository.findById(homeTeamId.intValue());
+        Team homeTeam = teamRepository.findById(homeTeamId);
         if (homeTeam == null) throw new NotFoundException("homeTeam not found");
 
-        Team awayTeam = teamRepository.findById(awayTeamId.intValue());
+        Team awayTeam = teamRepository.findById(awayTeamId);
         if (awayTeam == null) throw new NotFoundException("awayTeam not found");
 
         validateGoals(matchDTO.getHomeGoals(), matchDTO.getAwayGoals());

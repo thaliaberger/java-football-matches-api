@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface TeamRepository extends JpaRepository<Team, Integer> {
 
-    Team findById(int id);
+    Team findById(Long id);
 
-    Team findByNameAndStateAndIdNot(String name, String state, int id);
+    Team findByNameAndStateAndIdNot(String name, String state, Long id);
 
     List<Team> findAllByState(String state);
 

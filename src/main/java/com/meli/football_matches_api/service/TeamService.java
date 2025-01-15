@@ -27,7 +27,7 @@ public class TeamService {
 
     public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
         TeamValidations.validateFields(teamDTO, repository);
-        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId().intValue(), teamDTO.getName(), teamDTO.getState(), repository);
+        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), repository);
 
         Team newTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(newTeam));
@@ -35,18 +35,18 @@ public class TeamService {
     };
 
     public ResponseEntity<TeamDTO> update(TeamDTO teamDTO) {
-        Team team = repository.findById(teamDTO.getId().intValue());
+        Team team = repository.findById(teamDTO.getId());
         if (team == null) throw new NotFoundException("Team not found");
 
         TeamValidations.validateFields(teamDTO, repository);
-        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId().intValue(), teamDTO.getName(), teamDTO.getState(), repository);
+        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), repository);
 
         Team updatedTeam = new Team(teamDTO);
         TeamDTO savedTeam = new TeamDTO(repository.save(updatedTeam));
         return ResponseEntity.status(200).body(savedTeam);
     }
 
-    public ResponseEntity<TeamDTO> get(int id) {
+    public ResponseEntity<TeamDTO> get(Long id) {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");
 
@@ -85,22 +85,22 @@ public class TeamService {
         return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
     }
 
-    public ResponseEntity<String> delete(int id) {
+    public ResponseEntity<String> delete(Long id) {
         Team team = repository.findById(id);
         team.setIsActive(false);
         repository.save(team);
         return ResponseEntity.status(204).body("");
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(int id) {
+    public ResponseEntity<RetrospectDTO> getRetrospect(Long id) {
         return ResponseEntity.ok(getRetrospectDTO(id, null));
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(int id, String matchLocation) {
+    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, String matchLocation) {
         return ResponseEntity.ok(getRetrospectDTO(id, matchLocation));
     }
 
-    private RetrospectDTO getRetrospectDTO(int id, String matchLocation) {
+    private RetrospectDTO getRetrospectDTO(Long id, String matchLocation) {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");
 
@@ -111,7 +111,7 @@ public class TeamService {
         return new RetrospectDTO(null, team.getAwayMatches());
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(int id, int opponentId) {
+    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId) {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");
 
@@ -125,7 +125,7 @@ public class TeamService {
         return ResponseEntity.status(200).body(retrospectDTO);
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(int id, int opponentId, boolean isHammering) {
+    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId, boolean isHammering) {
         if (!isHammering) return getRetrospect(id, opponentId);
 
         Team team = repository.findById(id);
@@ -141,7 +141,7 @@ public class TeamService {
         return ResponseEntity.status(200).body(retrospectDTO);
     }
 
-    public ResponseEntity<HashMap<String, RetrospectDTO>> getRetrospectAgainstAll(int id) {
+    public ResponseEntity<HashMap<String, RetrospectDTO>> getRetrospectAgainstAll(Long id) {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");
 

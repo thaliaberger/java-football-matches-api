@@ -33,7 +33,7 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<TeamDTO> get(@RequestParam int id) {
+    public ResponseEntity<TeamDTO> get(@RequestParam Long id) {
         return teamService.get(id);
     }
 
@@ -72,37 +72,37 @@ public class TeamController {
     }
 
     @DeleteMapping(params = "id")
-    public ResponseEntity<String> delete(@RequestParam int id) {
+    public ResponseEntity<String> delete(@RequestParam Long id) {
         return teamService.delete(id);
     }
 
     @GetMapping(value = "/retrospect", params = "id")
-    public ResponseEntity<RetrospectDTO> retrospect(@RequestParam int id) {
+    public ResponseEntity<RetrospectDTO> retrospect(@RequestParam Long id) {
         return teamService.getRetrospect(id);
     }
 
     @GetMapping(value = "/retrospect", params = { "id", "matchLocation" })
     public ResponseEntity<RetrospectDTO> retrospect(
-            @RequestParam int id,
+            @RequestParam Long id,
             @RequestParam String matchLocation
     ) {
         return teamService.getRetrospect(id, matchLocation);
     }
 
     @GetMapping(value = "/retrospect/all", params = "id")
-    public ResponseEntity<HashMap<String, RetrospectDTO>> retrospectAll(@RequestParam int id) {
+    public ResponseEntity<HashMap<String, RetrospectDTO>> retrospectAll(@RequestParam Long id) {
         return teamService.getRetrospectAgainstAll(id);
     }
 
     @GetMapping(value = "/retrospect", params = { "id" , "opponentId" })
-    public ResponseEntity<RetrospectDTO> retrospect(@RequestParam int id, @RequestParam int opponentId) {
+    public ResponseEntity<RetrospectDTO> retrospect(@RequestParam Long id, @RequestParam Long opponentId) {
         return teamService.getRetrospect(id, opponentId);
     }
 
     @GetMapping(value = "/retrospect", params = { "id" , "opponentId", "hammering" })
     public ResponseEntity<RetrospectDTO> retrospect(
-            @RequestParam int id,
-            @RequestParam int opponentId,
+            @RequestParam Long id,
+            @RequestParam Long opponentId,
             @RequestParam(name = "hammering", defaultValue="true") boolean isHammering
     ) {
         return teamService.getRetrospect(id, opponentId, isHammering);

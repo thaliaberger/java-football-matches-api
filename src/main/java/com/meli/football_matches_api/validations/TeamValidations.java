@@ -24,7 +24,7 @@ public class TeamValidations {
         validateState(teamDTO.getState());
     };
 
-    public static void validateIfTeamAlreadyExists(int id, String teamName, String state, TeamRepository repository) {
+    public static void validateIfTeamAlreadyExists(Long id, String teamName, String state, TeamRepository repository) {
         Team existingTeam = repository.findByNameAndStateAndIdNot(teamName, state, id);
         if (existingTeam != null) throw new ConflictException("Already existing team with name [" + teamName + "] and state [" + state + "]");
     }
