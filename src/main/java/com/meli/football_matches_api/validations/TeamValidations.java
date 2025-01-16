@@ -3,6 +3,7 @@ package com.meli.football_matches_api.validations;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
+import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.TeamRepository;
 
@@ -16,16 +17,30 @@ public class TeamValidations {
         return Arrays.asList(STATES).contains(state);
     }
 
-    public static void validateFields(TeamDTO teamDTO, TeamRepository teamRepository) {
+    public static void validateFields(TeamDTO teamDTO, TeamRepository teamRepository, boolean isUpdate) {
         if (teamDTO.getName() == null || teamDTO.getName().isEmpty()) throw new FieldException("Field name cannot be empty");
         if (teamDTO.getIsActive() == null) throw new FieldException("Field isActive cannot be null");
+
+        validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), teamRepository, isUpdate);
 
         validateDateCreated(teamDTO.getDateCreated(), teamRepository);
         validateState(teamDTO.getState());
     };
 
-    public static void validateIfTeamAlreadyExists(Long id, String teamName, String state, TeamRepository repository) {
-        Team existingTeam = repository.findByNameAndStateAndIdNot(teamName, state, id);
+    private static void validateIfTeamAlreadyExists(Long id, String teamName, String state, TeamRepository teamRepository, boolean isUpdate) {
+        if (isUpdate) {
+            ensureTeamExists(id, teamRepository);
+        } else {
+            ensureTeamDoesNotExist(teamName, state, id, teamRepository);
+        }
+    }
+
+    private static void ensureTeamExists(Long id, TeamRepository teamRepository) {
+        if (!teamRepository.existsById(id)) throw new NotFoundException("Team not found");
+    }
+
+    private static void ensureTeamDoesNotExist(String teamName, String state, Long id, TeamRepository teamRepository) {
+        Team existingTeam = teamRepository.findByNameAndStateAndIdNot(teamName, state, id);
         if (existingTeam != null) throw new ConflictException("Already existing team with name [" + teamName + "] and state [" + state + "]");
     }
 

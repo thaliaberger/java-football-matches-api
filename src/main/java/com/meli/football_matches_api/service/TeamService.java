@@ -11,6 +11,7 @@ import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.TeamValidations;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -26,24 +27,19 @@ public class TeamService {
     };
 
     public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
-        TeamValidations.validateFields(teamDTO, repository);
-        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), repository);
-
-        Team newTeam = new Team(teamDTO);
-        TeamDTO savedTeam = new TeamDTO(repository.save(newTeam));
-        return ResponseEntity.status(201).body(savedTeam);
-    };
+        return saveTeam(teamDTO, false, HttpStatus.CREATED);
+    }
 
     public ResponseEntity<TeamDTO> update(TeamDTO teamDTO) {
-        Team team = repository.findById(teamDTO.getId());
-        if (team == null) throw new NotFoundException("Team not found");
+        return saveTeam(teamDTO, true, HttpStatus.OK);
+    }
 
-        TeamValidations.validateFields(teamDTO, repository);
-        TeamValidations.validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), repository);
+    private ResponseEntity<TeamDTO> saveTeam(TeamDTO teamDTO, Boolean isUpdate, HttpStatus status) {
+        TeamValidations.validateFields(teamDTO, repository, isUpdate);
 
-        Team updatedTeam = new Team(teamDTO);
-        TeamDTO savedTeam = new TeamDTO(repository.save(updatedTeam));
-        return ResponseEntity.status(200).body(savedTeam);
+        Team team = new Team(teamDTO);
+        TeamDTO savedTeam = new TeamDTO(repository.save(team));
+        return ResponseEntity.status(status).body(savedTeam);
     }
 
     public ResponseEntity<TeamDTO> get(Long id) {
@@ -51,12 +47,12 @@ public class TeamService {
         if (team == null) throw new NotFoundException("Team not found");
 
         TeamDTO teamDTO = new TeamDTO(team);
-        return ResponseEntity.status(200).body(teamDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(teamDTO);
     }
 
     public ResponseEntity<List<TeamDTO>> list() {
         List<Team> teams = repository.findAll();
-        return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToDTO(teams));
     }
 
     public ResponseEntity<List<TeamDTO>> list(String sort) {
@@ -66,7 +62,7 @@ public class TeamService {
     public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
         List<Team> teams = repository.findAll(pageable).getContent();
-        return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToDTO(teams));
     }
 
     public ResponseEntity<List<TeamDTO>> list(String param, Boolean isNameSearch) {
@@ -77,19 +73,19 @@ public class TeamService {
         } else {
             teams = repository.findAllByState(param);
         }
-        return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToDTO(teams));
     }
 
     public ResponseEntity<List<TeamDTO>> list(Boolean isActive) {
         List<Team> teams = repository.findAllByIsActive(isActive);
-        return ResponseEntity.status(200).body(Utils.convertToDTO(teams));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToDTO(teams));
     }
 
     public ResponseEntity<String> delete(Long id) {
         Team team = repository.findById(id);
         team.setIsActive(false);
         repository.save(team);
-        return ResponseEntity.status(204).body("");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
     public ResponseEntity<RetrospectDTO> getRetrospect(Long id) {
@@ -122,7 +118,7 @@ public class TeamService {
         List<Match> awayMatchesAgainstOpponent = team.getAwayMatches().stream().filter(match -> match.getHomeTeam().getId() == opponentId).toList();
 
         RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatchesAgainstOpponent, awayMatchesAgainstOpponent);
-        return ResponseEntity.status(200).body(retrospectDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(retrospectDTO);
     }
 
     public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId, boolean isHammering) {
@@ -138,7 +134,7 @@ public class TeamService {
         List<Match> awayMatchesAgainstOpponent = team.getAwayMatches().stream().filter(match -> match.getHomeTeam().getId() == opponentId && match.isHammering()).toList();
 
         RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatchesAgainstOpponent, awayMatchesAgainstOpponent);
-        return ResponseEntity.status(200).body(retrospectDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(retrospectDTO);
     }
 
     public ResponseEntity<HashMap<String, RetrospectDTO>> getRetrospectAgainstAll(Long id) {
@@ -153,7 +149,7 @@ public class TeamService {
         processMatches(homeMatches, true, retrospectsByOpponent);
         processMatches(awayMatches, false, retrospectsByOpponent);
 
-        return ResponseEntity.status(200).body(retrospectsByOpponent);
+        return ResponseEntity.status(HttpStatus.OK).body(retrospectsByOpponent);
     }
 
     private void processMatches(List<Match> matches, boolean isHomeMatch, HashMap<String, RetrospectDTO> retrospectsByOpponent) {
@@ -185,7 +181,7 @@ public class TeamService {
 
         PriorityQueue<TeamDTO> rankedTeams = buildPriorityQueue(Utils.convertToDTO(teams), comparator, filter);
 
-        return ResponseEntity.status(200).body(rankedTeams);
+        return ResponseEntity.status(HttpStatus.OK).body(rankedTeams);
     }
 
     private Comparator<TeamDTO> getComparator(String rankBy, String matchLocation) {
