@@ -10,6 +10,7 @@ import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.MatchValidations;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -44,14 +45,14 @@ public class MatchService {
         Match newMatch = new Match(matchDTO);
         MatchDTO savedMatch = new MatchDTO(matchRepository.save(newMatch));
 
-        int statusCode = isUpdate ? 200 : 201;
+        HttpStatus statusCode = isUpdate ? HttpStatus.OK : HttpStatus.CREATED;
         return ResponseEntity.status(statusCode).body(savedMatch);
     }
 
     public ResponseEntity<String> delete(Long id) {
         MatchValidations.validateIfMatchExists(id, matchRepository);
         matchRepository.deleteById(id);
-        return ResponseEntity.status(204).body("");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
     public ResponseEntity<MatchDTO> get(Long id) {
@@ -59,12 +60,12 @@ public class MatchService {
         if (match == null) throw new NotFoundException("Match not found");
 
         MatchDTO matchDTO = new MatchDTO(match);
-        return ResponseEntity.status(200).body(matchDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(matchDTO);
     }
 
     public ResponseEntity<List<MatchDTO>> list() {
         List<Match> matches = matchRepository.findAll();
-        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
     }
 
     public ResponseEntity<List<MatchDTO>> list(String sort) {
@@ -89,7 +90,7 @@ public class MatchService {
 
     public ResponseEntity<List<MatchDTO>> listByStadium(Long stadiumId) {
         List<Match> matches = matchRepository.findAllByStadiumId(stadiumId);
-        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
     }
 
     public ResponseEntity<List<MatchDTO>> list(Boolean isHammering) {
@@ -101,12 +102,12 @@ public class MatchService {
            if (match.isHammering()) hammeringMatches.add(match);
         }
 
-        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(hammeringMatches));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(hammeringMatches));
     }
 
     public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
         List<Match> matches = matchRepository.findAll(pageable).getContent();
-        return ResponseEntity.status(200).body(Utils.convertToMatchDTO(matches));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
     }
 }
