@@ -75,7 +75,7 @@ public class MatchService {
         return ResponseEntity.ok(Utils.convertToMatchDTO(getMatchesByTeam(teamId, null)));
     }
 
-    public ResponseEntity<List<MatchDTO>> listByTeam(Long teamId, String matchLocation) {
+    public ResponseEntity<List<MatchDTO>> listByTeamAndMatchLocation(Long teamId, String matchLocation) {
         return ResponseEntity.ok(Utils.convertToMatchDTO(getMatchesByTeam(teamId, matchLocation)));
     }
 

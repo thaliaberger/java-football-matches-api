@@ -55,7 +55,7 @@ public class MatchController {
             @RequestParam(name = "teamId") Long teamId,
             @RequestParam String matchLocation
     ) {
-        return matchService.listByTeam(teamId, matchLocation);
+        return matchService.listByTeamAndMatchLocation(teamId, matchLocation);
     }
 
     @GetMapping(value ="/list", params = "stadiumId")
