@@ -8,7 +8,6 @@ import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.validations.StadiumValidations;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -34,7 +34,7 @@ class StadiumServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -46,34 +46,34 @@ class StadiumServiceTest {
 
         ResponseEntity<StadiumDTO> response = stadiumService.create(stadiumDTO);
 
-        Assertions.assertEquals(201, response.getStatusCode().value());
-        Assertions.assertNotNull(response.getBody());
-        Assertions.assertEquals("Maracanã", response.getBody().getName());
+        assertEquals(201, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals("Maracanã", response.getBody().getName());
     }
 
     @Test
     @DisplayName("Should throw FieldException when stadium name is empty")
     void createCaseEmptyStadiumName() {
 
-        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = assertThrows(FieldException.class, () -> {
             StadiumDTO stadiumDTO = new StadiumDTO(1L, null, null, null);
             StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, false);
         });
 
-        Assertions.assertEquals("Stadium name cannot be null or empty", exception.getMessage());
+        assertEquals("Stadium name cannot be null or empty", exception.getMessage());
     }
 
     @Test
     @DisplayName("Should throw FieldException when stadium name has less then 3 characters")
     void createCaseStadiumNameSmallerThen3Characters() {
 
-        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = assertThrows(FieldException.class, () -> {
             Team team = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
             StadiumDTO stadiumDTO = new StadiumDTO(1L, "Ma", team, null);
             StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, false);
         });
 
-        Assertions.assertEquals("Stadium name must be at least 3 characters", exception.getMessage());
+        assertEquals("Stadium name must be at least 3 characters", exception.getMessage());
     }
 
     @Test
@@ -84,11 +84,11 @@ class StadiumServiceTest {
 
         when(stadiumRepository.existsByName("Maracanã")).thenReturn(true);
 
-        ConflictException exception = Assertions.assertThrows(ConflictException.class, () -> {
+        ConflictException exception = assertThrows(ConflictException.class, () -> {
             StadiumValidations.validateName("Maracanã", stadiumRepository, false);
         });
 
-        Assertions.assertEquals("Stadium with name [Maracanã] already exists", exception.getMessage());
+        assertEquals("Stadium with name [Maracanã] already exists", exception.getMessage());
     }
 
     @Test
@@ -101,57 +101,57 @@ class StadiumServiceTest {
 
         ResponseEntity<StadiumDTO> response = stadiumService.update(stadiumDTO);
 
-        Assertions.assertEquals(200, response.getStatusCode().value());
-        Assertions.assertNotNull(response.getBody());
-        Assertions.assertEquals("Morumbi", response.getBody().getName());
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals("Morumbi", response.getBody().getName());
     }
 
     @Test
     @DisplayName("Should throw FieldException when stadium name is empty")
     void updateCaseEmptyStadiumName() {
 
-        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = assertThrows(FieldException.class, () -> {
             StadiumDTO stadiumDTO = new StadiumDTO(1L, null, null, null);
             StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, true);
         });
 
-        Assertions.assertEquals("Stadium name cannot be null or empty", exception.getMessage());
+        assertEquals("Stadium name cannot be null or empty", exception.getMessage());
     }
 
     @Test
     @DisplayName("Should throw FieldException when stadium name has less then 3 characters")
     void updateCaseStadiumNameSmallerThen3Characters() {
 
-        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = assertThrows(FieldException.class, () -> {
             StadiumDTO stadiumDTO = new StadiumDTO(1L, "Ma", null, null);
             StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, true);
         });
 
-        Assertions.assertEquals("Stadium name must be at least 3 characters", exception.getMessage());
+        assertEquals("Stadium name must be at least 3 characters", exception.getMessage());
     }
 
     @Test
     @DisplayName("Should throw FieldException when trying to update a Stadium without passing an id")
     void updateCaseWithoutPassingAnId() {
 
-        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = assertThrows(FieldException.class, () -> {
             StadiumDTO stadiumDTO = new StadiumDTO(null, "Maracanã", null, null);
             StadiumValidations.validateIfStadiumExists(stadiumDTO, stadiumRepository);
         });
 
-        Assertions.assertEquals("You need to provide a valid id to update a stadium", exception.getMessage());
+        assertEquals("You need to provide a valid id to update a stadium", exception.getMessage());
     }
 
     @Test
     @DisplayName("Should throw NotFoundException when trying to update an non-existing Stadium")
     void updateCaseStadiumDoesNotExists() {
 
-        NotFoundException exception = Assertions.assertThrows(NotFoundException.class, () -> {
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             StadiumDTO stadiumDTO = new StadiumDTO(1L, "Maracanã", null, null);
             StadiumValidations.validateIfStadiumExists(stadiumDTO, stadiumRepository);
         });
 
-        Assertions.assertEquals("Stadium not found", exception.getMessage());
+        assertEquals("Stadium not found", exception.getMessage());
     }
 
     @Test
@@ -163,10 +163,10 @@ class StadiumServiceTest {
 
         ResponseEntity<StadiumDTO> response = stadiumService.get(stadiumId);
 
-        Assertions.assertEquals(200, response.getStatusCode().value());
-        Assertions.assertNotNull(response.getBody());
-        Assertions.assertEquals(stadiumId, response.getBody().getId());
-        Assertions.assertEquals("Maracanã", response.getBody().getName());
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals(stadiumId, response.getBody().getId());
+        assertEquals("Maracanã", response.getBody().getName());
     }
 
     @Test
@@ -175,11 +175,11 @@ class StadiumServiceTest {
         Long stadiumId = 1L;
         when(stadiumRepository.findById(stadiumId)).thenReturn(null);
 
-        NotFoundException exception = Assertions.assertThrows(NotFoundException.class, () -> {
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             stadiumService.get(stadiumId);
         });
 
-        Assertions.assertEquals("Stadium not found", exception.getMessage());
+        assertEquals("Stadium not found", exception.getMessage());
     }
 
     @Test
@@ -195,9 +195,9 @@ class StadiumServiceTest {
 
         ResponseEntity<List<StadiumDTO>> response = stadiumService.list();
 
-        Assertions.assertEquals(200, response.getStatusCode().value());
-        Assertions.assertNotNull(response.getBody());
-        Assertions.assertEquals("Maracanã", response.getBody().get(0).getName());
-        Assertions.assertEquals("Morumbi", response.getBody().get(1).getName());
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals("Maracanã", response.getBody().get(0).getName());
+        assertEquals("Morumbi", response.getBody().get(1).getName());
     }
 }
