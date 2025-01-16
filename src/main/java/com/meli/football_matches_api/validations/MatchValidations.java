@@ -46,8 +46,8 @@ public class MatchValidations {
         validateStadium(matchDTO.getStadium(), stadiumRepository, matchDateTime);
     };
 
-    public static void validateIfMatchExists(int matchId, MatchRepository matchRepository) {
-        matchRepository.findById(matchId).orElseThrow(() -> new NotFoundException("Match not found"));
+    public static void validateIfMatchExists(Long matchId, MatchRepository matchRepository) {
+        if (!matchRepository.existsById(matchId)) throw new NotFoundException("Match not found");
     }
 
     private static void validateGoals(Integer homeGoals, Integer awayGoals) {
