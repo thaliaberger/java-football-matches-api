@@ -803,4 +803,36 @@ class MatchServiceTest {
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(awayMatchId, response.getBody().getFirst().getId());
     }
+
+    @Test
+    @DisplayName("Should get all team matches successfully")
+    void listByTeamCaseSuccess() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        Long homeMatchId = 1L;
+        Match match = new Match(homeMatchId, 1, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team2, team1, stadium);
+
+        List<Match> team1HomeMatches = new ArrayList<>();
+        team1HomeMatches.add(match);
+
+        List<Match> team1AwayMatches = new ArrayList<>();
+        team1AwayMatches.add(match2);
+
+        team1.setHomeMatches(team1HomeMatches);
+        team1.setAwayMatches(team1AwayMatches);
+
+        List<Match> team1AllMatches = new ArrayList<>();
+        team1AllMatches.add(match);
+        team1AllMatches.add(match2);
+
+        when(matchRepository.findAllByHomeTeamIdOrAwayTeamId(1L, 1L)).thenReturn(team1AllMatches);
+
+        ResponseEntity<List<MatchDTO>> response = matchService.listByTeam(team1.getId());
+
+        Assertions.assertEquals(200, response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(homeMatchId, response.getBody().getFirst().getId());
+    }
 }
