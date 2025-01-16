@@ -58,4 +58,13 @@ class TeamServiceTest {
         assertNotNull(response.getBody());
         assertEquals(teamDTO.getName(), response.getBody().getName());
     }
+
+    @Test
+    void updateCaseTeamDoesNotExist() {
+        TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+
+        when(repository.findById(1L)).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> teamService.update(teamDTO));
+    }
 }
