@@ -317,6 +317,61 @@ class MatchServiceTest {
         Assertions.assertEquals("[awayGoals] cannot be negative", thrown.getMessage());
     }
 
+    @Test
+    @DisplayName("Should throw FieldException: [homeTeam] is not active")
+    void createCaseHomeTeamNotActive() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), false);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        long matchId = 3L;
+        Match newMatch = new Match(matchId, 1, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        when(teamRepository.findById(1L)).thenReturn(team1);
+        when(teamRepository.findById(2L)).thenReturn(team2);
+
+        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("[homeTeam] is not active", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException: [awayTeam] is not active")
+    void createCaseAwayTeamNotActive() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), false);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        long matchId = 3L;
+        Match newMatch = new Match(matchId, 1, 1, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        when(teamRepository.findById(1L)).thenReturn(team1);
+        when(teamRepository.findById(2L)).thenReturn(team2);
+
+        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("[awayTeam] is not active", thrown.getMessage());
+    }
 
     @Test
     @DisplayName("Should get Match successfully")
