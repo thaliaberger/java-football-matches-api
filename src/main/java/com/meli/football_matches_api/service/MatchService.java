@@ -8,7 +8,6 @@ import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.repository.TeamRepository;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.MatchValidations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +20,13 @@ import java.util.List;
 public class MatchService {
 
     private final MatchRepository matchRepository;
+    private final TeamRepository teamRepository;
+    private final StadiumRepository stadiumRepository;
 
-    @Autowired
-    private TeamRepository teamRepository;
-    @Autowired
-    private StadiumRepository stadiumRepository;
-
-    public MatchService(MatchRepository repository) {
+    public MatchService(MatchRepository repository, TeamRepository teamRepository, StadiumRepository stadiumRepository) {
         this.matchRepository = repository;
+        this.teamRepository = teamRepository;
+        this.stadiumRepository = stadiumRepository;
     };
 
     public ResponseEntity<MatchDTO> create(MatchDTO matchDTO) {
