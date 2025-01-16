@@ -1,7 +1,7 @@
 package com.meli.football_matches_api.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.exception.ConflictException;
@@ -14,7 +14,6 @@ import com.meli.football_matches_api.repository.MatchRepository;
 import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.repository.TeamRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,9 +42,6 @@ class MatchServiceTest {
 
     @InjectMocks
     private MatchService matchService;
-
-    @BeforeEach
-    void setUp() {}
 
     @Test
     @DisplayName("Should create Match successfully")
@@ -619,6 +615,64 @@ class MatchServiceTest {
         });
 
         Assertions.assertEquals("Stadium already has a match on this date", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should update Match successfully")
+    void updateCaseSuccess() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        Match updatedMatch = new Match(2L, 4, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        MatchDTO matchDTO = new MatchDTO(updatedMatch);
+
+        when(teamRepository.findById(1L)).thenReturn(team1);
+        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(stadiumRepository.findById(1L)).thenReturn(stadium);
+        when(matchRepository.save(any(Match.class))).thenReturn(new Match(matchDTO));
+
+        ResponseEntity<MatchDTO> response = matchService.create(matchDTO);
+
+        Assertions.assertEquals(201, response.getStatusCode().value());
+        Assertions.assertNotNull(response.getBody());
+        Assertions.assertEquals(2L, response.getBody().getId());
+    }
+
+    @Test
+    @DisplayName("Should delete Match successfully")
+    void deleteCaseSuccess() {
+        long matchId = 1;
+
+        when(matchRepository.existsById(matchId)).thenReturn(true);
+
+        ResponseEntity<String> response = matchService.delete(matchId);
+
+        verify(matchRepository, times(1)).deleteById(matchId);
+
+        Assertions.assertEquals(204, response.getStatusCode().value());
+        Assertions.assertEquals("", response.getBody());
+    }
+
+    @Test
+    @DisplayName("Should throw NotFoundException: Match not found")
+    void deleteCaseMatchDoesNotExist() {
+        long matchId = 1;
+
+        when(matchRepository.existsById(matchId)).thenReturn(false);
+
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class, () -> {
+            matchService.delete(matchId);
+        });
+
+        Assertions.assertEquals("Match not found", exception.getMessage());
     }
 
     @Test
