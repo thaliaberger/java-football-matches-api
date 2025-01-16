@@ -90,7 +90,7 @@ public class MatchValidations {
         if (stadiumId == null) throw new FieldException("[stadium.id] cannot be null");
 
         Stadium stadium = stadiumRepository.findById(stadiumId);
-        if (stadium == null) throw new FieldException("Stadium not found");
+        if (stadium == null) throw new NotFoundException("Stadium not found");
 
         List<Match> matches = stadium.getMatches();
 
