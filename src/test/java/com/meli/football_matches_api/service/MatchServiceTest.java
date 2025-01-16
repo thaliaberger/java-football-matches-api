@@ -90,11 +90,11 @@ class MatchServiceTest {
         Match newMatch = new Match(3L, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[homeTeamId] cannot be null", thrown.getMessage());
+        Assertions.assertEquals("[homeTeamId] cannot be null", exception.getMessage());
     }
 
     @Test
@@ -114,11 +114,11 @@ class MatchServiceTest {
         Match newMatch = new Match(3L, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[awayTeamId] cannot be null", thrown.getMessage());
+        Assertions.assertEquals("[awayTeamId] cannot be null", exception.getMessage());
     }
 
     @Test
@@ -138,11 +138,11 @@ class MatchServiceTest {
         Match newMatch = new Match(3L, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team1, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[homeTeam] and [awayTeam] cannot be the same", thrown.getMessage());
+        Assertions.assertEquals("[homeTeam] and [awayTeam] cannot be the same", exception.getMessage());
     }
 
     @Test
@@ -164,11 +164,11 @@ class MatchServiceTest {
 
         when(teamRepository.findById(1L)).thenReturn(null);
 
-        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("homeTeam not found", thrown.getMessage());
+        Assertions.assertEquals("homeTeam not found", exception.getMessage());
     }
 
     @Test
@@ -191,11 +191,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(null);
 
-        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("awayTeam not found", thrown.getMessage());
+        Assertions.assertEquals("awayTeam not found", exception.getMessage());
     }
 
     @Test
@@ -218,11 +218,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[homeGoals] cannot be null", thrown.getMessage());
+        Assertions.assertEquals("[homeGoals] cannot be null", exception.getMessage());
     }
 
     @Test
@@ -245,11 +245,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[awayGoals] cannot be null", thrown.getMessage());
+        Assertions.assertEquals("[awayGoals] cannot be null", exception.getMessage());
     }
 
     @Test
@@ -272,11 +272,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[homeGoals] cannot be negative", thrown.getMessage());
+        Assertions.assertEquals("[homeGoals] cannot be negative", exception.getMessage());
     }
 
     @Test
@@ -299,11 +299,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[awayGoals] cannot be negative", thrown.getMessage());
+        Assertions.assertEquals("[awayGoals] cannot be negative", exception.getMessage());
     }
 
     @Test
@@ -326,11 +326,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[homeTeam] is not active", thrown.getMessage());
+        Assertions.assertEquals("[homeTeam] is not active", exception.getMessage());
     }
 
     @Test
@@ -353,11 +353,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[awayTeam] is not active", thrown.getMessage());
+        Assertions.assertEquals("[awayTeam] is not active", exception.getMessage());
     }
 
     @Test
@@ -380,11 +380,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[matchDateTime] cannot be null", thrown.getMessage());
+        Assertions.assertEquals("[matchDateTime] cannot be null", exception.getMessage());
     }
 
     @Test
@@ -408,11 +408,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[matchDateTime] cannot be in the future", thrown.getMessage());
+        Assertions.assertEquals("[matchDateTime] cannot be in the future", exception.getMessage());
     }
 
     @Test
@@ -435,11 +435,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        ConflictException thrown = Assertions.assertThrows(ConflictException.class, () -> {
+        ConflictException exception = Assertions.assertThrows(ConflictException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[matchDateTime] cannot be before [homeTeamDateCreated]", thrown.getMessage());
+        Assertions.assertEquals("[matchDateTime] cannot be before [homeTeamDateCreated]", exception.getMessage());
     }
 
     @Test
@@ -462,11 +462,11 @@ class MatchServiceTest {
         when(teamRepository.findById(1L)).thenReturn(team1);
         when(teamRepository.findById(2L)).thenReturn(team2);
 
-        ConflictException thrown = Assertions.assertThrows(ConflictException.class, () -> {
+        ConflictException exception = Assertions.assertThrows(ConflictException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[matchDateTime] cannot be before [awayTeamDateCreated]", thrown.getMessage());
+        Assertions.assertEquals("[matchDateTime] cannot be before [awayTeamDateCreated]", exception.getMessage());
     }
 
     @Test
@@ -491,11 +491,11 @@ class MatchServiceTest {
         when(teamRepository.findById(2L)).thenReturn(team2);
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
 
-        ConflictException thrown = Assertions.assertThrows(ConflictException.class, () -> {
+        ConflictException exception = Assertions.assertThrows(ConflictException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("Cannot create a match when one of the teams already has a match in less than 48 hours", thrown.getMessage());
+        Assertions.assertEquals("Cannot create a match when one of the teams already has a match in less than 48 hours", exception.getMessage());
     }
 
     @Test
@@ -519,11 +519,11 @@ class MatchServiceTest {
         when(teamRepository.findById(2L)).thenReturn(team2);
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[stadium] cannot be null", thrown.getMessage());
+        Assertions.assertEquals("[stadium] cannot be null", exception.getMessage());
     }
 
     @Test
@@ -548,11 +548,11 @@ class MatchServiceTest {
         when(teamRepository.findById(2L)).thenReturn(team2);
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
 
-        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+        FieldException exception = Assertions.assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("[stadium.id] cannot be null", thrown.getMessage());
+        Assertions.assertEquals("[stadium.id] cannot be null", exception.getMessage());
     }
 
     @Test
@@ -578,11 +578,11 @@ class MatchServiceTest {
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
         when(stadiumRepository.findById(2L)).thenReturn(null);
 
-        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("Stadium not found", thrown.getMessage());
+        Assertions.assertEquals("Stadium not found", exception.getMessage());
     }
 
     @Test
@@ -610,11 +610,11 @@ class MatchServiceTest {
         when(teamRepository.findById(4L)).thenReturn(team4);
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches2);
         when(stadiumRepository.findById(1L)).thenReturn(stadium);
-        ConflictException thrown = Assertions.assertThrows(ConflictException.class, () -> {
+        ConflictException exception = Assertions.assertThrows(ConflictException.class, () -> {
             matchService.create(matchDTO);
         });
 
-        Assertions.assertEquals("Stadium already has a match on this date", thrown.getMessage());
+        Assertions.assertEquals("Stadium already has a match on this date", exception.getMessage());
     }
 
     @Test
