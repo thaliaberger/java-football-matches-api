@@ -10,6 +10,8 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
 
     Team findById(Long id);
 
+    Boolean existsById(Long id);
+
     Team findByNameAndStateAndIdNot(String name, String state, Long id);
 
     List<Team> findAllByState(String state);
