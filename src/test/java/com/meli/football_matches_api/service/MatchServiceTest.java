@@ -713,6 +713,20 @@ class MatchServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw NotFoundException: Match not found")
+    void getCaseMatchDoesNotExist() {
+        long matchId = 1;
+
+        when(matchRepository.existsById(matchId)).thenReturn(false);
+
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class, () -> {
+            matchService.delete(matchId);
+        });
+
+        Assertions.assertEquals("Match not found", exception.getMessage());
+    }
+
+    @Test
     @DisplayName("Should get all matches successfully")
     void listCaseSuccess() {
         Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
