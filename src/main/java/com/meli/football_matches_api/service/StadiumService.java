@@ -23,15 +23,15 @@ public class StadiumService {
     };
 
     public ResponseEntity<StadiumDTO> create(StadiumDTO stadiumDTO) {
-        return createOrUpdate(stadiumDTO, false);
+        return saveStadium(stadiumDTO, false);
     };
 
     public ResponseEntity<StadiumDTO> update(StadiumDTO stadiumDTO) {
         StadiumValidations.validateIfStadiumExists(stadiumDTO, stadiumRepository);
-        return createOrUpdate(stadiumDTO, true);
+        return saveStadium(stadiumDTO, true);
     };
 
-    public ResponseEntity<StadiumDTO> createOrUpdate(StadiumDTO stadiumDTO, Boolean isUpdate) {
+    public ResponseEntity<StadiumDTO> saveStadium(StadiumDTO stadiumDTO, Boolean isUpdate) {
         StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, isUpdate);
         Stadium newStadium = new Stadium(stadiumDTO);
         StadiumDTO savedStadium = new StadiumDTO(stadiumRepository.save(newStadium));
