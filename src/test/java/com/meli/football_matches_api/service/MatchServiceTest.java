@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
@@ -858,5 +859,42 @@ class MatchServiceTest {
 
         Assertions.assertEquals(200, response.getStatusCode().value());
         Assertions.assertNotNull(response.getBody());
+    }
+
+    @Test
+    @DisplayName("Should get all matches successfully")
+    void listNotHammeringCaseSuccess() {
+        ResponseEntity<List<MatchDTO>> response = matchService.list(false);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(200, response.getStatusCode().value());
+    }
+
+    @Test
+    @DisplayName("Should get all hammering matches successfully")
+    void listHammeringCaseSuccess() {
+        Match match1 = new Match();
+        match1.setHomeGoals(5);
+        match1.setAwayGoals(0);
+
+        Match match2 = new Match();
+        match2.setHomeGoals(2);
+        match2.setAwayGoals(1);
+
+        Match match3 = new Match();
+        match3.setHomeGoals(4);
+        match3.setAwayGoals(1);
+
+        when(matchRepository.findAllByHomeGoalsNotNullOrAwayGoalsNotNull())
+                .thenReturn(Arrays.asList(match1, match2, match3));
+
+        ResponseEntity<List<MatchDTO>> response = matchService.list(true);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(200, response.getStatusCode().value());
+
+        List<MatchDTO> matchDTOs = response.getBody();
+        Assertions.assertNotNull(matchDTOs);
+        Assertions.assertEquals(2, matchDTOs.size());
     }
 }
