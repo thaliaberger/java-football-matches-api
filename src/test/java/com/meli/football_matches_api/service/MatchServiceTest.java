@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
@@ -72,6 +73,81 @@ class MatchServiceTest {
         Assertions.assertEquals(201, response.getStatusCode().value());
         Assertions.assertNotNull(response.getBody());
         Assertions.assertEquals(matchId, response.getBody().getId());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException: [homeTeamId] cannot be null")
+    void createCaseHomeTeamIdNull() {
+        Team team1 = new Team(null, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        long matchId = 3L;
+        Match newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("[homeTeamId] cannot be null", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException: [awayTeamId] cannot be null")
+    void createCaseAwayTeamIdNull() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team2 = new Team(null, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        long matchId = 3L;
+        Match newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("[awayTeamId] cannot be null", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException: [homeTeam] and [awayTeam] cannot be the same")
+    void createCaseHomeTeamIdAndAwayTeamIdAreTheSame() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team2 = new Team(null, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        long matchId = 3L;
+        Match newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team1, stadium);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("[homeTeam] and [awayTeam] cannot be the same", thrown.getMessage());
     }
 
     @Test
