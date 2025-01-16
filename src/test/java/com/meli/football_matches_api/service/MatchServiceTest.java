@@ -91,8 +91,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
@@ -116,8 +115,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
@@ -141,8 +139,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team1, stadium);
+        Match newMatch = new Match(3L, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team1, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
@@ -166,8 +163,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(null);
@@ -193,8 +189,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -221,8 +216,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, null, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, null, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -249,8 +243,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 1, null, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 1, null, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -277,8 +270,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, -1, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, -1, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -305,8 +297,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 1, -1, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 1, -1, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -333,8 +324,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 1, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 1, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -361,8 +351,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 1, 1, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -389,8 +378,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 1, 1, null, team1, team2, stadium);
+        Match newMatch = new Match(3L, 1, 1, null, team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -417,9 +405,8 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
         int nextYear = Year.now().getValue() + 1;
-        Match newMatch = new Match(matchId, 1, 1, LocalDateTime.of(nextYear, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(nextYear, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -446,8 +433,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 1, 1, LocalDateTime.of(1979, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(1979, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -474,8 +460,7 @@ class MatchServiceTest {
         matches.add(match2);
         stadium.setMatches(matches);
 
-        long matchId = 3L;
-        Match newMatch = new Match(matchId, 1, 1, LocalDateTime.of(1979, 1, 6, 10, 10, 10), team1, team2, stadium);
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(1979, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(team1);
@@ -486,6 +471,154 @@ class MatchServiceTest {
         });
 
         Assertions.assertEquals("[matchDateTime] cannot be before [awayTeamDateCreated]", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw ConflictException: Cannot create a match when one of the teams already has a match in less than 48 hours")
+    void createCaseTeamAlreadyHasAMatchInLessThan48Hours() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1970, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        Stadium stadium2 = new Stadium(2L, "Maracanã", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium2);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        when(teamRepository.findById(1L)).thenReturn(team1);
+        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
+
+        ConflictException thrown = Assertions.assertThrows(ConflictException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("Cannot create a match when one of the teams already has a match in less than 48 hours", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException: [stadium] cannot be null")
+    void createCaseStadiumIsNull() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1970, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(2022, 1, 3, 10, 10, 10), team1, team2, null);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        when(teamRepository.findById(1L)).thenReturn(team1);
+        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
+
+        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("[stadium] cannot be null", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException: [stadium.id] cannot be null")
+    void createCaseStadiumIdNull() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1970, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        Stadium stadium2 = new Stadium(null, "Maracanã", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(2022, 1, 3, 10, 10, 10), team1, team2, stadium2);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        when(teamRepository.findById(1L)).thenReturn(team1);
+        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
+
+        FieldException thrown = Assertions.assertThrows(FieldException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("[stadium.id] cannot be null", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw NotFoundException: Stadium not found")
+    void createCaseStadiumNotFound() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1970, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        Stadium stadium2 = new Stadium(2L, "Maracanã", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(2022, 1, 3, 10, 10, 10), team1, team2, stadium2);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        when(teamRepository.findById(1L)).thenReturn(team1);
+        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
+        when(stadiumRepository.findById(2L)).thenReturn(null);
+
+        NotFoundException thrown = Assertions.assertThrows(NotFoundException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("Stadium not found", thrown.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw ConflictException: Stadium already has a match on this date")
+    void createCaseStadiumAlreadyHasAMatchOnThisDate() {
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1970, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team3 = new Team(3L, "Avai", "SC", LocalDate.of(1980, 1, 1), true);
+        Team team4 = new Team(4L, "Criciuma", "SC", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        List<Match> matches = new ArrayList<>();
+
+        Match match1 = new Match(1L, 1, 0, LocalDateTime.of(2024, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match1);
+        matches.add(match2);
+        stadium.setMatches(matches);
+
+        Match newMatch = new Match(3L, 1, 1, LocalDateTime.of(2023, 1, 3, 10, 10, 10), team3, team4, stadium);
+        MatchDTO matchDTO = new MatchDTO(newMatch);
+
+        List<Match> matches2 = new ArrayList<>();
+
+        when(teamRepository.findById(3L)).thenReturn(team3);
+        when(teamRepository.findById(4L)).thenReturn(team4);
+        when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches2);
+        when(stadiumRepository.findById(1L)).thenReturn(stadium);
+        ConflictException thrown = Assertions.assertThrows(ConflictException.class, () -> {
+            matchService.create(matchDTO);
+        });
+
+        Assertions.assertEquals("Stadium already has a match on this date", thrown.getMessage());
     }
 
     @Test
