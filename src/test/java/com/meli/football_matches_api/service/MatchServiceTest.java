@@ -20,6 +20,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -896,5 +899,39 @@ class MatchServiceTest {
         List<MatchDTO> matchDTOs = response.getBody();
         Assertions.assertNotNull(matchDTOs);
         Assertions.assertEquals(2, matchDTOs.size());
+    }
+
+    @Test
+    @DisplayName("Should get all matches successfully paginated and sorted")
+    void listWithPaginationAndSortCaseSuccess() {
+        Match match1 = new Match();
+        match1.setHomeGoals(3);
+        match1.setAwayGoals(1);
+
+        Match match2 = new Match();
+        match2.setHomeGoals(2);
+        match2.setAwayGoals(2);
+
+        Match match3 = new Match();
+        match3.setHomeGoals(4);
+        match3.setAwayGoals(0);
+
+        List<Match> matches = Arrays.asList(match1, match2, match3);
+        Page<Match> pageMatches = new PageImpl<>(matches);
+
+        when(matchRepository.findAll(any(Pageable.class))).thenReturn(pageMatches);
+
+        int page = 0;
+        int itemsPerPage = 10;
+        String sort = "goals,asc";
+
+        ResponseEntity<List<MatchDTO>> response = matchService.list(page, itemsPerPage, sort);
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(200, response.getStatusCode().value());
+
+        List<MatchDTO> matchDTOs = response.getBody();
+        Assertions.assertNotNull(matchDTOs);
+        Assertions.assertEquals(3, matchDTOs.size());
     }
 }
