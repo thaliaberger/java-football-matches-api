@@ -34,7 +34,7 @@ public class MatchService {
     };
 
     public ResponseEntity<MatchDTO> update(MatchDTO matchDTO) {
-        MatchValidations.validateIfMatchExists(matchDTO.getId().intValue(), matchRepository);
+        MatchValidations.validateIfMatchExists(matchDTO.getId(), matchRepository);
         return createOrUpdate(matchDTO, true);
     }
 
@@ -48,7 +48,7 @@ public class MatchService {
         return ResponseEntity.status(statusCode).body(savedMatch);
     }
 
-    public ResponseEntity<String> delete(int id) {
+    public ResponseEntity<String> delete(Long id) {
         MatchValidations.validateIfMatchExists(id, matchRepository);
         matchRepository.deleteById(id);
         return ResponseEntity.status(204).body("");

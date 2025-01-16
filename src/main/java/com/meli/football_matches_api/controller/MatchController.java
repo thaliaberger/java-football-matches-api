@@ -31,7 +31,7 @@ public class MatchController {
     }
 
     @DeleteMapping(params = "id")
-    public ResponseEntity<String> delete(@RequestParam int id) {
+    public ResponseEntity<String> delete(@RequestParam Long id) {
         return matchService.delete(id);
     }
 

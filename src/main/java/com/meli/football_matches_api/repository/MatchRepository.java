@@ -10,6 +10,10 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
 
     Match findById(Long id);
 
+    Boolean existsById(Long id);
+
+    void deleteById(Long id);
+
     List<Match> findAllByAwayTeam(Team awayTeam);
 
     List<Match> findAllByHomeTeam(Team homeTeam);
