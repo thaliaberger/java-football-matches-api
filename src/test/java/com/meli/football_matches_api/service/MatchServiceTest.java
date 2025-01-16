@@ -647,6 +647,25 @@ class MatchServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw NotFoundException: Match not found")
+    void updateCaseMatchDoesNotExist() {
+        long matchId = 1L;
+        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        Match updatedMatch = new Match(matchId, 4, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
+        MatchDTO matchDTO = new MatchDTO(updatedMatch);
+
+        when(matchRepository.existsById(matchId)).thenReturn(false);
+
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class, () -> {
+            matchService.update(matchDTO);
+        });
+
+        Assertions.assertEquals("Match not found", exception.getMessage());
+    }
+
+    @Test
     @DisplayName("Should delete Match successfully")
     void deleteCaseSuccess() {
         long matchId = 1;
