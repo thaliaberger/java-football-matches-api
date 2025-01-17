@@ -18,7 +18,7 @@ public class TeamValidations {
     }
 
     public static void validateFields(TeamDTO teamDTO, TeamRepository teamRepository, boolean isUpdate) {
-        if (teamDTO.getName() == null || teamDTO.getName().isEmpty()) throw new FieldException("[name] cannot be empty");
+        if (teamDTO.getName() == null || teamDTO.getName().isEmpty()) throw new FieldException("[name] cannot be empty or null");
         if (teamDTO.getIsActive() == null) throw new FieldException("[isActive] cannot be null");
 
         validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), teamRepository, isUpdate);

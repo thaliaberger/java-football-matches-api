@@ -1,10 +1,12 @@
 package com.meli.football_matches_api.service;
 
 import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -32,6 +34,7 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should create Team successfully")
     void createCaseSuccess() {
         TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
 
@@ -45,6 +48,31 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw FieldException when Team name is empty or null")
+    void createCaseEmptyName() {
+        TeamDTO teamDTO = new TeamDTO(1L, "", "RJ", LocalDate.of(1980, 1, 1), true);
+
+        FieldException exception = assertThrows(FieldException.class, () -> {
+            teamService.create(teamDTO);
+        });
+
+        assertEquals("[name] cannot be empty or null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException when Team isActive is null")
+    void createCaseIsActiveNull() {
+        TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), null);
+
+        FieldException exception = assertThrows(FieldException.class, () -> {
+            teamService.create(teamDTO);
+        });
+
+        assertEquals("[isActive] cannot be null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should update Team successfully")
     void updateCaseSuccess() {
         TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
 
@@ -60,6 +88,7 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw NotFoundException when updating Team that does not exist")
     void updateCaseTeamDoesNotExist() {
         TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
 
