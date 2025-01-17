@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -88,6 +90,35 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw FieldException when dateCreated is null")
+    void createCaseDateCreatedNull() {
+        TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", null, true);
+
+        when(repository.findByNameAndStateAndIdNot(newTeamDTO.getName(), newTeamDTO.getState(), newTeamDTO.getId())).thenReturn(null);
+
+        FieldException exception = assertThrows(FieldException.class, () -> {
+            teamService.create(newTeamDTO);
+        });
+
+        assertEquals("[dateCreated] cannot be null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException when dateCreated is in the future")
+    void createCaseDateCreatedInTheFuture() {
+        int nextYear = Year.now().getValue() + 1;
+        TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", LocalDate.of(nextYear, 1, 1), true);
+
+        when(repository.findByNameAndStateAndIdNot(newTeamDTO.getName(), newTeamDTO.getState(), newTeamDTO.getId())).thenReturn(null);
+
+        FieldException exception = assertThrows(FieldException.class, () -> {
+            teamService.create(newTeamDTO);
+        });
+
+        assertEquals("[dateCreated] cannot be in the future", exception.getMessage());
+    }
+
+    @Test
     @DisplayName("Should update Team successfully")
     void updateCaseSuccess() {
         TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
@@ -111,5 +142,23 @@ class TeamServiceTest {
         when(repository.findById(1L)).thenReturn(null);
 
         assertThrows(NotFoundException.class, () -> teamService.update(teamDTO));
+    }
+
+    @Test
+    @DisplayName("Should throw ConflictException when dateCreated is after match date")
+    void updateCaseDateCreatedIsAfterMatchDate() {
+        long teamId = 2L;
+        TeamDTO teamDTO = new TeamDTO(teamId, "Flamengo", "RJ", LocalDate.of(2025, 1, 1), true);
+        LocalDateTime dateTime = teamDTO.getDateCreated().atTime(0,0);
+
+        when(repository.existsById(teamId)).thenReturn(true);
+        when(repository.existsByIdAndHomeMatchesMatchDateTimeBefore(teamDTO.getId(), dateTime)).thenReturn(true);
+        when(repository.existsByIdAndAwayMatchesMatchDateTimeBefore(teamDTO.getId(), dateTime)).thenReturn(true);
+
+        ConflictException exception = assertThrows(ConflictException.class, () -> {
+            teamService.update(teamDTO);
+        });
+
+        assertEquals("[dateCreated] cannot be after match date", exception.getMessage());
     }
 }
