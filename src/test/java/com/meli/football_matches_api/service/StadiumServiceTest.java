@@ -60,7 +60,7 @@ class StadiumServiceTest {
             StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, false);
         });
 
-        assertEquals("Stadium name cannot be null or empty", exception.getMessage());
+        assertEquals("[name] cannot be null or empty", exception.getMessage());
     }
 
     @Test
@@ -73,7 +73,7 @@ class StadiumServiceTest {
             StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, false);
         });
 
-        assertEquals("Stadium name must be at least 3 characters", exception.getMessage());
+        assertEquals("[name] must be at least 3 characters", exception.getMessage());
     }
 
     @Test
@@ -115,7 +115,7 @@ class StadiumServiceTest {
             StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, true);
         });
 
-        assertEquals("Stadium name cannot be null or empty", exception.getMessage());
+        assertEquals("[name] cannot be null or empty", exception.getMessage());
     }
 
     @Test
@@ -127,7 +127,7 @@ class StadiumServiceTest {
             StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, true);
         });
 
-        assertEquals("Stadium name must be at least 3 characters", exception.getMessage());
+        assertEquals("[name] must be at least 3 characters", exception.getMessage());
     }
 
     @Test

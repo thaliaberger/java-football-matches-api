@@ -9,8 +9,8 @@ import com.meli.football_matches_api.repository.StadiumRepository;
 public class StadiumValidations {
 
     public static void validateName(String name, StadiumRepository stadiumRepository, Boolean isUpdate) {
-        if (name == null || name.isEmpty()) throw new FieldException("Stadium name cannot be null or empty");
-        if (name.length() < 3) throw new FieldException("Stadium name must be at least 3 characters");
+        if (name == null || name.isEmpty()) throw new FieldException("[name] cannot be null or empty");
+        if (name.length() < 3) throw new FieldException("[name] must be at least 3 characters");
         if (stadiumRepository.existsByName(name) && !isUpdate) throw new ConflictException("Stadium with name [" + name + "] already exists");
     }
 

@@ -18,8 +18,8 @@ public class TeamValidations {
     }
 
     public static void validateFields(TeamDTO teamDTO, TeamRepository teamRepository, boolean isUpdate) {
-        if (teamDTO.getName() == null || teamDTO.getName().isEmpty()) throw new FieldException("Field name cannot be empty");
-        if (teamDTO.getIsActive() == null) throw new FieldException("Field isActive cannot be null");
+        if (teamDTO.getName() == null || teamDTO.getName().isEmpty()) throw new FieldException("[name] cannot be empty");
+        if (teamDTO.getIsActive() == null) throw new FieldException("[isActive] cannot be null");
 
         validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), teamRepository, isUpdate);
 
@@ -45,21 +45,21 @@ public class TeamValidations {
     }
 
     private static void validateDateCreated(LocalDate date, TeamRepository teamRepository) {
-        if (date == null) throw new FieldException("dateCreated cannot be null");
+        if (date == null) throw new FieldException("[dateCreated] cannot be null");
 
-        if (date.isAfter(LocalDate.now())) throw new FieldException("dateCreated cannot be in the future");
+        if (date.isAfter(LocalDate.now())) throw new FieldException("[dateCreated] cannot be in the future");
 
-        if (!teamRepository.findByHomeMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new ConflictException("dateCreated cannot be after match date");
+        if (!teamRepository.findByHomeMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new ConflictException("[dateCreated] cannot be after match date");
 
-        if (!teamRepository.findByAwayMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new ConflictException("dateCreated cannot be after match date");
+        if (!teamRepository.findByAwayMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new ConflictException("[dateCreated] cannot be after match date");
     };
 
     private static void validateState(String state) {
-        if (state == null || state.isEmpty()) throw new FieldException("Field state cannot be empty");
+        if (state == null || state.isEmpty()) throw new FieldException("[state] cannot be empty");
 
-        if (state.length() != 2) throw new FieldException("Field state must contain 2 characters");
+        if (state.length() != 2) throw new FieldException("[state] must contain 2 characters");
 
-        if (!isValidState(state)) throw new FieldException("state is not a valid");
+        if (!isValidState(state)) throw new FieldException("[state] is not a valid");
     };
 
 }
