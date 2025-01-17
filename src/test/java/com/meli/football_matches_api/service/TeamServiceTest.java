@@ -119,6 +119,48 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw FieldException when state is null or empty")
+    void createCaseStateIsNullOrEmpty() {
+        TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "", LocalDate.of(2000, 1, 1), true);
+
+        when(repository.findByNameAndStateAndIdNot(teamDTO.getName(), teamDTO.getState(), teamDTO.getId())).thenReturn(null);
+
+        FieldException exception = assertThrows(FieldException.class, () -> {
+            teamService.create(teamDTO);
+        });
+
+        assertEquals("[state] cannot be empty or null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException when state length is different than 2")
+    void createCaseStateLengthDifferentThan2() {
+        TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "Rio de Janeiro", LocalDate.of(2000, 1, 1), true);
+
+        when(repository.findByNameAndStateAndIdNot(teamDTO.getName(), teamDTO.getState(), teamDTO.getId())).thenReturn(null);
+
+        FieldException exception = assertThrows(FieldException.class, () -> {
+            teamService.create(teamDTO);
+        });
+
+        assertEquals("[state] must contain 2 characters", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw FieldException when state is invalid")
+    void createCaseInvalidState() {
+        TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "SS", LocalDate.of(2000, 1, 1), true);
+
+        when(repository.findByNameAndStateAndIdNot(teamDTO.getName(), teamDTO.getState(), teamDTO.getId())).thenReturn(null);
+
+        FieldException exception = assertThrows(FieldException.class, () -> {
+            teamService.create(teamDTO);
+        });
+
+        assertEquals("[state] is not a valid", exception.getMessage());
+    }
+
+    @Test
     @DisplayName("Should update Team successfully")
     void updateCaseSuccess() {
         TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);

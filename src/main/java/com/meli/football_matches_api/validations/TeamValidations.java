@@ -56,7 +56,7 @@ public class TeamValidations {
     };
 
     private static void validateState(String state) {
-        if (state == null || state.isEmpty()) throw new FieldException("[state] cannot be empty");
+        if (state == null || state.isEmpty()) throw new FieldException("[state] cannot be empty or null");
 
         if (state.length() != 2) throw new FieldException("[state] must contain 2 characters");
 
