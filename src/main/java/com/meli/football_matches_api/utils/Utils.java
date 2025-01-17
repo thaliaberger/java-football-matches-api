@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Utils {
 
-    public static List<TeamDTO> convertToDTO(List<Team> teams) {
+    public static List<TeamDTO> convertToTeamDTO(List<Team> teams) {
         List<TeamDTO> teamDTOs = new ArrayList<>();
 
         for (Team team : teams) {
@@ -22,11 +22,6 @@ public class Utils {
         }
 
         return teamDTOs;
-    }
-
-    public static Sort handleSortParams(String sort) {
-        String[] sortParams = sort.split(",");
-        return sortParams[1].equalsIgnoreCase("asc") ? Sort.by(sortParams[0]).ascending() : Sort.by(sortParams[0]).descending();
     }
 
     public static List<MatchDTO> convertToMatchDTO(List<Match> matches) {
@@ -49,6 +44,11 @@ public class Utils {
         }
 
         return stadiumDTOS;
+    }
+
+    public static Sort handleSortParams(String sort) {
+        String[] sortParams = sort.split(",");
+        return sortParams[1].equalsIgnoreCase("asc") ? Sort.by(sortParams[0]).ascending() : Sort.by(sortParams[0]).descending();
     }
 
     public static TeamFilter getFilter(String rankBy) {

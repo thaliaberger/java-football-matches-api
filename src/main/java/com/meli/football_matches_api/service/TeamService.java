@@ -52,7 +52,7 @@ public class TeamService {
 
     public ResponseEntity<List<TeamDTO>> list() {
         List<Team> teams = repository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToDTO(teams));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
     }
 
     public ResponseEntity<List<TeamDTO>> list(String sort) {
@@ -62,7 +62,7 @@ public class TeamService {
     public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
         List<Team> teams = repository.findAll(pageable).getContent();
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToDTO(teams));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
     }
 
     public ResponseEntity<List<TeamDTO>> list(String param, Boolean isNameSearch) {
@@ -73,12 +73,12 @@ public class TeamService {
         } else {
             teams = repository.findAllByState(param);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToDTO(teams));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
     }
 
     public ResponseEntity<List<TeamDTO>> list(Boolean isActive) {
         List<Team> teams = repository.findAllByIsActive(isActive);
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToDTO(teams));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
     }
 
     public ResponseEntity<String> delete(Long id) {
@@ -179,7 +179,7 @@ public class TeamService {
         Comparator<TeamDTO> comparator = getComparator(rankBy, matchLocation);
         List<Team> teams = getTeamsByMatchLocation(rankBy, matchLocation);
 
-        PriorityQueue<TeamDTO> rankedTeams = buildPriorityQueue(Utils.convertToDTO(teams), comparator, filter);
+        PriorityQueue<TeamDTO> rankedTeams = buildPriorityQueue(Utils.convertToTeamDTO(teams), comparator, filter);
 
         return ResponseEntity.status(HttpStatus.OK).body(rankedTeams);
     }
