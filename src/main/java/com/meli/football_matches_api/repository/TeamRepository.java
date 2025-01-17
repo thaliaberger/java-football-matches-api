@@ -1,6 +1,7 @@
 package com.meli.football_matches_api.repository;
 
 import com.meli.football_matches_api.model.Team;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -16,9 +17,15 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
 
     List<Team> findAllByState(String state);
 
+    List<Team> findAllByState(String state, Pageable pageable);
+
     List<Team> findAllByName(String name);
 
+    List<Team> findAllByName(String name, Pageable pageable);
+
     List<Team> findAllByIsActive(boolean isActive);
+
+    List<Team> findAllByIsActive(boolean isActive, Pageable pageable);
 
     List<Team> findByHomeMatchesNotNullOrAwayMatchesNotNull();
 

@@ -15,8 +15,7 @@ import java.util.PriorityQueue;
 @RequestMapping("/team")
 public class TeamController {
 
-    @Autowired
-    private TeamService teamService;
+    private final TeamService teamService;
 
     public TeamController(TeamService teamService) {
         this.teamService = teamService;
@@ -42,13 +41,34 @@ public class TeamController {
         return teamService.list();
     }
 
-    @GetMapping(value = "/list", params = "page")
-    public ResponseEntity<List<TeamDTO>> list(
+    @GetMapping(value = "/list", params = { "page", "name" })
+    public ResponseEntity<List<TeamDTO>> listByName(
+            @RequestParam String name,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
-            @RequestParam(name = "sort", defaultValue="id") String sort
+            @RequestParam(name = "sort", defaultValue="id,asc") String sort
     ) {
-        return teamService.list(page, itemsPerPage, sort);
+        return teamService.list(page, itemsPerPage, sort, name, true);
+    }
+
+    @GetMapping(value = "/list", params = { "page", "state" })
+    public ResponseEntity<List<TeamDTO>> listByState(
+            @RequestParam String state,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
+            @RequestParam(name = "sort", defaultValue="id,asc") String sort
+    ) {
+        return teamService.list(page, itemsPerPage, sort, state, false);
+    }
+
+    @GetMapping(value = "/list", params = { "page", "isActive" })
+    public ResponseEntity<List<TeamDTO>> list(
+            @RequestParam Boolean isActive,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
+            @RequestParam(name = "sort", defaultValue="id,asc") String sort
+    ) {
+        return teamService.list(page, itemsPerPage, sort, isActive);
     }
 
     @GetMapping(value = "/list", params = "sort")

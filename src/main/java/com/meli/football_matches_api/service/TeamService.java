@@ -65,6 +65,11 @@ public class TeamService {
         return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
     }
 
+    public ResponseEntity<List<TeamDTO>> list(Boolean isActive) {
+        List<Team> teams = repository.findAllByIsActive(isActive);
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
+    }
+
     public ResponseEntity<List<TeamDTO>> list(String param, Boolean isNameSearch) {
         List<Team> teams;
 
@@ -76,8 +81,25 @@ public class TeamService {
         return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
     }
 
-    public ResponseEntity<List<TeamDTO>> list(Boolean isActive) {
-        List<Team> teams = repository.findAllByIsActive(isActive);
+    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort, String param, boolean isNameSearch) {
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
+
+        List<Team> teams;
+
+        if (isNameSearch) {
+            teams = repository.findAllByName(param, pageable);
+        } else {
+            teams = repository.findAllByState(param, pageable);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
+    }
+
+    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort, Boolean isActive) {
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
+
+        List<Team> teams = repository.findAllByIsActive(isActive, pageable);
+
         return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
     }
 
