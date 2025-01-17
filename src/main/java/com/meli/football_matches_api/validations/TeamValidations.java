@@ -8,6 +8,7 @@ import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.TeamRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class TeamValidations {
@@ -23,7 +24,7 @@ public class TeamValidations {
 
         validateIfTeamAlreadyExists(teamDTO.getId(), teamDTO.getName(), teamDTO.getState(), teamRepository, isUpdate);
 
-        validateDateCreated(teamDTO.getDateCreated(), teamRepository);
+        validateDateCreated(teamDTO.getDateCreated(), teamRepository, teamDTO.getId(), isUpdate);
         validateState(teamDTO.getState());
     };
 
@@ -44,14 +45,14 @@ public class TeamValidations {
         if (existingTeam != null) throw new ConflictException("Already existing team with name [" + teamName + "] and state [" + state + "]");
     }
 
-    private static void validateDateCreated(LocalDate date, TeamRepository teamRepository) {
+    private static void validateDateCreated(LocalDate date, TeamRepository teamRepository, Long id, boolean isUpdate) {
         if (date == null) throw new FieldException("[dateCreated] cannot be null");
 
         if (date.isAfter(LocalDate.now())) throw new FieldException("[dateCreated] cannot be in the future");
 
-        if (!teamRepository.findByHomeMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new ConflictException("[dateCreated] cannot be after match date");
-
-        if (!teamRepository.findByAwayMatchesMatchDateTimeBefore(date.atTime(10, 30)).isEmpty()) throw new ConflictException("[dateCreated] cannot be after match date");
+        LocalDateTime localDateTime = date.atTime(0, 0);
+        boolean hasMatchesBeforeDate = teamRepository.existsByIdAndAwayMatchesMatchDateTimeBefore(id, localDateTime) || teamRepository.existsByIdAndHomeMatchesMatchDateTimeBefore(id, localDateTime);
+        if (isUpdate && hasMatchesBeforeDate) throw new ConflictException("[dateCreated] cannot be after match date");
     };
 
     private static void validateState(String state) {
