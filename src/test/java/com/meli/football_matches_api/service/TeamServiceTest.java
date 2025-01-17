@@ -1,6 +1,7 @@
 package com.meli.football_matches_api.service;
 
 import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Team;
@@ -69,6 +70,21 @@ class TeamServiceTest {
         });
 
         assertEquals("[isActive] cannot be null", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should throw ConflictException when Team already exists")
+    void createCaseTeamAlreadyExists() {
+        TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+
+        when(repository.findByNameAndStateAndIdNot(newTeamDTO.getName(), newTeamDTO.getState(), newTeamDTO.getId())).thenReturn(new Team(teamDTO));
+
+        ConflictException exception = assertThrows(ConflictException.class, () -> {
+            teamService.create(newTeamDTO);
+        });
+
+        assertEquals("Already existing team with name [Flamengo] and state [RJ]", exception.getMessage());
     }
 
     @Test
