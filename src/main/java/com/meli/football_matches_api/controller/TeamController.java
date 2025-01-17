@@ -37,58 +37,23 @@ public class TeamController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<TeamDTO>> list() {
-        return teamService.list();
-    }
-
-    @GetMapping(value = "/list", params = { "page", "name" })
-    public ResponseEntity<List<TeamDTO>> listByName(
-            @RequestParam String name,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
-            @RequestParam(name = "sort", defaultValue="id,asc") String sort
-    ) {
-        return teamService.list(page, itemsPerPage, sort, name, true);
-    }
-
-    @GetMapping(value = "/list", params = { "page", "state" })
-    public ResponseEntity<List<TeamDTO>> listByState(
-            @RequestParam String state,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
-            @RequestParam(name = "sort", defaultValue="id,asc") String sort
-    ) {
-        return teamService.list(page, itemsPerPage, sort, state, false);
-    }
-
-    @GetMapping(value = "/list", params = { "page", "isActive" })
     public ResponseEntity<List<TeamDTO>> list(
-            @RequestParam Boolean isActive,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
-            @RequestParam(name = "sort", defaultValue="id,asc") String sort
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "itemsPerPage", required = false, defaultValue = "5") Integer itemsPerPage,
+            @RequestParam(name = "sort", required = false, defaultValue = "id,asc") String sort,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) Boolean isActive
     ) {
-        return teamService.list(page, itemsPerPage, sort, isActive);
-    }
-
-    @GetMapping(value = "/list", params = "sort")
-    public ResponseEntity<List<TeamDTO>> list(@RequestParam(name = "sort", defaultValue="id") String sort) {
-        return teamService.list(sort);
-    }
-
-    @GetMapping(value = "/list", params = "name")
-    public ResponseEntity<List<TeamDTO>> listByName(@RequestParam String name) {
-        return teamService.list(name, true);
-    }
-
-    @GetMapping(value = "/list", params = "state")
-    public ResponseEntity<List<TeamDTO>> listByState(@RequestParam String state) {
-        return teamService.list(state, false);
-    }
-
-    @GetMapping(value = "/list", params = "isActive")
-    public ResponseEntity<List<TeamDTO>> list(@RequestParam Boolean isActive) {
-        return teamService.list(isActive);
+        if (name != null) {
+            return teamService.list(page, itemsPerPage, sort, name, true);
+        } else if (state != null) {
+            return teamService.list(page, itemsPerPage, sort, state, false);
+        } else if (isActive != null) {
+            return teamService.list(page, itemsPerPage, sort, isActive);
+        } else {
+            return teamService.list();
+        }
     }
 
     @DeleteMapping(params = "id")
