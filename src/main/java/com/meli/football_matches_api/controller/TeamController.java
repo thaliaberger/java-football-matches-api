@@ -93,16 +93,12 @@ public class TeamController {
         return teamService.getRetrospect(id, opponentId, isHammering);
     }
 
-    @GetMapping(value = "/ranking", params = "rankBy" )
-    public ResponseEntity<PriorityQueue<TeamDTO>> ranking(@RequestParam String rankBy) {
-        return teamService.ranking(rankBy);
-    }
-
-    @GetMapping(value = "/ranking", params = { "rankBy", "matchLocation" } )
-    public ResponseEntity<PriorityQueue<TeamDTO>> ranking(
+    @GetMapping(value = "/ranking", params = "rankBy")
+    public ResponseEntity<List<TeamDTO>> ranking(
             @RequestParam String rankBy,
-            @RequestParam String matchLocation
+            @RequestParam(required = false) String matchLocation
     ) {
-        return teamService.ranking(rankBy, matchLocation);
+        if (matchLocation != null) return teamService.ranking(rankBy, matchLocation);
+        return teamService.ranking(rankBy);
     }
 }

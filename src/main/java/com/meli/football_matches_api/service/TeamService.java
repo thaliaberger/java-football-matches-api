@@ -189,18 +189,15 @@ public class TeamService {
         }
     }
 
-    public ResponseEntity<PriorityQueue<TeamDTO>> ranking(String rankBy) {
+    public ResponseEntity<List<TeamDTO>> ranking(String rankBy) {
         return ranking(rankBy, null);
     }
 
-    public ResponseEntity<PriorityQueue<TeamDTO>> ranking(String rankBy, String matchLocation) {
+    public ResponseEntity<List<TeamDTO>> ranking(String rankBy, String matchLocation) {
         TeamFilter filter = Utils.getFilter(rankBy);
         Comparator<TeamDTO> comparator = getComparator(rankBy, matchLocation);
         List<Team> teams = getTeamsByMatchLocation(rankBy, matchLocation);
-
-        PriorityQueue<TeamDTO> rankedTeams = buildPriorityQueue(Utils.convertToTeamDTO(teams), comparator, filter);
-
-        return ResponseEntity.status(HttpStatus.OK).body(rankedTeams);
+        return ResponseEntity.status(HttpStatus.OK).body(rankTeams(Utils.convertToTeamDTO(teams), comparator, filter));
     }
 
     private Comparator<TeamDTO> getComparator(String rankBy, String matchLocation) {
@@ -251,13 +248,15 @@ public class TeamService {
         }
     }
 
-    private PriorityQueue<TeamDTO> buildPriorityQueue(List<TeamDTO> teams, Comparator<TeamDTO> comparator, TeamFilter filter) {
-        PriorityQueue<TeamDTO> maxHeap = new PriorityQueue<>(comparator);
+    public List<TeamDTO> rankTeams(List<TeamDTO> teams, Comparator<TeamDTO> comparator, TeamFilter filter) {
+        List<TeamDTO> filteredTeams = new ArrayList<>();
+
         for (TeamDTO team : teams) {
-            if (filter == null || filter.filter(team)) maxHeap.add(team);
+            if (filter == null || filter.filter(team)) filteredTeams.add(team);
         }
 
-        return maxHeap;
-    }
+        filteredTeams.sort(comparator);
 
+        return filteredTeams;
+    }
 }
