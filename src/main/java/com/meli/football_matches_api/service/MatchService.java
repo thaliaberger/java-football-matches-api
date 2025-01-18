@@ -14,8 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class MatchService {
@@ -63,51 +63,41 @@ public class MatchService {
         return ResponseEntity.status(HttpStatus.OK).body(matchDTO);
     }
 
-    public ResponseEntity<List<MatchDTO>> list() {
-        List<Match> matches = matchRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
-    }
+    public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort, Long teamId, String matchLocation, boolean isHammering) {
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
 
-    public ResponseEntity<List<MatchDTO>> list(String sort) {
-        return list(0, 1000, sort);
-    }
+        List<Match> matches;
 
-    public ResponseEntity<List<MatchDTO>> listByTeam(Long teamId) {
-        return ResponseEntity.ok(Utils.convertToMatchDTO(getMatchesByTeam(teamId, null)));
-    }
-
-    public ResponseEntity<List<MatchDTO>> listByTeamAndMatchLocation(Long teamId, String matchLocation) {
-        return ResponseEntity.ok(Utils.convertToMatchDTO(getMatchesByTeam(teamId, matchLocation)));
-    }
-
-    private List<Match> getMatchesByTeam(Long teamId, String matchLocation) {
-        if (matchLocation == null || matchLocation.isEmpty()) return matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId, teamId);
-
-        if (matchLocation.equals("home")) return matchRepository.findAllByHomeTeamId(teamId);
-
-        return matchRepository.findAllByAwayTeamId(teamId);
-    }
-
-    public ResponseEntity<List<MatchDTO>> listByStadium(Long stadiumId) {
-        List<Match> matches = matchRepository.findAllByStadiumId(stadiumId);
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
-    }
-
-    public ResponseEntity<List<MatchDTO>> list(Boolean isHammering) {
-        if (!isHammering) return list();
-
-        List<Match> hammeringMatches = new ArrayList<>();
-
-        for (Match match : matchRepository.findAllByHomeGoalsNotNullOrAwayGoalsNotNull()) {
-           if (match.isHammering()) hammeringMatches.add(match);
+        if (Objects.equals(matchLocation, "home")) {
+            matches = matchRepository.findAllByHomeTeamId(teamId);
+        } else if (Objects.equals(matchLocation, "away")) {
+            matches = matchRepository.findAllByAwayTeamId(teamId);
+        } else {
+            matches = matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId, teamId, pageable);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(hammeringMatches));
+        if (isHammering) matches = Utils.getHammeringMatches(matches);
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
     }
 
-    public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort) {
+    public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort, Long stadiumId, boolean isHammering) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
-        List<Match> matches = matchRepository.findAll(pageable).getContent();
+        List<Match> matches = matchRepository.findAllByStadiumId(stadiumId, pageable);
+        if (isHammering) matches = Utils.getHammeringMatches(matches);
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
+    }
+
+    public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort, boolean isHammering) {
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
+
+        List<Match> matches;
+
+        if (isHammering) {
+            matches = Utils.getHammeringMatches(matchRepository.findAllByHomeGoalsNotNullOrAwayGoalsNotNull());
+        } else {
+            matches = matchRepository.findAll(pageable).getContent();
+        }
+
         return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
     }
 }

@@ -1,7 +1,6 @@
 package com.meli.football_matches_api.controller;
 
 import com.meli.football_matches_api.DTO.MatchDTO;
-import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,45 +39,22 @@ public class MatchController {
         return matchService.get(id);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<MatchDTO>> list() {
-        return matchService.list();
-    }
-
-    @GetMapping(value ="/list", params = "teamId")
-    public ResponseEntity<List<MatchDTO>> listByTeam(@RequestParam(name = "teamId") Long teamId) {
-        return matchService.listByTeam(teamId);
-    }
-
-    @GetMapping(value ="/list", params = { "teamId", "matchLocation" })
-    public ResponseEntity<List<MatchDTO>> listByTeam(
-            @RequestParam(name = "teamId") Long teamId,
-            @RequestParam String matchLocation
-    ) {
-        return matchService.listByTeamAndMatchLocation(teamId, matchLocation);
-    }
-
-    @GetMapping(value ="/list", params = "stadiumId")
-    public ResponseEntity<List<MatchDTO>> listByStadium(@RequestParam(name = "stadiumId") Long stadiumId) {
-        return matchService.listByStadium(stadiumId);
-    }
-
-    @GetMapping(value = "/list", params = "sort")
-    public ResponseEntity<List<MatchDTO>> list(@RequestParam(name = "sort", defaultValue="id,asc") String sort) {
-        return matchService.list(sort);
-    }
-
-    @GetMapping(value = "/list", params = "hammering")
-    public ResponseEntity<List<MatchDTO>> list(@RequestParam(name = "hammering", defaultValue="true") Boolean isHammering) {
-        return matchService.list(isHammering);
-    }
-
-    @GetMapping(value = "/list", params = "page")
+    @GetMapping(value = "/list")
     public ResponseEntity<List<MatchDTO>> list(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
-            @RequestParam(name = "sort", defaultValue="id,asc") String sort
+            @RequestParam(name = "itemsPerPage", defaultValue = "1000") int itemsPerPage,
+            @RequestParam(name = "sort", defaultValue="id,asc") String sort,
+            @RequestParam(required = false) Long teamId,
+            @RequestParam(required = false, defaultValue="false") Boolean isHammering,
+            @RequestParam(required = false) Long stadiumId,
+            @RequestParam(required = false, defaultValue="") String matchLocation
     ) {
-        return matchService.list(page, itemsPerPage, sort);
+        if (teamId != null) {
+            return matchService.list(page, itemsPerPage, sort, teamId, matchLocation, isHammering);
+        } else if (stadiumId != null) {
+            return matchService.list(page, itemsPerPage, sort, stadiumId, isHammering);
+        } else {
+            return matchService.list(page, itemsPerPage, sort, isHammering);
+        }
     }
 }

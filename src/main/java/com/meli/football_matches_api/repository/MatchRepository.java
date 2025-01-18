@@ -2,6 +2,7 @@ package com.meli.football_matches_api.repository;
 
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -20,9 +21,9 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
 
     List<Match> findAllByHomeGoalsNotNullOrAwayGoalsNotNull();
 
-    List<Match> findAllByHomeTeamIdOrAwayTeamId(Long homeTeamId, Long awayTeamId);
+    List<Match> findAllByHomeTeamIdOrAwayTeamId(Long homeTeamId, Long awayTeamId, Pageable pageable);
 
-    List<Match> findAllByStadiumId(Long stadiumId);
+    List<Match> findAllByStadiumId(Long stadiumId, Pageable pageable);
 
     List<Match> findAllByHomeTeamId(Long homeTeamId);
 

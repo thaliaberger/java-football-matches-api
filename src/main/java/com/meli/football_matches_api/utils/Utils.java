@@ -5,7 +5,7 @@ import com.meli.football_matches_api.DTO.StadiumDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
-import com.meli.football_matches_api.model.Team;
+import com.meli.football_matches_api.model.Team;]
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
@@ -62,6 +62,16 @@ public class Utils {
             default:
                 return null;
         }
+    }
+
+    public static List<Match> getHammeringMatches(List<Match> matches) {
+        List<Match> hammeringMatches = new ArrayList<>();
+
+        for (Match match : matches) {
+            if (match.isHammering()) hammeringMatches.add(match);
+        }
+
+        return hammeringMatches;
     }
 
     private static TeamFilter filterByWins() {
