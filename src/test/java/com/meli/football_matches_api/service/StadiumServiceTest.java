@@ -193,7 +193,7 @@ class StadiumServiceTest {
 
         when(stadiumRepository.findAll()).thenReturn(stadiumList);
 
-        ResponseEntity<List<StadiumDTO>> response = stadiumService.list();
+        ResponseEntity<List<StadiumDTO>> response = stadiumService.list(0, 1000, "id,asc");
 
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());

@@ -47,15 +47,6 @@ public class StadiumService {
         return ResponseEntity.status(200).body(stadiumDTO);
     }
 
-    public ResponseEntity<List<StadiumDTO>> list() {
-        List<Stadium> stadiums = stadiumRepository.findAll();
-        return ResponseEntity.status(200).body(Utils.convertToStadiumDTO(stadiums));
-    }
-
-    public ResponseEntity<List<StadiumDTO>> list(String sort) {
-        return list(0, 1000, sort);
-    }
-
     public ResponseEntity<List<StadiumDTO>> list(int page, int itemsPerPage, String sort) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
         List<Stadium> stadiums = stadiumRepository.findAll(pageable).getContent();

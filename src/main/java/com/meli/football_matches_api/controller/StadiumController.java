@@ -34,21 +34,11 @@ public class StadiumController {
         return stadiumService.get(id);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<StadiumDTO>> list() {
-        return stadiumService.list();
-    }
-
-    @GetMapping(value = "/list", params = "sort")
-    public ResponseEntity<List<StadiumDTO>> list(@RequestParam(name = "sort", defaultValue="id,asc") String sort) {
-        return stadiumService.list(sort);
-    }
-
-    @GetMapping(value = "/list", params = "page")
+    @GetMapping(value = "/list")
     public ResponseEntity<List<StadiumDTO>> list(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemsPerPage", defaultValue = "5") int itemsPerPage,
-            @RequestParam(name = "sort", defaultValue="id,asc") String sort
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "1000") int itemsPerPage,
+            @RequestParam(required = false, defaultValue="id,asc") String sort
     ) {
         return stadiumService.list(page, itemsPerPage, sort);
     }
