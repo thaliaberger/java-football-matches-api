@@ -1,9 +1,12 @@
 package com.meli.football_matches_api.service;
 
+import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
+import com.meli.football_matches_api.model.Match;
+import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,16 +36,29 @@ class TeamServiceTest {
     @InjectMocks
     private TeamService teamService;
 
+    long teamId = 1L;
+    Team team1 = new Team();
+    TeamDTO teamDTO = new TeamDTO();
+    List<Match> matches = new ArrayList<>();
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        Team team1 = new Team(teamId, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        teamDTO = new TeamDTO(team1);
+
+        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
+        matches = new ArrayList<>();
+        Match match = new Match(1L, 4, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
+        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team1, team2, stadium);
+        matches.add(match);
+        matches.add(match2);
     }
 
     @Test
     @DisplayName("Should create Team successfully")
     void createCaseSuccess() {
-        TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-
         when(repository.save(any(Team.class))).thenReturn(new Team(teamDTO));
         ResponseEntity<TeamDTO> response = teamService.create(teamDTO);
 
@@ -77,7 +95,6 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw ConflictException when Team already exists")
     void createCaseTeamAlreadyExists() {
-        TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
         TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
 
         when(repository.findByNameAndState(newTeamDTO.getName(), newTeamDTO.getState())).thenReturn(new Team(teamDTO));
@@ -163,8 +180,6 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should update Team successfully")
     void updateCaseSuccess() {
-        TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-
         when(repository.existsById(1L)).thenReturn(true);
         when(repository.save(any(Team.class))).thenReturn(new Team(teamDTO));
 
@@ -179,8 +194,6 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException when updating Team that does not exist")
     void updateCaseTeamDoesNotExist() {
-        TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-
         when(repository.findById(1L)).thenReturn(null);
 
         assertThrows(NotFoundException.class, () -> teamService.update(teamDTO));
@@ -207,23 +220,21 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should inactivate Team")
     public void deleteCaseSuccess() {
-        Team team = new Team(1L, "Flamengo", "Rio de Janeiro", LocalDate.of(2000, 1, 1), true);
-        when(repository.findById(1L)).thenReturn(team);
+        when(repository.findById(1L)).thenReturn(team1);
 
         ResponseEntity<String> response = teamService.delete(1L);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertEquals( "", response.getBody());
-        assertEquals(false, team.getIsActive());
+        assertEquals(false, team1.getIsActive());
 
-        verify(repository, times(1)).save(team);
+        verify(repository, times(1)).save(team1);
     }
 
     @Test
     @DisplayName("Should throw NotFoundException")
     public void deleteCaseTeamNotFound() {
         when(repository.findById(1L)).thenReturn(null);
-
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             teamService.delete(1L);
@@ -232,5 +243,23 @@ class TeamServiceTest {
         assertEquals("Team not found", exception.getMessage());
     }
 
+    @Test
+    @DisplayName("Should get Team retrospect successfully")
+    void getRetrospectCaseSuccess() {
+        team1.setHomeMatches(matches);
+        when(repository.findById(teamId)).thenReturn(team1);
 
+        ResponseEntity<RetrospectDTO> response = teamService.getRetrospect(teamId, "", false);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getWins());
+        assertEquals(1, response.getBody().getDraws());
+        assertEquals(0, response.getBody().getLosses());
+        assertEquals(4, response.getBody().getScoredGoals());
+        assertEquals(0, response.getBody().getConcededGoals());
+        assertEquals(4, response.getBody().getScore());
+        assertEquals(2, response.getBody().getMatches().size());
+    }
 }
