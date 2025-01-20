@@ -54,20 +54,12 @@ public class TeamService {
         return list(page, itemsPerPage, sort, null, null, null);
     }
 
-    public ResponseEntity<List<TeamDTO>> list(Boolean isActive) {
-        return list(0, 1000, "id,asc", isActive, null, null);
-    }
-
-    public ResponseEntity<List<TeamDTO>> list(String param, Boolean isNameSearch) {
-        return list(0, 1000, "id,asc", null, param, isNameSearch);
+    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort, Boolean isActive) {
+        return list(page, itemsPerPage, sort, isActive, null, null);
     }
 
     public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort, String param, Boolean isNameSearch) {
         return list(page, itemsPerPage, sort, null, param, isNameSearch);
-    }
-
-    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort, Boolean isActive) {
-        return list(page, itemsPerPage, sort, isActive, null, null);
     }
 
     public ResponseEntity<List<TeamDTO>> list(
@@ -100,23 +92,15 @@ public class TeamService {
     }
 
     public ResponseEntity<RetrospectDTO> getRetrospect(Long id, String matchLocation, boolean isHammering) {
-        Team team = getTeamById(id, false);
+        Team team = Utils.getTeamById(repository, id, false);
         return ResponseEntity.status(HttpStatus.OK).body(createRetrospectDTO(team, null, matchLocation, isHammering));
     }
 
     public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId, String matchLocation, boolean isHammering) {
-        Team team = getTeamById(id, false);
-        Team opponentTeam = getTeamById(opponentId, true);
+        Team team = Utils.getTeamById(repository, id, false);
+        Team opponentTeam = Utils.getTeamById(repository, opponentId, true);
 
         return ResponseEntity.status(HttpStatus.OK).body(createRetrospectDTO(team, opponentId, matchLocation, isHammering));
-    }
-
-    private Team getTeamById(Long id, boolean isOpponent) {
-        Team team = repository.findById(id);
-        if (team == null) {
-            throw new NotFoundException(isOpponent ? "Opponent team not found" : "Team not found");
-        }
-        return team;
     }
 
     private RetrospectDTO createRetrospectDTO(Team team, Long opponentId, String matchLocation, boolean isHammering) {
