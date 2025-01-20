@@ -41,9 +41,9 @@ public class MatchController {
 
     @GetMapping(value = "/list")
     public ResponseEntity<List<MatchDTO>> list(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "itemsPerPage", defaultValue = "1000") int itemsPerPage,
-            @RequestParam(name = "sort", defaultValue="id,asc") String sort,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "1000") int itemsPerPage,
+            @RequestParam(required = false, defaultValue="id,asc") String sort,
             @RequestParam(required = false) Long teamId,
             @RequestParam(required = false, defaultValue="false") Boolean isHammering,
             @RequestParam(required = false) Long stadiumId,

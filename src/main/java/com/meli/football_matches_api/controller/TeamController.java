@@ -38,9 +38,9 @@ public class TeamController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TeamDTO>> list(
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(name = "itemsPerPage", required = false, defaultValue = "5") Integer itemsPerPage,
-            @RequestParam(name = "sort", required = false, defaultValue = "id,asc") String sort,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "1000") Integer itemsPerPage,
+            @RequestParam(required = false, defaultValue = "id,asc") String sort,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) Boolean isActive
