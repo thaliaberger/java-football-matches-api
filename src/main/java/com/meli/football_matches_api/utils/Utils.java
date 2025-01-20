@@ -3,9 +3,11 @@ package com.meli.football_matches_api.utils;
 import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.DTO.StadiumDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
+import com.meli.football_matches_api.repository.TeamRepository;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
@@ -64,6 +66,14 @@ public class Utils {
             default:
                 return null;
         }
+    }
+
+    public static Team getTeamById(TeamRepository repository, Long id, boolean isOpponent) {
+        Team team = repository.findById(id);
+        if (team == null) {
+            throw new NotFoundException(isOpponent ? "Opponent team not found" : "Team not found");
+        }
+        return team;
     }
 
     public static List<Match> getHammeringMatches(List<Match> matches) {
