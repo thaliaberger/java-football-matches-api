@@ -31,15 +31,15 @@ public class MatchService {
     };
 
     public ResponseEntity<MatchDTO> create(MatchDTO matchDTO) {
-        return createOrUpdate(matchDTO, false);
+        return saveMatch(matchDTO, false);
     };
 
     public ResponseEntity<MatchDTO> update(MatchDTO matchDTO) {
         MatchValidations.validateIfMatchExists(matchDTO.getId(), matchRepository);
-        return createOrUpdate(matchDTO, true);
+        return saveMatch(matchDTO, true);
     }
 
-    private ResponseEntity<MatchDTO> createOrUpdate(MatchDTO matchDTO, Boolean isUpdate) {
+    private ResponseEntity<MatchDTO> saveMatch(MatchDTO matchDTO, Boolean isUpdate) {
         MatchValidations.validateFields(matchDTO, matchRepository, teamRepository, stadiumRepository);
 
         Match newMatch = new Match(matchDTO);
