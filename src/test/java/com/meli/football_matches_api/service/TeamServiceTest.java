@@ -80,7 +80,7 @@ class TeamServiceTest {
         TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
         TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
 
-        when(repository.findByNameAndStateAndIdNot(newTeamDTO.getName(), newTeamDTO.getState(), newTeamDTO.getId())).thenReturn(new Team(teamDTO));
+        when(repository.findByNameAndState(newTeamDTO.getName(), newTeamDTO.getState())).thenReturn(new Team(teamDTO));
 
         ConflictException exception = assertThrows(ConflictException.class, () -> {
             teamService.create(newTeamDTO);
@@ -94,7 +94,7 @@ class TeamServiceTest {
     void createCaseDateCreatedNull() {
         TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", null, true);
 
-        when(repository.findByNameAndStateAndIdNot(newTeamDTO.getName(), newTeamDTO.getState(), newTeamDTO.getId())).thenReturn(null);
+        when(repository.findByNameAndState(newTeamDTO.getName(), newTeamDTO.getState())).thenReturn(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             teamService.create(newTeamDTO);
@@ -109,7 +109,7 @@ class TeamServiceTest {
         int nextYear = Year.now().getValue() + 1;
         TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", LocalDate.of(nextYear, 1, 1), true);
 
-        when(repository.findByNameAndStateAndIdNot(newTeamDTO.getName(), newTeamDTO.getState(), newTeamDTO.getId())).thenReturn(null);
+        when(repository.findByNameAndState(newTeamDTO.getName(), newTeamDTO.getState())).thenReturn(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             teamService.create(newTeamDTO);
@@ -123,7 +123,7 @@ class TeamServiceTest {
     void createCaseStateIsNullOrEmpty() {
         TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "", LocalDate.of(2000, 1, 1), true);
 
-        when(repository.findByNameAndStateAndIdNot(teamDTO.getName(), teamDTO.getState(), teamDTO.getId())).thenReturn(null);
+        when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             teamService.create(teamDTO);
@@ -137,7 +137,7 @@ class TeamServiceTest {
     void createCaseStateLengthDifferentThan2() {
         TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "Rio de Janeiro", LocalDate.of(2000, 1, 1), true);
 
-        when(repository.findByNameAndStateAndIdNot(teamDTO.getName(), teamDTO.getState(), teamDTO.getId())).thenReturn(null);
+        when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             teamService.create(teamDTO);
@@ -151,7 +151,7 @@ class TeamServiceTest {
     void createCaseInvalidState() {
         TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "SS", LocalDate.of(2000, 1, 1), true);
 
-        when(repository.findByNameAndStateAndIdNot(teamDTO.getName(), teamDTO.getState(), teamDTO.getId())).thenReturn(null);
+        when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             teamService.create(teamDTO);

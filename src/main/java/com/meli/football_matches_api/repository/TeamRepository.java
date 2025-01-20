@@ -13,17 +13,11 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
 
     Boolean existsById(Long id);
 
-    Team findByNameAndStateAndIdNot(String name, String state, Long id);
-
-    List<Team> findAllByState(String state);
+    Team findByNameAndState(String name, String state);
 
     List<Team> findAllByState(String state, Pageable pageable);
 
-    List<Team> findAllByName(String name);
-
     List<Team> findAllByName(String name, Pageable pageable);
-
-    List<Team> findAllByIsActive(boolean isActive);
 
     List<Team> findAllByIsActive(boolean isActive, Pageable pageable);
 

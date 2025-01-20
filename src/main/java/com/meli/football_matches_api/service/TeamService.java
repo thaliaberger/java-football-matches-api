@@ -106,6 +106,7 @@ public class TeamService {
         repository.save(team);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
+
     public ResponseEntity<RetrospectDTO> getRetrospect(Long id, String matchLocation, boolean isHammering) {
         Team team = getTeamById(id, false);
         return ResponseEntity.status(HttpStatus.OK).body(createRetrospectDTO(team, null, matchLocation, isHammering));

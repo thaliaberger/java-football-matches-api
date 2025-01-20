@@ -32,7 +32,7 @@ public class TeamValidations {
         if (isUpdate) {
             ensureTeamExists(id, teamRepository);
         } else {
-            ensureTeamDoesNotExist(teamName, state, id, teamRepository);
+            ensureTeamDoesNotExist(teamName, state, teamRepository);
         }
     }
 
@@ -40,8 +40,8 @@ public class TeamValidations {
         if (!teamRepository.existsById(id)) throw new NotFoundException("Team not found");
     }
 
-    private static void ensureTeamDoesNotExist(String teamName, String state, Long id, TeamRepository teamRepository) {
-        Team existingTeam = teamRepository.findByNameAndStateAndIdNot(teamName, state, id);
+    private static void ensureTeamDoesNotExist(String teamName, String state, TeamRepository teamRepository) {
+        Team existingTeam = teamRepository.findByNameAndState(teamName, state);
         if (existingTeam != null) throw new ConflictException("Already existing team with name [" + teamName + "] and state [" + state + "]");
     }
 
