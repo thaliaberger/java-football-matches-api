@@ -288,4 +288,42 @@ class TeamServiceTest {
         assertEquals(0, response.getBody().getScore());
         assertEquals(1, response.getBody().getMatches().size());
     }
+
+    @Test
+    @DisplayName("Should get Team home matches retrospect successfully")
+    void getHomeMatchesRetrospectCaseSuccess() {
+        when(repository.findById(teamId)).thenReturn(team1);
+
+        ResponseEntity<RetrospectDTO> response = teamService.getRetrospect(teamId,  "home", false);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getWins());
+        assertEquals(1, response.getBody().getDraws());
+        assertEquals(0, response.getBody().getLosses());
+        assertEquals(4, response.getBody().getScoredGoals());
+        assertEquals(0, response.getBody().getConcededGoals());
+        assertEquals(4, response.getBody().getScore());
+        assertEquals(2, response.getBody().getMatches().size());
+    }
+
+    @Test
+    @DisplayName("Should get Team away matches retrospect successfully")
+    void getAwayMatchesRetrospectCaseSuccess() {
+        when(repository.findById(teamId)).thenReturn(team1);
+
+        ResponseEntity<RetrospectDTO> response = teamService.getRetrospect(teamId,  "away", false);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(0, response.getBody().getWins());
+        assertEquals(0, response.getBody().getDraws());
+        assertEquals(1, response.getBody().getLosses());
+        assertEquals(1, response.getBody().getScoredGoals());
+        assertEquals(2, response.getBody().getConcededGoals());
+        assertEquals(0, response.getBody().getScore());
+        assertEquals(1, response.getBody().getMatches().size());
+    }
 }
