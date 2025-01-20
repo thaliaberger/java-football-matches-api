@@ -106,54 +106,46 @@ public class TeamService {
         repository.save(team);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
-
-    public ResponseEntity<RetrospectDTO> getRetrospect(Long id) {
-        return ResponseEntity.ok(getRetrospectDTO(id, null));
+    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, String matchLocation, boolean isHammering) {
+        Team team = getTeamById(id, false);
+        return ResponseEntity.status(HttpStatus.OK).body(createRetrospectDTO(team, null, matchLocation, isHammering));
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, String matchLocation) {
-        return ResponseEntity.ok(getRetrospectDTO(id, matchLocation));
+    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId, String matchLocation, boolean isHammering) {
+        Team team = getTeamById(id, false);
+        Team opponentTeam = getTeamById(opponentId, true);
+
+        return ResponseEntity.status(HttpStatus.OK).body(createRetrospectDTO(team, opponentId, matchLocation, isHammering));
     }
 
-    private RetrospectDTO getRetrospectDTO(Long id, String matchLocation) {
+    private Team getTeamById(Long id, boolean isOpponent) {
         Team team = repository.findById(id);
-        if (team == null) throw new NotFoundException("Team not found");
-
-        if (matchLocation == null || matchLocation.isEmpty()) return new RetrospectDTO(team.getHomeMatches(), team.getAwayMatches());
-
-        if (matchLocation.equals("home")) return new RetrospectDTO(team.getHomeMatches(), null);
-
-        return new RetrospectDTO(null, team.getAwayMatches());
+        if (team == null) {
+            throw new NotFoundException(isOpponent ? "Opponent team not found" : "Team not found");
+        }
+        return team;
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId) {
-        Team team = repository.findById(id);
-        if (team == null) throw new NotFoundException("Team not found");
+    private RetrospectDTO createRetrospectDTO(Team team, Long opponentId, String matchLocation, boolean isHammering) {
+        List<Match> homeMatches = opponentId == null ? team.getHomeMatches() : Utils.filterByOpponent(team.getHomeMatches(), opponentId, true);
+        List<Match> awayMatches = opponentId == null ? team.getAwayMatches() : Utils.filterByOpponent(team.getAwayMatches(), opponentId, false);
 
-        Team opponentTeam = repository.findById(opponentId);
-        if (opponentTeam == null) throw new NotFoundException("Opponent team not found");
+        if (isHammering) {
+            homeMatches = homeMatches.stream().filter(Match::isHammering).toList();
+            awayMatches = awayMatches.stream().filter(Match::isHammering).toList();
+        }
 
-        List<Match> homeMatchesAgainstOpponent = team.getHomeMatches().stream().filter(match -> match.getAwayTeam().getId() == opponentId).toList();
-        List<Match> awayMatchesAgainstOpponent = team.getAwayMatches().stream().filter(match -> match.getHomeTeam().getId() == opponentId).toList();
-
-        RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatchesAgainstOpponent, awayMatchesAgainstOpponent);
-        return ResponseEntity.status(HttpStatus.OK).body(retrospectDTO);
+        return createRetrospectDTOByLocation(homeMatches, awayMatches, matchLocation);
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId, boolean isHammering) {
-        if (!isHammering) return getRetrospect(id, opponentId);
-
-        Team team = repository.findById(id);
-        if (team == null) throw new NotFoundException("Team not found");
-
-        Team opponentTeam = repository.findById(opponentId);
-        if (opponentTeam == null) throw new NotFoundException("Opponent team not found");
-
-        List<Match> homeMatchesAgainstOpponent = team.getHomeMatches().stream().filter(match -> match.getAwayTeam().getId() == opponentId && match.isHammering()).toList();
-        List<Match> awayMatchesAgainstOpponent = team.getAwayMatches().stream().filter(match -> match.getHomeTeam().getId() == opponentId && match.isHammering()).toList();
-
-        RetrospectDTO retrospectDTO = new RetrospectDTO(homeMatchesAgainstOpponent, awayMatchesAgainstOpponent);
-        return ResponseEntity.status(HttpStatus.OK).body(retrospectDTO);
+    private RetrospectDTO createRetrospectDTOByLocation(List<Match> homeMatches, List<Match> awayMatches, String matchLocation) {
+        if (matchLocation == null || matchLocation.isEmpty()) {
+            return new RetrospectDTO(homeMatches, awayMatches);
+        } else if (matchLocation.equals("home")) {
+            return new RetrospectDTO(homeMatches, null);
+        } else {
+            return new RetrospectDTO(null, awayMatches);
+        }
     }
 
     public ResponseEntity<HashMap<String, RetrospectDTO>> getRetrospectAgainstAll(Long id) {

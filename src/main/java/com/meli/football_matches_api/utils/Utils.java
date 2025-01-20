@@ -10,6 +10,8 @@ import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -72,6 +74,10 @@ public class Utils {
         }
 
         return hammeringMatches;
+    }
+
+    public static List<Match> filterByOpponent(List<Match> matches, Long opponentId, boolean isHomeMatch) {
+        return matches.stream().filter(match -> Objects.equals(isHomeMatch ? match.getAwayTeam().getId() : match.getHomeTeam().getId(), opponentId)).collect(Collectors.toList());
     }
 
     private static TeamFilter filterByWins() {

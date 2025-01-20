@@ -62,35 +62,19 @@ public class TeamController {
     }
 
     @GetMapping(value = "/retrospect", params = "id")
-    public ResponseEntity<RetrospectDTO> retrospect(@RequestParam Long id) {
-        return teamService.getRetrospect(id);
-    }
-
-    @GetMapping(value = "/retrospect", params = { "id", "matchLocation" })
     public ResponseEntity<RetrospectDTO> retrospect(
             @RequestParam Long id,
-            @RequestParam String matchLocation
+            @RequestParam(required = false) Long opponentId,
+            @RequestParam(required = false, defaultValue="") String matchLocation,
+            @RequestParam(required = false, defaultValue="false") boolean isHammering
     ) {
-        return teamService.getRetrospect(id, matchLocation);
+        if (opponentId != null) return teamService.getRetrospect(id, opponentId, matchLocation, isHammering);
+        return teamService.getRetrospect(id, matchLocation, isHammering);
     }
 
     @GetMapping(value = "/retrospect/all", params = "id")
     public ResponseEntity<HashMap<String, RetrospectDTO>> retrospectAll(@RequestParam Long id) {
         return teamService.getRetrospectAgainstAll(id);
-    }
-
-    @GetMapping(value = "/retrospect", params = { "id" , "opponentId" })
-    public ResponseEntity<RetrospectDTO> retrospect(@RequestParam Long id, @RequestParam Long opponentId) {
-        return teamService.getRetrospect(id, opponentId);
-    }
-
-    @GetMapping(value = "/retrospect", params = { "id" , "opponentId", "hammering" })
-    public ResponseEntity<RetrospectDTO> retrospect(
-            @RequestParam Long id,
-            @RequestParam Long opponentId,
-            @RequestParam(name = "hammering", defaultValue="true") boolean isHammering
-    ) {
-        return teamService.getRetrospect(id, opponentId, isHammering);
     }
 
     @GetMapping(value = "/ranking", params = "rankBy")
