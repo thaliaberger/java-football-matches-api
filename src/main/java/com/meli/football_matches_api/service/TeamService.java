@@ -93,36 +93,14 @@ public class TeamService {
 
     public ResponseEntity<RetrospectDTO> getRetrospect(Long id, String matchLocation, boolean isHammering) {
         Team team = Utils.getTeamById(repository, id, false);
-        return ResponseEntity.status(HttpStatus.OK).body(createRetrospectDTO(team, null, matchLocation, isHammering));
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.createRetrospectDTO(team, null, matchLocation, isHammering));
     }
 
     public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId, String matchLocation, boolean isHammering) {
         Team team = Utils.getTeamById(repository, id, false);
         Team opponentTeam = Utils.getTeamById(repository, opponentId, true);
 
-        return ResponseEntity.status(HttpStatus.OK).body(createRetrospectDTO(team, opponentId, matchLocation, isHammering));
-    }
-
-    private RetrospectDTO createRetrospectDTO(Team team, Long opponentId, String matchLocation, boolean isHammering) {
-        List<Match> homeMatches = opponentId == null ? team.getHomeMatches() : Utils.filterByOpponent(team.getHomeMatches(), opponentId, true);
-        List<Match> awayMatches = opponentId == null ? team.getAwayMatches() : Utils.filterByOpponent(team.getAwayMatches(), opponentId, false);
-
-        if (isHammering) {
-            homeMatches = homeMatches.stream().filter(Match::isHammering).toList();
-            awayMatches = awayMatches.stream().filter(Match::isHammering).toList();
-        }
-
-        return createRetrospectDTOByLocation(homeMatches, awayMatches, matchLocation);
-    }
-
-    private RetrospectDTO createRetrospectDTOByLocation(List<Match> homeMatches, List<Match> awayMatches, String matchLocation) {
-        if (matchLocation == null || matchLocation.isEmpty()) {
-            return new RetrospectDTO(homeMatches, awayMatches);
-        } else if (matchLocation.equals("home")) {
-            return new RetrospectDTO(homeMatches, null);
-        } else {
-            return new RetrospectDTO(null, awayMatches);
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.createRetrospectDTO(team, opponentId, matchLocation, isHammering));
     }
 
     public ResponseEntity<HashMap<String, RetrospectDTO>> getRetrospectAgainstAll(Long id) {
@@ -134,28 +112,10 @@ public class TeamService {
 
         HashMap<String, RetrospectDTO> retrospectsByOpponent = new HashMap<>();
 
-        processMatches(homeMatches, true, retrospectsByOpponent);
-        processMatches(awayMatches, false, retrospectsByOpponent);
+        Utils.populateRetrospectsByOpponentHashMap(homeMatches, true, retrospectsByOpponent);
+        Utils.populateRetrospectsByOpponentHashMap(awayMatches, false, retrospectsByOpponent);
 
         return ResponseEntity.status(HttpStatus.OK).body(retrospectsByOpponent);
-    }
-
-    private void processMatches(List<Match> matches, boolean isHomeMatch, HashMap<String, RetrospectDTO> retrospectsByOpponent) {
-        for (Match match : matches) {
-            String currentOpponent = isHomeMatch ? match.getAwayTeam().getName() : match.getHomeTeam().getName();
-
-            RetrospectDTO newDTO;
-
-            if (retrospectsByOpponent.containsKey(currentOpponent)) {
-                newDTO = RetrospectDTO.update(retrospectsByOpponent.get(currentOpponent), match, isHomeMatch);
-                retrospectsByOpponent.put(currentOpponent, newDTO);
-            } else {
-                newDTO = new RetrospectDTO(match, isHomeMatch);
-                retrospectsByOpponent.put(currentOpponent, newDTO);
-            }
-
-            retrospectsByOpponent.put(currentOpponent, newDTO);
-        }
     }
 
     public ResponseEntity<List<TeamDTO>> ranking(String rankBy) {
@@ -164,68 +124,8 @@ public class TeamService {
 
     public ResponseEntity<List<TeamDTO>> ranking(String rankBy, String matchLocation) {
         TeamFilter filter = Utils.getFilter(rankBy);
-        Comparator<TeamDTO> comparator = getComparator(rankBy, matchLocation);
-        List<Team> teams = getTeamsByMatchLocation(rankBy, matchLocation);
-        return ResponseEntity.status(HttpStatus.OK).body(rankTeams(Utils.convertToTeamDTO(teams), comparator, filter));
-    }
-
-    private Comparator<TeamDTO> getComparator(String rankBy, String matchLocation) {
-        switch (rankBy) {
-            case "matches":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getNumberOfMatches).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getNumberOfHomeMatches).reversed();
-                return Comparator.comparing(TeamDTO::getNumberOfAwayMatches).reversed();
-            case "wins":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getWins).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeWins).reversed();
-                return Comparator.comparing(TeamDTO::getAwayWins).reversed();
-            case "goals":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getAllScoredGoals).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeScoredGoals).reversed();
-                return Comparator.comparing(TeamDTO::getAwayScoredGoals).reversed();
-            case "score":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getScore).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getScoreFromHomeMatches).reversed();
-                return Comparator.comparing(TeamDTO::getScoreFromAwayMatches).reversed();
-            default:
-                throw new IllegalArgumentException("Invalid rank type: " + rankBy);
-        }
-    }
-
-    private List<Team> getTeamsByMatchLocation(String rankBy, String matchLocation) {
-        switch (rankBy) {
-            case "matches":
-            case "score":
-                if ("home".equals(matchLocation)) {
-                    return repository.findByHomeMatchesNotNull();
-                } else if ("away".equals(matchLocation)) {
-                    return repository.findByAwayMatchesNotNull();
-                } else {
-                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
-                }
-            case "wins":
-            case "goals":
-                if ("home".equals(matchLocation)) {
-                    return repository.findByHomeMatchesHomeGoalsNotNull();
-                } else if ("away".equals(matchLocation)) {
-                    return repository.findByAwayMatchesHomeGoalsNotNull();
-                } else {
-                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
-                }
-            default:
-                throw new IllegalArgumentException("Invalid ranking criteria: " + rankBy);
-        }
-    }
-
-    public List<TeamDTO> rankTeams(List<TeamDTO> teams, Comparator<TeamDTO> comparator, TeamFilter filter) {
-        List<TeamDTO> filteredTeams = new ArrayList<>();
-
-        for (TeamDTO team : teams) {
-            if (filter == null || filter.filter(team)) filteredTeams.add(team);
-        }
-
-        filteredTeams.sort(comparator);
-
-        return filteredTeams;
+        Comparator<TeamDTO> comparator = Utils.getComparator(rankBy, matchLocation);
+        List<Team> teams = Utils.getTeamsByMatchLocation(rankBy, matchLocation, repository);
+        return ResponseEntity.status(HttpStatus.OK).body(Utils.rankTeams(Utils.convertToTeamDTO(teams), comparator, filter));
     }
 }

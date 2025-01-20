@@ -1,6 +1,7 @@
 package com.meli.football_matches_api.utils;
 
 import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.StadiumDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.exception.NotFoundException;
@@ -10,9 +11,7 @@ import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.TeamRepository;
 import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Utils {
@@ -88,6 +87,106 @@ public class Utils {
 
     public static List<Match> filterByOpponent(List<Match> matches, Long opponentId, boolean isHomeMatch) {
         return matches.stream().filter(match -> Objects.equals(isHomeMatch ? match.getAwayTeam().getId() : match.getHomeTeam().getId(), opponentId)).collect(Collectors.toList());
+    }
+
+    public static Comparator<TeamDTO> getComparator(String rankBy, String matchLocation) {
+        switch (rankBy) {
+            case "matches":
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getNumberOfMatches).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getNumberOfHomeMatches).reversed();
+                return Comparator.comparing(TeamDTO::getNumberOfAwayMatches).reversed();
+            case "wins":
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getWins).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeWins).reversed();
+                return Comparator.comparing(TeamDTO::getAwayWins).reversed();
+            case "goals":
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getAllScoredGoals).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeScoredGoals).reversed();
+                return Comparator.comparing(TeamDTO::getAwayScoredGoals).reversed();
+            case "score":
+                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getScore).reversed();
+                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getScoreFromHomeMatches).reversed();
+                return Comparator.comparing(TeamDTO::getScoreFromAwayMatches).reversed();
+            default:
+                throw new IllegalArgumentException("Invalid rank type: " + rankBy);
+        }
+    }
+
+    public static RetrospectDTO createRetrospectDTO(Team team, Long opponentId, String matchLocation, boolean isHammering) {
+        List<Match> homeMatches = opponentId == null ? team.getHomeMatches() : Utils.filterByOpponent(team.getHomeMatches(), opponentId, true);
+        List<Match> awayMatches = opponentId == null ? team.getAwayMatches() : Utils.filterByOpponent(team.getAwayMatches(), opponentId, false);
+
+        if (isHammering) {
+            homeMatches = homeMatches.stream().filter(Match::isHammering).toList();
+            awayMatches = awayMatches.stream().filter(Match::isHammering).toList();
+        }
+
+        return createRetrospectDTOByLocation(homeMatches, awayMatches, matchLocation);
+    }
+
+    public static RetrospectDTO createRetrospectDTOByLocation(List<Match> homeMatches, List<Match> awayMatches, String matchLocation) {
+        if (matchLocation == null || matchLocation.isEmpty()) {
+            return new RetrospectDTO(homeMatches, awayMatches);
+        } else if (matchLocation.equals("home")) {
+            return new RetrospectDTO(homeMatches, null);
+        } else {
+            return new RetrospectDTO(null, awayMatches);
+        }
+    }
+
+    public static List<Team> getTeamsByMatchLocation(String rankBy, String matchLocation, TeamRepository repository) {
+        switch (rankBy) {
+            case "matches":
+            case "score":
+                if ("home".equals(matchLocation)) {
+                    return repository.findByHomeMatchesNotNull();
+                } else if ("away".equals(matchLocation)) {
+                    return repository.findByAwayMatchesNotNull();
+                } else {
+                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
+                }
+            case "wins":
+            case "goals":
+                if ("home".equals(matchLocation)) {
+                    return repository.findByHomeMatchesHomeGoalsNotNull();
+                } else if ("away".equals(matchLocation)) {
+                    return repository.findByAwayMatchesHomeGoalsNotNull();
+                } else {
+                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
+                }
+            default:
+                throw new IllegalArgumentException("Invalid ranking criteria: " + rankBy);
+        }
+    }
+
+    public static List<TeamDTO> rankTeams(List<TeamDTO> teams, Comparator<TeamDTO> comparator, TeamFilter filter) {
+        List<TeamDTO> filteredTeams = new ArrayList<>();
+
+        for (TeamDTO team : teams) {
+            if (filter == null || filter.filter(team)) filteredTeams.add(team);
+        }
+
+        filteredTeams.sort(comparator);
+
+        return filteredTeams;
+    }
+
+    public static void populateRetrospectsByOpponentHashMap(List<Match> matches, boolean isHomeMatch, HashMap<String, RetrospectDTO> retrospectsByOpponent) {
+        for (Match match : matches) {
+            String currentOpponent = isHomeMatch ? match.getAwayTeam().getName() : match.getHomeTeam().getName();
+
+            RetrospectDTO newDTO;
+
+            if (retrospectsByOpponent.containsKey(currentOpponent)) {
+                newDTO = RetrospectDTO.update(retrospectsByOpponent.get(currentOpponent), match, isHomeMatch);
+                retrospectsByOpponent.put(currentOpponent, newDTO);
+            } else {
+                newDTO = new RetrospectDTO(match, isHomeMatch);
+                retrospectsByOpponent.put(currentOpponent, newDTO);
+            }
+
+            retrospectsByOpponent.put(currentOpponent, newDTO);
+        }
     }
 
     private static TeamFilter filterByWins() {
