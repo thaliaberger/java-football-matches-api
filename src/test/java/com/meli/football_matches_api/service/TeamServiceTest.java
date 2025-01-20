@@ -326,4 +326,23 @@ class TeamServiceTest {
         assertEquals(0, response.getBody().getScore());
         assertEquals(1, response.getBody().getMatches().size());
     }
+
+    @Test
+    @DisplayName("Should get Team hammering matches retrospect successfully")
+    void getHammeringMatchesRetrospectCaseSuccess() {
+        when(repository.findById(teamId)).thenReturn(team1);
+
+        ResponseEntity<RetrospectDTO> response = teamService.getRetrospect(teamId,  "", true);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getWins());
+        assertEquals(0, response.getBody().getDraws());
+        assertEquals(0, response.getBody().getLosses());
+        assertEquals(4, response.getBody().getScoredGoals());
+        assertEquals(0, response.getBody().getConcededGoals());
+        assertEquals(3, response.getBody().getScore());
+        assertEquals(1, response.getBody().getMatches().size());
+    }
 }
