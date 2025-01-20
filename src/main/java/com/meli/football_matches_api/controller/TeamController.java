@@ -52,7 +52,7 @@ public class TeamController {
         } else if (isActive != null) {
             return teamService.list(page, itemsPerPage, sort, isActive);
         } else {
-            return teamService.list();
+            return teamService.list(page, itemsPerPage, sort);
         }
     }
 

@@ -50,14 +50,6 @@ public class TeamService {
         return ResponseEntity.status(HttpStatus.OK).body(teamDTO);
     }
 
-    public ResponseEntity<List<TeamDTO>> list() {
-        return list(0, 1000, "id,asc", null, null, null);
-    }
-
-    public ResponseEntity<List<TeamDTO>> list(String sort) {
-        return list(0, 1000, sort, null, null, null);
-    }
-
     public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort) {
         return list(page, itemsPerPage, sort, null, null, null);
     }
