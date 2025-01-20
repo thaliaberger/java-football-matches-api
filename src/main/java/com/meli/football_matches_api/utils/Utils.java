@@ -86,6 +86,7 @@ public class Utils {
     }
 
     public static List<Match> filterByOpponent(List<Match> matches, Long opponentId, boolean isHomeMatch) {
+        if (matches == null) return List.of();
         return matches.stream().filter(match -> Objects.equals(isHomeMatch ? match.getAwayTeam().getId() : match.getHomeTeam().getId(), opponentId)).collect(Collectors.toList());
     }
 
@@ -117,8 +118,8 @@ public class Utils {
         List<Match> awayMatches = opponentId == null ? team.getAwayMatches() : Utils.filterByOpponent(team.getAwayMatches(), opponentId, false);
 
         if (isHammering) {
-            homeMatches = homeMatches.stream().filter(Match::isHammering).toList();
-            awayMatches = awayMatches.stream().filter(Match::isHammering).toList();
+            if (homeMatches != null) homeMatches = homeMatches.stream().filter(Match::isHammering).toList();
+            if (awayMatches != null) awayMatches = awayMatches.stream().filter(Match::isHammering).toList();
         }
 
         return createRetrospectDTOByLocation(homeMatches, awayMatches, matchLocation);

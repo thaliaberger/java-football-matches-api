@@ -38,22 +38,29 @@ class TeamServiceTest {
 
     long teamId = 1L;
     Team team1 = new Team();
+    Team team3 = new Team();
     TeamDTO teamDTO = new TeamDTO();
-    List<Match> matches = new ArrayList<>();
+    List<Match> homeMatches = new ArrayList<>();
+    List<Match> awayMatches = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        Team team1 = new Team(teamId, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        team1 = new Team(teamId, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
         Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        team3 = new Team(3L, "Figueirense", "SC", LocalDate.of(1980, 1, 1), true);
         teamDTO = new TeamDTO(team1);
 
         Stadium stadium = new Stadium(1L, "Morumbi", null, null);
-        matches = new ArrayList<>();
         Match match = new Match(1L, 4, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
         Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team1, team2, stadium);
-        matches.add(match);
-        matches.add(match2);
+        Match match3 = new Match(3L, 2, 1, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team3, team1, stadium);
+
+        homeMatches.add(match);
+        homeMatches.add(match2);
+        team1.setHomeMatches(homeMatches);
+        awayMatches.add(match3);
+        team1.setAwayMatches(awayMatches);
     }
 
     @Test
@@ -246,7 +253,6 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team retrospect successfully")
     void getRetrospectCaseSuccess() {
-        team1.setHomeMatches(matches);
         when(repository.findById(teamId)).thenReturn(team1);
 
         ResponseEntity<RetrospectDTO> response = teamService.getRetrospect(teamId, "", false);
@@ -256,10 +262,30 @@ class TeamServiceTest {
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().getWins());
         assertEquals(1, response.getBody().getDraws());
-        assertEquals(0, response.getBody().getLosses());
-        assertEquals(4, response.getBody().getScoredGoals());
-        assertEquals(0, response.getBody().getConcededGoals());
+        assertEquals(1, response.getBody().getLosses());
+        assertEquals(5, response.getBody().getScoredGoals());
+        assertEquals(2, response.getBody().getConcededGoals());
         assertEquals(4, response.getBody().getScore());
-        assertEquals(2, response.getBody().getMatches().size());
+        assertEquals(3, response.getBody().getMatches().size());
+    }
+
+    @Test
+    @DisplayName("Should get Team retrospect against opponent successfully")
+    void getRetrospectAgainstOpponentCaseSuccess() {
+        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(3L)).thenReturn(team3);
+
+        ResponseEntity<RetrospectDTO> response = teamService.getRetrospect(teamId, 3L, "", false);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(0, response.getBody().getWins());
+        assertEquals(0, response.getBody().getDraws());
+        assertEquals(1, response.getBody().getLosses());
+        assertEquals(1, response.getBody().getScoredGoals());
+        assertEquals(2, response.getBody().getConcededGoals());
+        assertEquals(0, response.getBody().getScore());
+        assertEquals(1, response.getBody().getMatches().size());
     }
 }
