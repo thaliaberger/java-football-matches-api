@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -344,5 +345,19 @@ class TeamServiceTest {
         assertEquals(0, response.getBody().getConcededGoals());
         assertEquals(3, response.getBody().getScore());
         assertEquals(1, response.getBody().getMatches().size());
+    }
+
+    @Test
+    @DisplayName("Should get Team retrospect against all successfully")
+    void getRetrospectAgainstAllCaseSuccess() {
+        when(repository.findById(teamId)).thenReturn(team1);
+
+        ResponseEntity<HashMap<String, RetrospectDTO>> response = teamService.getRetrospectAgainstAll(teamId);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(0, response.getBody().get("Figueirense").getWins());
+        assertEquals(1, response.getBody().get("Fluminense").getWins());
     }
 }
