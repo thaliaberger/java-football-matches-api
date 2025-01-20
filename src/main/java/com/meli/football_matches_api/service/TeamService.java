@@ -85,7 +85,7 @@ public class TeamService {
     }
 
     public ResponseEntity<String> delete(Long id) {
-        Team team = repository.findById(id);
+        Team team = Utils.getTeamById(repository, id, false);
         team.setIsActive(false);
         repository.save(team);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");

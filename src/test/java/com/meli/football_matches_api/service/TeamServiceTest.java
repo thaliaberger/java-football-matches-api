@@ -21,7 +21,7 @@ import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class TeamServiceTest {
 
@@ -203,4 +203,34 @@ class TeamServiceTest {
 
         assertEquals("[dateCreated] cannot be after match date", exception.getMessage());
     }
+
+    @Test
+    @DisplayName("Should inactivate Team")
+    public void deleteCaseSuccess() {
+        Team team = new Team(1L, "Flamengo", "Rio de Janeiro", LocalDate.of(2000, 1, 1), true);
+        when(repository.findById(1L)).thenReturn(team);
+
+        ResponseEntity<String> response = teamService.delete(1L);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals( "", response.getBody());
+        assertEquals(false, team.getIsActive());
+
+        verify(repository, times(1)).save(team);
+    }
+
+    @Test
+    @DisplayName("Should throw NotFoundException")
+    public void deleteCaseTeamNotFound() {
+        when(repository.findById(1L)).thenReturn(null);
+
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            teamService.delete(1L);
+        });
+
+        assertEquals("Team not found", exception.getMessage());
+    }
+
+
 }
