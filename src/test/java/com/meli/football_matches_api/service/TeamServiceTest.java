@@ -44,6 +44,7 @@ class TeamServiceTest {
     TeamDTO teamDTO = new TeamDTO();
     List<Match> team1HomeMatches = new ArrayList<>();
     List<Match> team1AwayMatches = new ArrayList<>();
+    List<Team> teamsToBeRanked = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -65,6 +66,10 @@ class TeamServiceTest {
         team1.setAwayMatches(team1AwayMatches);
         team2.setAwayMatches(team1HomeMatches);
         team3.setHomeMatches(team1AwayMatches);
+
+        teamsToBeRanked.add(team3);
+        teamsToBeRanked.add(team2);
+        teamsToBeRanked.add(team1);
     }
 
     @Test
@@ -367,11 +372,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by goals successfully")
     void getRankingByGoalsCaseSuccess() {
-        List<Team> rankedTeams = new ArrayList<>();
-        rankedTeams.add(team3);
-        rankedTeams.add(team2);
-        rankedTeams.add(team1);
-        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(rankedTeams);
+        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
 
         ResponseEntity<List<TeamDTO>> response = teamService.ranking("goals");
 
@@ -386,11 +387,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by matches successfully")
     void getRankingByMatchesCaseSuccess() {
-        List<Team> rankedTeams = new ArrayList<>();
-        rankedTeams.add(team3);
-        rankedTeams.add(team2);
-        rankedTeams.add(team1);
-        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(rankedTeams);
+        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
 
         ResponseEntity<List<TeamDTO>> response = teamService.ranking("matches");
 
@@ -400,6 +397,23 @@ class TeamServiceTest {
         assertNotNull(response.getBody());
         assertEquals(1L, response.getBody().getFirst().getId());
         assertEquals(3L, response.getBody().getLast().getId());
+        assertEquals(3, response.getBody().size());
+    }
+
+
+    @Test
+    @DisplayName("Should get Teams ranked by score successfully")
+    void getRankingByScoreCaseSuccess() {
+        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
+
+        ResponseEntity<List<TeamDTO>> response = teamService.ranking("score");
+
+        System.out.println(response.getBody());
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getFirst().getId());
+        assertEquals(2L, response.getBody().getLast().getId());
         assertEquals(3, response.getBody().size());
     }
 }
