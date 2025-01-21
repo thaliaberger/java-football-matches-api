@@ -435,7 +435,6 @@ class TeamServiceTest {
         when(repository.findByHomeMatchesHomeGoalsNotNull()).thenReturn(teamsToBeRanked);
 
         ResponseEntity<List<TeamDTO>> response = teamService.ranking("wins", "home");
-        System.out.println(response.getBody());
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -458,6 +457,36 @@ class TeamServiceTest {
         assertNotNull(response.getBody());
         assertEquals(3L, response.getBody().getFirst().getId());
         assertEquals(1L, response.getBody().getLast().getId());
+        assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    @DisplayName("Should get Teams ranked by home goals successfully")
+    void getRankingByHomeGoalsCaseSuccess() {
+        when(repository.findByHomeMatchesHomeGoalsNotNull()).thenReturn(teamsToBeRanked);
+
+        ResponseEntity<List<TeamDTO>> response = teamService.ranking("goals", "home");
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getFirst().getId());
+        assertEquals(3L, response.getBody().getLast().getId());
+        assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    @DisplayName("Should get Teams ranked by away goals successfully")
+    void getRankingByAwayGoalsCaseSuccess() {
+        when(repository.findByAwayMatchesHomeGoalsNotNull()).thenReturn(teamsToBeRanked);
+
+        ResponseEntity<List<TeamDTO>> response = teamService.ranking("goals", "away");
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getFirst().getId());
+        assertEquals(3L, response.getBody().getLast().getId());
         assertEquals(2, response.getBody().size());
     }
 }
