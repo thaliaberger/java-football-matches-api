@@ -39,10 +39,11 @@ class TeamServiceTest {
 
     long teamId = 1L;
     Team team1 = new Team();
+    Team team2 = new Team();
     Team team3 = new Team();
     TeamDTO teamDTO = new TeamDTO();
-    List<Match> homeMatches = new ArrayList<>();
-    List<Match> awayMatches = new ArrayList<>();
+    List<Match> team1HomeMatches = new ArrayList<>();
+    List<Match> team1AwayMatches = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -57,11 +58,13 @@ class TeamServiceTest {
         Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team1, team2, stadium);
         Match match3 = new Match(3L, 2, 1, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team3, team1, stadium);
 
-        homeMatches.add(match);
-        homeMatches.add(match2);
-        team1.setHomeMatches(homeMatches);
-        awayMatches.add(match3);
-        team1.setAwayMatches(awayMatches);
+        team1HomeMatches.add(match);
+        team1HomeMatches.add(match2);
+        team1.setHomeMatches(team1HomeMatches);
+        team1AwayMatches.add(match3);
+        team1.setAwayMatches(team1AwayMatches);
+        team2.setAwayMatches(team1HomeMatches);
+        team3.setHomeMatches(team1AwayMatches);
     }
 
     @Test
@@ -292,7 +295,7 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Should get Team home matches retrospect successfully")
-    void getHomeMatchesRetrospectCaseSuccess() {
+    void getteam1HomeMatchesRetrospectCaseSuccess() {
         when(repository.findById(teamId)).thenReturn(team1);
 
         ResponseEntity<RetrospectDTO> response = teamService.getRetrospect(teamId,  "home", false);
@@ -311,7 +314,7 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Should get Team away matches retrospect successfully")
-    void getAwayMatchesRetrospectCaseSuccess() {
+    void getteam1AwayMatchesRetrospectCaseSuccess() {
         when(repository.findById(teamId)).thenReturn(team1);
 
         ResponseEntity<RetrospectDTO> response = teamService.getRetrospect(teamId,  "away", false);
@@ -359,5 +362,24 @@ class TeamServiceTest {
         assertNotNull(response.getBody());
         assertEquals(0, response.getBody().get("Figueirense").getWins());
         assertEquals(1, response.getBody().get("Fluminense").getWins());
+    }
+
+    @Test
+    @DisplayName("Should get Teams ranked by goals successfully")
+    void getRankingByGoalsCaseSuccess() {
+        List<Team> rankedTeams = new ArrayList<>();
+        rankedTeams.add(team3);
+        rankedTeams.add(team2);
+        rankedTeams.add(team1);
+        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(rankedTeams);
+
+        ResponseEntity<List<TeamDTO>> response = teamService.ranking("goals");
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getFirst().getId());
+        assertEquals(3L, response.getBody().getLast().getId());
+        assertEquals(2, response.getBody().size());
     }
 }
