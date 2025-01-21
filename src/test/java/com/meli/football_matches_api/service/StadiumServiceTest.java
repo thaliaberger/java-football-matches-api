@@ -4,6 +4,7 @@ import com.meli.football_matches_api.DTO.StadiumDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
+import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.repository.StadiumRepository;
@@ -14,6 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
@@ -44,11 +49,10 @@ class StadiumServiceTest {
 
         when(stadiumRepository.save(any(Stadium.class))).thenReturn(new Stadium(stadiumDTO));
 
-        ResponseEntity<StadiumDTO> response = stadiumService.create(stadiumDTO);
+        StadiumDTO response = stadiumService.create(stadiumDTO);
 
-        assertEquals(201, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals("Maracanã", response.getBody().getName());
+        assertNotNull(response);
+        assertEquals("Maracanã", response.getName());
     }
 
     @Test
@@ -99,11 +103,10 @@ class StadiumServiceTest {
         when(stadiumRepository.existsById(1L)).thenReturn(true);
         when(stadiumRepository.save(any(Stadium.class))).thenReturn(new Stadium(stadiumDTO));
 
-        ResponseEntity<StadiumDTO> response = stadiumService.update(stadiumDTO);
+        StadiumDTO response = stadiumService.update(stadiumDTO);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals("Morumbi", response.getBody().getName());
+        assertNotNull(response);
+        assertEquals("Morumbi", response.getName());
     }
 
     @Test
@@ -161,12 +164,11 @@ class StadiumServiceTest {
         Stadium stadium = new Stadium(stadiumId, "Maracanã", null, null);
         when(stadiumRepository.findById(stadiumId)).thenReturn(stadium);
 
-        ResponseEntity<StadiumDTO> response = stadiumService.get(stadiumId);
+        StadiumDTO response = stadiumService.get(stadiumId);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals(stadiumId, response.getBody().getId());
-        assertEquals("Maracanã", response.getBody().getName());
+        assertNotNull(response);
+        assertEquals(stadiumId, response.getId());
+        assertEquals("Maracanã", response.getName());
     }
 
     @Test
@@ -191,13 +193,13 @@ class StadiumServiceTest {
         stadiumList.add(stadium);
         stadiumList.add(stadium2);
 
-        when(stadiumRepository.findAll()).thenReturn(stadiumList);
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
+        when(stadiumRepository.findAll(pageable)).thenReturn(new PageImpl<Stadium>(stadiumList));
 
-        ResponseEntity<List<StadiumDTO>> response = stadiumService.list(0, 1000, "id,asc");
+        List<StadiumDTO> response = stadiumService.list(0, 1000, "id,asc");
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals("Maracanã", response.getBody().get(0).getName());
-        assertEquals("Morumbi", response.getBody().get(1).getName());
+        assertNotNull(response);
+        assertEquals("Maracanã", response.get(0).getName());
+        assertEquals("Morumbi", response.get(1).getName());
     }
 }

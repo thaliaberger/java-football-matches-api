@@ -8,7 +8,6 @@ import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.StadiumValidations;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,34 +21,30 @@ public class StadiumService {
         this.stadiumRepository = stadiumRepository;
     };
 
-    public ResponseEntity<StadiumDTO> create(StadiumDTO stadiumDTO) {
+    public StadiumDTO create(StadiumDTO stadiumDTO) {
         return saveStadium(stadiumDTO, false);
     };
 
-    public ResponseEntity<StadiumDTO> update(StadiumDTO stadiumDTO) {
+    public StadiumDTO update(StadiumDTO stadiumDTO) {
         StadiumValidations.validateIfStadiumExists(stadiumDTO, stadiumRepository);
         return saveStadium(stadiumDTO, true);
     };
 
-    public ResponseEntity<StadiumDTO> saveStadium(StadiumDTO stadiumDTO, Boolean isUpdate) {
+    public StadiumDTO saveStadium(StadiumDTO stadiumDTO, Boolean isUpdate) {
         StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, isUpdate);
         Stadium newStadium = new Stadium(stadiumDTO);
-        StadiumDTO savedStadium = new StadiumDTO(stadiumRepository.save(newStadium));
-        int statusCode = isUpdate ? 200 : 201;
-        return ResponseEntity.status(statusCode).body(savedStadium);
+        return new StadiumDTO(stadiumRepository.save(newStadium));
     };
 
-    public ResponseEntity<StadiumDTO> get(Long id) {
+    public StadiumDTO get(Long id) {
         Stadium stadium = stadiumRepository.findById(id);
         if (stadium == null) throw new NotFoundException("Stadium not found");
-
-        StadiumDTO stadiumDTO = new StadiumDTO(stadium);
-        return ResponseEntity.status(200).body(stadiumDTO);
+        return new StadiumDTO(stadium);
     }
 
-    public ResponseEntity<List<StadiumDTO>> list(int page, int itemsPerPage, String sort) {
+    public List<StadiumDTO> list(int page, int itemsPerPage, String sort) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
-        List<Stadium> stadiums = stadiumRepository.findAll(pageable).getContent();
-        return ResponseEntity.status(200).body(Utils.convertToStadiumDTO(stadiums));
+        System.out.println(pageable);
+        return Utils.convertToStadiumDTO(stadiumRepository.findAll(pageable).getContent());
     }
 }

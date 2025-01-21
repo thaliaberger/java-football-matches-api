@@ -3,6 +3,7 @@ package com.meli.football_matches_api.controller;
 import com.meli.football_matches_api.DTO.StadiumDTO;
 import com.meli.football_matches_api.service.StadiumService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,17 +22,18 @@ public class StadiumController {
 
     @PostMapping
     public ResponseEntity<StadiumDTO> create(@RequestBody StadiumDTO stadiumDTO) {
-        return stadiumService.create(stadiumDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(stadiumService.create(stadiumDTO));
     }
 
     @PutMapping
     public ResponseEntity<StadiumDTO> update(@RequestBody StadiumDTO stadiumDTO) {
-        return stadiumService.update(stadiumDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(stadiumService.update(stadiumDTO));
     }
 
     @GetMapping
     public ResponseEntity<StadiumDTO> get(@RequestParam Long id) {
-        return stadiumService.get(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(stadiumService.get(id));
     }
 
     @GetMapping(value = "/list")
@@ -40,6 +42,6 @@ public class StadiumController {
             @RequestParam(required = false, defaultValue = "1000") int itemsPerPage,
             @RequestParam(required = false, defaultValue="id,asc") String sort
     ) {
-        return stadiumService.list(page, itemsPerPage, sort);
+        return ResponseEntity.status(HttpStatus.OK).body(stadiumService.list(page, itemsPerPage, sort));
     }
 }
