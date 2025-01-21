@@ -11,8 +11,6 @@ import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.TeamValidations;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,43 +24,39 @@ public class TeamService {
         this.repository = repository;
     };
 
-    public ResponseEntity<TeamDTO> create(TeamDTO teamDTO) {
-        return saveTeam(teamDTO, false, HttpStatus.CREATED);
+    public TeamDTO create(TeamDTO teamDTO) {
+        return saveTeam(teamDTO, false);
     }
 
-    public ResponseEntity<TeamDTO> update(TeamDTO teamDTO) {
-        return saveTeam(teamDTO, true, HttpStatus.OK);
+    public TeamDTO update(TeamDTO teamDTO) {
+        return saveTeam(teamDTO, true);
     }
 
-    private ResponseEntity<TeamDTO> saveTeam(TeamDTO teamDTO, Boolean isUpdate, HttpStatus status) {
+    private TeamDTO saveTeam(TeamDTO teamDTO, Boolean isUpdate) {
         TeamValidations.validateFields(teamDTO, repository, isUpdate);
-
         Team team = new Team(teamDTO);
-        TeamDTO savedTeam = new TeamDTO(repository.save(team));
-        return ResponseEntity.status(status).body(savedTeam);
+        return new TeamDTO(repository.save(team));
     }
 
-    public ResponseEntity<TeamDTO> get(Long id) {
+    public TeamDTO get(Long id) {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");
-
-        TeamDTO teamDTO = new TeamDTO(team);
-        return ResponseEntity.status(HttpStatus.OK).body(teamDTO);
+        return new TeamDTO(team);
     }
 
-    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort) {
+    public List<TeamDTO> list(int page, int itemsPerPage, String sort) {
         return list(page, itemsPerPage, sort, null, null, null);
     }
 
-    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort, Boolean isActive) {
+    public List<TeamDTO> list(int page, int itemsPerPage, String sort, Boolean isActive) {
         return list(page, itemsPerPage, sort, isActive, null, null);
     }
 
-    public ResponseEntity<List<TeamDTO>> list(int page, int itemsPerPage, String sort, String param, Boolean isNameSearch) {
+    public List<TeamDTO> list(int page, int itemsPerPage, String sort, String param, Boolean isNameSearch) {
         return list(page, itemsPerPage, sort, null, param, isNameSearch);
     }
 
-    public ResponseEntity<List<TeamDTO>> list(
+    public List<TeamDTO> list(
         int page, int itemsPerPage, String sort, Boolean isActive,
         String param, Boolean isNameSearch) {
 
@@ -81,29 +75,29 @@ public class TeamService {
             teams = repository.findAll(pageable).getContent();
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToTeamDTO(teams));
+        return Utils.convertToTeamDTO(teams);
     }
 
-    public ResponseEntity<String> delete(Long id) {
+    public String delete(Long id) {
         Team team = Utils.getTeamById(repository, id, false);
         team.setIsActive(false);
         repository.save(team);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+        return "";
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, String matchLocation, boolean isHammering) {
+    public RetrospectDTO getRetrospect(Long id, String matchLocation, boolean isHammering) {
         Team team = Utils.getTeamById(repository, id, false);
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.createRetrospectDTO(team, null, matchLocation, isHammering));
+        return Utils.createRetrospectDTO(team, null, matchLocation, isHammering);
     }
 
-    public ResponseEntity<RetrospectDTO> getRetrospect(Long id, Long opponentId, String matchLocation, boolean isHammering) {
+    public RetrospectDTO getRetrospect(Long id, Long opponentId, String matchLocation, boolean isHammering) {
         Team team = Utils.getTeamById(repository, id, false);
         Team opponentTeam = Utils.getTeamById(repository, opponentId, true);
 
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.createRetrospectDTO(team, opponentId, matchLocation, isHammering));
+        return Utils.createRetrospectDTO(team, opponentId, matchLocation, isHammering);
     }
 
-    public ResponseEntity<HashMap<String, RetrospectDTO>> getRetrospectAgainstAll(Long id) {
+    public HashMap<String, RetrospectDTO> getRetrospectAgainstAll(Long id) {
         Team team = repository.findById(id);
         if (team == null) throw new NotFoundException("Team not found");
 
@@ -115,17 +109,17 @@ public class TeamService {
         Utils.populateRetrospectsByOpponentHashMap(homeMatches, true, retrospectsByOpponent);
         Utils.populateRetrospectsByOpponentHashMap(awayMatches, false, retrospectsByOpponent);
 
-        return ResponseEntity.status(HttpStatus.OK).body(retrospectsByOpponent);
+        return retrospectsByOpponent;
     }
 
-    public ResponseEntity<List<TeamDTO>> ranking(String rankBy) {
+    public List<TeamDTO> ranking(String rankBy) {
         return ranking(rankBy, null);
     }
 
-    public ResponseEntity<List<TeamDTO>> ranking(String rankBy, String matchLocation) {
+    public List<TeamDTO> ranking(String rankBy, String matchLocation) {
         TeamFilter filter = Utils.getFilter(rankBy);
         Comparator<TeamDTO> comparator = Utils.getComparator(rankBy, matchLocation);
         List<Team> teams = Utils.getTeamsByMatchLocation(rankBy, matchLocation, repository);
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.rankTeams(Utils.convertToTeamDTO(teams), comparator, filter));
+        return Utils.rankTeams(Utils.convertToTeamDTO(teams), comparator, filter);
     }
 }
