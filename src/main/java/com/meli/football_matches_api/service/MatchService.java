@@ -30,40 +30,34 @@ public class MatchService {
         this.stadiumRepository = stadiumRepository;
     };
 
-    public ResponseEntity<MatchDTO> create(MatchDTO matchDTO) {
+    public MatchDTO create(MatchDTO matchDTO) {
         return saveMatch(matchDTO, false);
     };
 
-    public ResponseEntity<MatchDTO> update(MatchDTO matchDTO) {
+    public MatchDTO update(MatchDTO matchDTO) {
         MatchValidations.validateIfMatchExists(matchDTO.getId(), matchRepository);
         return saveMatch(matchDTO, true);
     }
 
-    private ResponseEntity<MatchDTO> saveMatch(MatchDTO matchDTO, Boolean isUpdate) {
+    private MatchDTO saveMatch(MatchDTO matchDTO, Boolean isUpdate) {
         MatchValidations.validateFields(matchDTO, matchRepository, teamRepository, stadiumRepository);
-
         Match newMatch = new Match(matchDTO);
-        MatchDTO savedMatch = new MatchDTO(matchRepository.save(newMatch));
-
-        HttpStatus statusCode = isUpdate ? HttpStatus.OK : HttpStatus.CREATED;
-        return ResponseEntity.status(statusCode).body(savedMatch);
+        return new MatchDTO(matchRepository.save(newMatch));
     }
 
-    public ResponseEntity<String> delete(Long id) {
+    public String delete(Long id) {
         MatchValidations.validateIfMatchExists(id, matchRepository);
         matchRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+        return "";
     }
 
-    public ResponseEntity<MatchDTO> get(Long id) {
+    public MatchDTO get(Long id) {
         Match match = matchRepository.findById(id);
         if (match == null) throw new NotFoundException("Match not found");
-
-        MatchDTO matchDTO = new MatchDTO(match);
-        return ResponseEntity.status(HttpStatus.OK).body(matchDTO);
+        return new MatchDTO(match);
     }
 
-    public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort, Long teamId, String matchLocation, boolean isHammering) {
+    public List<MatchDTO> list(int page, int itemsPerPage, String sort, Long teamId, String matchLocation, boolean isHammering) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
 
         List<Match> matches;
@@ -77,17 +71,17 @@ public class MatchService {
         }
 
         if (isHammering) matches = Utils.getHammeringMatches(matches);
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
+        return Utils.convertToMatchDTO(matches);
     }
 
-    public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort, Long stadiumId, boolean isHammering) {
+    public List<MatchDTO> list(int page, int itemsPerPage, String sort, Long stadiumId, boolean isHammering) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
         List<Match> matches = matchRepository.findAllByStadiumId(stadiumId, pageable);
         if (isHammering) matches = Utils.getHammeringMatches(matches);
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
+        return Utils.convertToMatchDTO(matches);
     }
 
-    public ResponseEntity<List<MatchDTO>> list(int page, int itemsPerPage, String sort, boolean isHammering) {
+    public List<MatchDTO> list(int page, int itemsPerPage, String sort, boolean isHammering) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
 
         List<Match> matches;
@@ -98,6 +92,6 @@ public class MatchService {
             matches = matchRepository.findAll(pageable).getContent();
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(Utils.convertToMatchDTO(matches));
+        return Utils.convertToMatchDTO(matches);
     }
 }

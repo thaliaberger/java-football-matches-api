@@ -68,11 +68,10 @@ class MatchServiceTest {
         when(stadiumRepository.findById(1L)).thenReturn(stadium);
         when(matchRepository.save(any(Match.class))).thenReturn(new Match(matchDTO));
 
-        ResponseEntity<MatchDTO> response = matchService.create(matchDTO);
+        MatchDTO response = matchService.create(matchDTO);
 
-        assertEquals(201, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals(matchId, response.getBody().getId());
+        assertNotNull(response);
+        assertEquals(matchId, response.getId());
     }
 
     @Test
@@ -641,11 +640,10 @@ class MatchServiceTest {
         when(stadiumRepository.findById(1L)).thenReturn(stadium);
         when(matchRepository.save(any(Match.class))).thenReturn(new Match(matchDTO));
 
-        ResponseEntity<MatchDTO> response = matchService.create(matchDTO);
+        MatchDTO response = matchService.create(matchDTO);
 
-        assertEquals(201, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals(2L, response.getBody().getId());
+        assertNotNull(response);
+        assertEquals(2L, response.getId());
     }
 
     @Test
@@ -674,12 +672,11 @@ class MatchServiceTest {
 
         when(matchRepository.existsById(matchId)).thenReturn(true);
 
-        ResponseEntity<String> response = matchService.delete(matchId);
+        String response = matchService.delete(matchId);
 
         verify(matchRepository, times(1)).deleteById(matchId);
 
-        assertEquals(204, response.getStatusCode().value());
-        assertEquals("", response.getBody());
+        assertEquals("", response);
     }
 
     @Test
@@ -707,11 +704,10 @@ class MatchServiceTest {
 
         when(matchRepository.findById(matchId)).thenReturn(match);
 
-        ResponseEntity<MatchDTO> response = matchService.get(matchId);
+        MatchDTO response = matchService.get(matchId);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals(matchId, response.getBody().getId());
+        assertNotNull(response);
+        assertEquals(matchId, response.getId());
     }
 
     @Test
@@ -744,11 +740,10 @@ class MatchServiceTest {
         Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(pageable)).thenReturn(new PageImpl<Match>(matches));
 
-        ResponseEntity<List<MatchDTO>> response = matchService.list(0, 1000, "id,asc", false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", false);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals(matchId, response.getBody().getFirst().getId());
+        assertNotNull(response);
+        assertEquals(matchId, response.getFirst().getId());
     }
 
     @Test
@@ -772,11 +767,10 @@ class MatchServiceTest {
 
         when(matchRepository.findAllByHomeTeamId(1L)).thenReturn(team1HomeMatches);
 
-        ResponseEntity<List<MatchDTO>> response = matchService.list(0, 1000, "id,asc", team1.getId(), "home", false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), "home", false);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals(homeMatchId, response.getBody().getFirst().getId());
+        assertNotNull(response);
+        assertEquals(homeMatchId, response.getFirst().getId());
     }
 
     @Test
@@ -800,11 +794,10 @@ class MatchServiceTest {
 
         when(matchRepository.findAllByAwayTeamId(1L)).thenReturn(team1AwayMatches);
 
-        ResponseEntity<List<MatchDTO>> response = matchService.list(0, 1000, "id,asc", team1.getId(), "away", false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), "away", false);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals(awayMatchId, response.getBody().getFirst().getId());
+        assertNotNull(response);
+        assertEquals(awayMatchId, response.getFirst().getId());
     }
 
     @Test
@@ -835,11 +828,10 @@ class MatchServiceTest {
 
         when(matchRepository.findAllByHomeTeamIdOrAwayTeamId(1L, 1L, pageable)).thenReturn(team1AllMatches);
 
-        ResponseEntity<List<MatchDTO>> response = matchService.list(0, 1000, "id,asc", team1.getId(), null, false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), null, false);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals(homeMatchId, response.getBody().getFirst().getId());
+        assertNotNull(response);
+        assertEquals(homeMatchId, response.getFirst().getId());
     }
 
     @Test
@@ -861,10 +853,9 @@ class MatchServiceTest {
         Pageable page = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAllByStadiumId(stadiumId, page)).thenReturn(matches);
 
-        ResponseEntity<List<MatchDTO>> response = matchService.list(0, 1000, "id,asc", stadiumId, false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", stadiumId, false);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
+        assertNotNull(response);
     }
 
     @Test
@@ -883,10 +874,9 @@ class MatchServiceTest {
         Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(pageable)).thenReturn(new PageImpl<Match>(matches));
 
-        ResponseEntity<List<MatchDTO>> response = matchService.list(0, 1000, "id,asc", false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", false);
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCode().value());
     }
 
     @Test
@@ -907,14 +897,10 @@ class MatchServiceTest {
         when(matchRepository.findAllByHomeGoalsNotNullOrAwayGoalsNotNull())
                 .thenReturn(Arrays.asList(match1, match2, match3));
 
-        ResponseEntity<List<MatchDTO>> response = matchService.list(0, 1000, "id,asc", true);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", true);
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCode().value());
-
-        List<MatchDTO> matchDTOs = response.getBody();
-        assertNotNull(matchDTOs);
-        assertEquals(2, matchDTOs.size());
+        assertEquals(2, response.size());
     }
 
     @Test
@@ -941,13 +927,9 @@ class MatchServiceTest {
         int itemsPerPage = 10;
         String sort = "goals,asc";
 
-        ResponseEntity<List<MatchDTO>> response = matchService.list(page, itemsPerPage, sort, false);
+        List<MatchDTO> response = matchService.list(page, itemsPerPage, sort, false);
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCode().value());
-
-        List<MatchDTO> matchDTOs = response.getBody();
-        assertNotNull(matchDTOs);
-        assertEquals(3, matchDTOs.size());
+        assertEquals(3, response.size());
     }
 }

@@ -3,6 +3,7 @@ package com.meli.football_matches_api.controller;
 import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.service.MatchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,22 +22,22 @@ public class MatchController {
 
     @PostMapping
     public ResponseEntity<MatchDTO> create(@RequestBody MatchDTO match) {
-        return matchService.create(match);
+        return ResponseEntity.status(HttpStatus.CREATED).body(matchService.create(match));
     }
 
     @PutMapping
     public ResponseEntity<MatchDTO> update(@RequestBody MatchDTO match) {
-        return matchService.update(match);
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.update(match));
     }
 
     @DeleteMapping(params = "id")
     public ResponseEntity<String> delete(@RequestParam Long id) {
-        return matchService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(matchService.delete(id));
     }
 
     @GetMapping
     public ResponseEntity<MatchDTO> get(@RequestParam Long id) {
-        return matchService.get(id);
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.get(id));
     }
 
     @GetMapping(value = "/list")
@@ -50,11 +51,11 @@ public class MatchController {
             @RequestParam(required = false, defaultValue="") String matchLocation
     ) {
         if (teamId != null) {
-            return matchService.list(page, itemsPerPage, sort, teamId, matchLocation, isHammering);
+            return ResponseEntity.status(HttpStatus.OK).body(matchService.list(page, itemsPerPage, sort, teamId, matchLocation, isHammering));
         } else if (stadiumId != null) {
-            return matchService.list(page, itemsPerPage, sort, stadiumId, isHammering);
+            return ResponseEntity.status(HttpStatus.OK).body(matchService.list(page, itemsPerPage, sort, stadiumId, isHammering));
         } else {
-            return matchService.list(page, itemsPerPage, sort, isHammering);
+            return ResponseEntity.status(HttpStatus.OK).body(matchService.list(page, itemsPerPage, sort, isHammering));
         }
     }
 }
