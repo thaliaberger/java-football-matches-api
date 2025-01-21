@@ -49,7 +49,7 @@ class TeamServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         team1 = new Team(teamId, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
+        team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
         team3 = new Team(3L, "Figueirense", "SC", LocalDate.of(1980, 1, 1), true);
         teamDTO = new TeamDTO(team1);
 
@@ -381,5 +381,25 @@ class TeamServiceTest {
         assertEquals(1L, response.getBody().getFirst().getId());
         assertEquals(3L, response.getBody().getLast().getId());
         assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    @DisplayName("Should get Teams ranked by matches successfully")
+    void getRankingByMatchesCaseSuccess() {
+        List<Team> rankedTeams = new ArrayList<>();
+        rankedTeams.add(team3);
+        rankedTeams.add(team2);
+        rankedTeams.add(team1);
+        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(rankedTeams);
+
+        ResponseEntity<List<TeamDTO>> response = teamService.ranking("matches");
+
+        System.out.println(response.getBody());
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1L, response.getBody().getFirst().getId());
+        assertEquals(3L, response.getBody().getLast().getId());
+        assertEquals(3, response.getBody().size());
     }
 }
