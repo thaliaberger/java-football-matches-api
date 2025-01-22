@@ -4,11 +4,9 @@ import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.StadiumDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
-import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
-import com.meli.football_matches_api.repository.TeamRepository;
 import org.springframework.data.domain.Sort;
 
 import java.util.*;
@@ -67,14 +65,6 @@ public class Utils {
         }
     }
 
-    public static Team getTeamById(TeamRepository repository, Long id, boolean isOpponent) {
-        Team team = repository.findById(id);
-        if (team == null) {
-            throw new NotFoundException(isOpponent ? "Opponent team not found" : "Team not found");
-        }
-        return team;
-    }
-
     public static List<Match> getHammeringMatches(List<Match> matches) {
         List<Match> hammeringMatches = new ArrayList<>();
 
@@ -93,24 +83,40 @@ public class Utils {
     public static Comparator<TeamDTO> getComparator(String rankBy, String matchLocation) {
         switch (rankBy) {
             case "matches":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getNumberOfMatches).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getNumberOfHomeMatches).reversed();
-                return Comparator.comparing(TeamDTO::getNumberOfAwayMatches).reversed();
+                return getComparatorByMatches(matchLocation);
             case "wins":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getWins).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeWins).reversed();
-                return Comparator.comparing(TeamDTO::getAwayWins).reversed();
+                return getComparatorByWins(matchLocation);
             case "goals":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getAllScoredGoals).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeScoredGoals).reversed();
-                return Comparator.comparing(TeamDTO::getAwayScoredGoals).reversed();
+                return getComparatorByGoals(matchLocation);
             case "score":
-                if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getScore).reversed();
-                if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getScoreFromHomeMatches).reversed();
-                return Comparator.comparing(TeamDTO::getScoreFromAwayMatches).reversed();
+                return getComparatorByScore(matchLocation);
             default:
                 throw new IllegalArgumentException("Invalid rank type: " + rankBy);
         }
+    }
+
+    private static Comparator<TeamDTO> getComparatorByMatches(String matchLocation) {
+        if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getNumberOfMatches).reversed();
+        if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getNumberOfHomeMatches).reversed();
+        return Comparator.comparing(TeamDTO::getNumberOfAwayMatches).reversed();
+    }
+
+    private static Comparator<TeamDTO> getComparatorByWins(String matchLocation) {
+        if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getWins).reversed();
+        if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeWins).reversed();
+        return Comparator.comparing(TeamDTO::getAwayWins).reversed();
+    }
+
+    private static Comparator<TeamDTO> getComparatorByGoals(String matchLocation) {
+        if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getAllScoredGoals).reversed();
+        if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeScoredGoals).reversed();
+        return Comparator.comparing(TeamDTO::getAwayScoredGoals).reversed();
+    }
+
+    private static Comparator<TeamDTO> getComparatorByScore(String matchLocation) {
+        if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getScore).reversed();
+        if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getScoreFromHomeMatches).reversed();
+        return Comparator.comparing(TeamDTO::getScoreFromAwayMatches).reversed();
     }
 
     public static RetrospectDTO createRetrospectDTO(Team team, Long opponentId, String matchLocation, boolean isHammering) {
@@ -132,31 +138,6 @@ public class Utils {
             return new RetrospectDTO(homeMatches, null);
         } else {
             return new RetrospectDTO(null, awayMatches);
-        }
-    }
-
-    public static List<Team> getTeamsByMatchLocation(String rankBy, String matchLocation, TeamRepository repository) {
-        switch (rankBy) {
-            case "matches":
-            case "score":
-                if ("home".equals(matchLocation)) {
-                    return repository.findByHomeMatchesNotNull();
-                } else if ("away".equals(matchLocation)) {
-                    return repository.findByAwayMatchesNotNull();
-                } else {
-                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
-                }
-            case "wins":
-            case "goals":
-                if ("home".equals(matchLocation)) {
-                    return repository.findByHomeMatchesHomeGoalsNotNull();
-                } else if ("away".equals(matchLocation)) {
-                    return repository.findByAwayMatchesHomeGoalsNotNull();
-                } else {
-                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
-                }
-            default:
-                throw new IllegalArgumentException("Invalid ranking criteria: " + rankBy);
         }
     }
 
