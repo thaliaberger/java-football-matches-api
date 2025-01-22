@@ -284,6 +284,39 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should get list of teams by name successfully")
+    void listByName() {
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
+        List<Team> teamList = new ArrayList<>();
+        teamList.add(team1);
+        when(repository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(teamList));
+
+        List<TeamDTO> response = teamService.list(0, 1000, "id,asc", "Flamengo", null, null);
+
+        assertNotNull(response);
+        assertEquals(1L, response.getFirst().getId());
+        assertEquals(1, response.size());
+        assertEquals("Flamengo", response.getFirst().getName());
+    }
+
+    @Test
+    @DisplayName("Should get list of teams by state successfully")
+    void listByState() {
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
+        List<Team> teamList = new ArrayList<>();
+        teamList.add(team1);
+        teamList.add(team2);
+        when(repository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(teamList));
+
+        List<TeamDTO> response = teamService.list(0, 1000, "id,asc", null , "RJ", null);
+
+        assertNotNull(response);
+        assertEquals(1L, response.getFirst().getId());
+        assertEquals(2, response.size());
+        assertEquals("Flamengo", response.getFirst().getName());
+    }
+
+    @Test
     @DisplayName("Should throw NotFoundException")
     void getCaseTeamNotFound() {
         when(repository.findById(teamId)).thenReturn(null);
