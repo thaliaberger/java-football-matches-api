@@ -6,11 +6,13 @@ import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.TeamRepository;
+import com.meli.football_matches_api.specification.TeamSpecification;
 import com.meli.football_matches_api.utils.TeamFilter;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.TeamValidations;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -44,37 +46,10 @@ public class TeamService {
         return new TeamDTO(team);
     }
 
-    public List<TeamDTO> list(int page, int itemsPerPage, String sort) {
-        return list(page, itemsPerPage, sort, null, null, null);
-    }
-
-    public List<TeamDTO> list(int page, int itemsPerPage, String sort, Boolean isActive) {
-        return list(page, itemsPerPage, sort, isActive, null, null);
-    }
-
-    public List<TeamDTO> list(int page, int itemsPerPage, String sort, String param, Boolean isNameSearch) {
-        return list(page, itemsPerPage, sort, null, param, isNameSearch);
-    }
-
-    public List<TeamDTO> list(
-        int page, int itemsPerPage, String sort, Boolean isActive,
-        String param, Boolean isNameSearch) {
-
+    public List<TeamDTO> list(int page, int itemsPerPage, String sort, String name, String state, Boolean isActive) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
-        List<Team> teams;
-
-        if (isActive != null) {
-            teams = repository.findAllByIsActive(isActive, pageable);
-        } else if (param != null) {
-            if (isNameSearch != null && isNameSearch) {
-                teams = repository.findAllByName(param, pageable);
-            } else {
-                teams = repository.findAllByState(param, pageable);
-            }
-        } else {
-            teams = repository.findAll(pageable).getContent();
-        }
-
+        Specification<Team> spec = TeamSpecification.hasIsActive(isActive).and(TeamSpecification.hasName(name)).and(TeamSpecification.hasState(state));
+        List<Team> teams = repository.findAll(spec, pageable).getContent();
         return Utils.convertToTeamDTO(teams);
     }
 

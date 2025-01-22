@@ -44,15 +44,7 @@ public class TeamController {
             @RequestParam(required = false) String state,
             @RequestParam(required = false) Boolean isActive
     ) {
-        if (name != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(teamService.list(page, itemsPerPage, sort, name, true));
-        } else if (state != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(teamService.list(page, itemsPerPage, sort, state, false));
-        } else if (isActive != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(teamService.list(page, itemsPerPage, sort, isActive));
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(teamService.list(page, itemsPerPage, sort));
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(teamService.list(page, itemsPerPage, sort, name, state, isActive));
     }
 
     @DeleteMapping(params = "id")

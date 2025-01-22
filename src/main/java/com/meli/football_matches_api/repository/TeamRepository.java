@@ -1,25 +1,19 @@
 package com.meli.football_matches_api.repository;
 
 import com.meli.football_matches_api.model.Team;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface TeamRepository extends JpaRepository<Team, Integer> {
+public interface TeamRepository extends JpaRepository<Team, Integer>, JpaSpecificationExecutor<Team> {
 
     Team findById(Long id);
 
     Boolean existsById(Long id);
 
     Team findByNameAndState(String name, String state);
-
-    List<Team> findAllByState(String state, Pageable pageable);
-
-    List<Team> findAllByName(String name, Pageable pageable);
-
-    List<Team> findAllByIsActive(boolean isActive, Pageable pageable);
 
     List<Team> findByHomeMatchesNotNullOrAwayMatchesNotNull();
 
