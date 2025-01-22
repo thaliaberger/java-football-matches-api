@@ -87,14 +87,15 @@ public class TeamService {
         return retrospectsByOpponent;
     }
 
-    public List<TeamDTO> ranking(String rankBy) {
-        return ranking(rankBy, null);
-    }
-
     public List<TeamDTO> ranking(String rankBy, String matchLocation) {
         TeamFilter filter = Utils.getFilter(rankBy);
         Comparator<TeamDTO> comparator = Utils.getComparator(rankBy, matchLocation);
-        List<Team> teams = getTeamsByMatchLocation(rankBy, matchLocation);
+        List<Team> teams;
+        if (matchLocation != null) {
+            teams = getTeamsByMatchLocation(rankBy, matchLocation);
+        } else {
+            teams = repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
+        }
         return Utils.rankTeams(Utils.convertToTeamDTO(teams), comparator, filter);
     }
 
@@ -114,8 +115,6 @@ public class TeamService {
                     return repository.findByHomeMatchesNotNull();
                 } else if ("away".equals(matchLocation)) {
                     return repository.findByAwayMatchesNotNull();
-                } else {
-                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
                 }
             case "wins":
             case "goals":
@@ -123,8 +122,6 @@ public class TeamService {
                     return repository.findByHomeMatchesHomeGoalsNotNull();
                 } else if ("away".equals(matchLocation)) {
                     return repository.findByAwayMatchesHomeGoalsNotNull();
-                } else {
-                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
                 }
             default:
                 throw new IllegalArgumentException("Invalid ranking criteria: " + rankBy);

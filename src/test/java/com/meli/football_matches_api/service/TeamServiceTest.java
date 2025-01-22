@@ -331,6 +331,20 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw NotFoundException")
+    void getRetrospectAgainstOpponentCaseOpponentNotFound() {
+        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(3L)).thenReturn(null);
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            teamService.getRetrospect(teamId, 3L, "", false);
+        });
+
+        assertEquals("Opponent team not found", exception.getMessage());
+
+    }
+
+    @Test
     @DisplayName("Should get Team home matches retrospect successfully")
     void getTeamHomeMatchesRetrospectCaseSuccess() {
         when(repository.findById(teamId)).thenReturn(team1);
@@ -394,11 +408,23 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should throw NotFoundException")
+    void getRetrospectAgainstAllCaseTeamNotFound() {
+        when(repository.findById(teamId)).thenReturn(null);
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            teamService.getRetrospectAgainstAll(teamId);
+        });
+
+        assertEquals("Team not found", exception.getMessage());
+    }
+
+    @Test
     @DisplayName("Should get Teams ranked by goals successfully")
     void getRankingByGoalsCaseSuccess() {
         when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
 
-        List<TeamDTO> response = teamService.ranking("goals");
+        List<TeamDTO> response = teamService.ranking("goals", null);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -411,7 +437,7 @@ class TeamServiceTest {
     void getRankingByMatchesCaseSuccess() {
         when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
 
-        List<TeamDTO> response = teamService.ranking("matches");
+        List<TeamDTO> response = teamService.ranking("matches", null);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -424,7 +450,7 @@ class TeamServiceTest {
     void getRankingByScoreCaseSuccess() {
         when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
 
-        List<TeamDTO> response = teamService.ranking("score");
+        List<TeamDTO> response = teamService.ranking("score", null);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -437,7 +463,7 @@ class TeamServiceTest {
     void getRankingByWinsCaseSuccess() {
         when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
 
-        List<TeamDTO> response = teamService.ranking("wins");
+        List<TeamDTO> response = teamService.ranking("wins", null);
 
         assertNotNull(response);
         assertEquals(3L, response.getFirst().getId());

@@ -73,7 +73,6 @@ public class TeamController {
             @RequestParam String rankBy,
             @RequestParam(required = false) String matchLocation
     ) {
-        if (matchLocation != null) return  ResponseEntity.status(HttpStatus.OK).body(teamService.ranking(rankBy, matchLocation));
-        return  ResponseEntity.status(HttpStatus.OK).body(teamService.ranking(rankBy));
+         return ResponseEntity.status(HttpStatus.OK).body(teamService.ranking(rankBy, matchLocation));
     }
 }
