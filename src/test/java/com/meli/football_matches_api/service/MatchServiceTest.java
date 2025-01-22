@@ -740,7 +740,7 @@ class MatchServiceTest {
         Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(pageable)).thenReturn(new PageImpl<Match>(matches));
 
-        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", null, null, null, false);
 
         assertNotNull(response);
         assertEquals(matchId, response.getFirst().getId());
@@ -767,7 +767,7 @@ class MatchServiceTest {
 
         when(matchRepository.findAllByHomeTeamId(1L)).thenReturn(team1HomeMatches);
 
-        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), "home", false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), 1L, "home", false);
 
         assertNotNull(response);
         assertEquals(homeMatchId, response.getFirst().getId());
@@ -794,7 +794,7 @@ class MatchServiceTest {
 
         when(matchRepository.findAllByAwayTeamId(1L)).thenReturn(team1AwayMatches);
 
-        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), "away", false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), 1L, "away", false);
 
         assertNotNull(response);
         assertEquals(awayMatchId, response.getFirst().getId());
@@ -828,7 +828,7 @@ class MatchServiceTest {
 
         when(matchRepository.findAllByHomeTeamIdOrAwayTeamId(1L, 1L, pageable)).thenReturn(team1AllMatches);
 
-        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), null, false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), null, null, false);
 
         assertNotNull(response);
         assertEquals(homeMatchId, response.getFirst().getId());
@@ -853,7 +853,7 @@ class MatchServiceTest {
         Pageable page = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAllByStadiumId(stadiumId, page)).thenReturn(matches);
 
-        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", stadiumId, false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc",null, stadiumId, null, false);
 
         assertNotNull(response);
     }
@@ -874,7 +874,7 @@ class MatchServiceTest {
         Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(pageable)).thenReturn(new PageImpl<Match>(matches));
 
-        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", false);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", null,null, null, false);
 
         assertNotNull(response);
     }
@@ -897,7 +897,7 @@ class MatchServiceTest {
         when(matchRepository.findAllByHomeGoalsNotNullOrAwayGoalsNotNull())
                 .thenReturn(Arrays.asList(match1, match2, match3));
 
-        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", true);
+        List<MatchDTO> response = matchService.list(0, 1000, "id,asc", null,null, null, true);
 
         assertNotNull(response);
         assertEquals(2, response.size());
@@ -927,7 +927,7 @@ class MatchServiceTest {
         int itemsPerPage = 10;
         String sort = "goals,asc";
 
-        List<MatchDTO> response = matchService.list(page, itemsPerPage, sort, false);
+        List<MatchDTO> response = matchService.list(page, itemsPerPage, sort, null, null, null, false);
 
         assertNotNull(response);
         assertEquals(3, response.size());

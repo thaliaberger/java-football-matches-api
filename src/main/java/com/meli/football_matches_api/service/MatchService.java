@@ -3,13 +3,17 @@ package com.meli.football_matches_api.service;
 import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
+import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.MatchRepository;
 import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.repository.TeamRepository;
+import com.meli.football_matches_api.specification.MatchSpecification;
+import com.meli.football_matches_api.specification.TeamSpecification;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.MatchValidations;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,41 +59,21 @@ public class MatchService {
         return new MatchDTO(match);
     }
 
-    public List<MatchDTO> list(int page, int itemsPerPage, String sort, Long teamId, String matchLocation, boolean isHammering) {
+    public List<MatchDTO> list(int page, int itemsPerPage, String sort, Long teamId, Long stadiumId, String matchLocation, boolean isHammering) {
         Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
 
-        List<Match> matches;
+        Specification<Match> spec = MatchSpecification.hasStadium(stadiumId);
 
         if (Objects.equals(matchLocation, "home")) {
-            matches = matchRepository.findAllByHomeTeamId(teamId);
+            spec = spec.and(MatchSpecification.hasHomeTeam(teamId));
         } else if (Objects.equals(matchLocation, "away")) {
-            matches = matchRepository.findAllByAwayTeamId(teamId);
+            spec = spec.and(MatchSpecification.hasAwayTeam(teamId));
         } else {
-            matches = matchRepository.findAllByHomeTeamIdOrAwayTeamId(teamId, teamId, pageable);
+            spec = spec.and(MatchSpecification.hasHomeTeam(teamId)).or(MatchSpecification.hasAwayTeam(teamId));
         }
 
+        List<Match> matches = matchRepository.findAll(spec, pageable).getContent();
         if (isHammering) matches = Utils.getHammeringMatches(matches);
-        return Utils.convertToMatchDTO(matches);
-    }
-
-    public List<MatchDTO> list(int page, int itemsPerPage, String sort, Long stadiumId, boolean isHammering) {
-        Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
-        List<Match> matches = matchRepository.findAllByStadiumId(stadiumId, pageable);
-        if (isHammering) matches = Utils.getHammeringMatches(matches);
-        return Utils.convertToMatchDTO(matches);
-    }
-
-    public List<MatchDTO> list(int page, int itemsPerPage, String sort, boolean isHammering) {
-        Pageable pageable = PageRequest.of(page, itemsPerPage, Utils.handleSortParams(sort));
-
-        List<Match> matches;
-
-        if (isHammering) {
-            matches = Utils.getHammeringMatches(matchRepository.findAllByHomeGoalsNotNullOrAwayGoalsNotNull());
-        } else {
-            matches = matchRepository.findAll(pageable).getContent();
-        }
-
         return Utils.convertToMatchDTO(matches);
     }
 }

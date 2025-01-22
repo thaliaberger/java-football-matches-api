@@ -4,10 +4,11 @@ import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 
-public interface MatchRepository extends JpaRepository<Match, Integer> {
+public interface MatchRepository extends JpaRepository<Match, Integer>, JpaSpecificationExecutor<Match> {
 
     Match findById(Long id);
 

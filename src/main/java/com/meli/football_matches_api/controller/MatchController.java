@@ -50,12 +50,6 @@ public class MatchController {
             @RequestParam(required = false) Long stadiumId,
             @RequestParam(required = false, defaultValue="") String matchLocation
     ) {
-        if (teamId != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(matchService.list(page, itemsPerPage, sort, teamId, matchLocation, isHammering));
-        } else if (stadiumId != null) {
-            return ResponseEntity.status(HttpStatus.OK).body(matchService.list(page, itemsPerPage, sort, stadiumId, isHammering));
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(matchService.list(page, itemsPerPage, sort, isHammering));
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(matchService.list(page, itemsPerPage, sort, teamId, stadiumId, matchLocation, isHammering));
     }
 }
