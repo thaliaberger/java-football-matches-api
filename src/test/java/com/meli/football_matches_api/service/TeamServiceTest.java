@@ -230,7 +230,7 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Should inactivate Team")
-    public void deleteCaseSuccess() {
+    void deleteCaseSuccess() {
         when(repository.findById(1L)).thenReturn(team1);
 
         String response = teamService.delete(1L);
@@ -243,11 +243,34 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Should throw NotFoundException")
-    public void deleteCaseTeamNotFound() {
+    void deleteCaseTeamNotFound() {
         when(repository.findById(1L)).thenReturn(null);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             teamService.delete(1L);
+        });
+
+        assertEquals("Team not found", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should get Team successfully")
+    void getCaseSuccess() {
+        when(repository.findById(teamId)).thenReturn(team1);
+
+        TeamDTO response = teamService.get(teamId);
+
+        assertNotNull(response);
+        assertEquals(teamDTO.getName(), response.getName());
+    }
+
+    @Test
+    @DisplayName("Should throw NotFoundException")
+    void getCaseTeamNotFound() {
+        when(repository.findById(teamId)).thenReturn(null);
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            teamService.get(teamId);
         });
 
         assertEquals("Team not found", exception.getMessage());
@@ -290,7 +313,7 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Should get Team home matches retrospect successfully")
-    void getteam1HomeMatchesRetrospectCaseSuccess() {
+    void getTeamHomeMatchesRetrospectCaseSuccess() {
         when(repository.findById(teamId)).thenReturn(team1);
 
         RetrospectDTO response = teamService.getRetrospect(teamId,  "home", false);
@@ -307,7 +330,7 @@ class TeamServiceTest {
 
     @Test
     @DisplayName("Should get Team away matches retrospect successfully")
-    void getteam1AwayMatchesRetrospectCaseSuccess() {
+    void getTeamAwayMatchesRetrospectCaseSuccess() {
         when(repository.findById(teamId)).thenReturn(team1);
 
         RetrospectDTO response = teamService.getRetrospect(teamId,  "away", false);
@@ -422,7 +445,6 @@ class TeamServiceTest {
         when(repository.findByAwayMatchesHomeGoalsNotNull()).thenReturn(teamsToBeRanked);
 
         List<TeamDTO> response = teamService.ranking("wins", "away");
-        System.out.println(response);
 
         assertNotNull(response);
         assertEquals(3L, response.getFirst().getId());
@@ -455,7 +477,6 @@ class TeamServiceTest {
         assertEquals(3L, response.getLast().getId());
         assertEquals(2, response.size());
     }
-
 
     @Test
     @DisplayName("Should get Teams ranked by home score successfully")
