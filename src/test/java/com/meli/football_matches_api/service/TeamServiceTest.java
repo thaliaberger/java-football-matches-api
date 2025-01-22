@@ -15,6 +15,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -262,6 +267,20 @@ class TeamServiceTest {
 
         assertNotNull(response);
         assertEquals(teamDTO.getName(), response.getName());
+    }
+
+    @Test
+    @DisplayName("Should get Team list successfully")
+    void listCaseSuccess() {
+        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
+        when(repository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(teamsToBeRanked));
+
+        List<TeamDTO> response = teamService.list(0, 1000, "id,asc", null, null, null);
+
+        assertNotNull(response);
+        assertEquals(3L, response.getFirst().getId());
+        assertEquals(1L, response.getLast().getId());
+        assertEquals(3, response.size());
     }
 
     @Test
