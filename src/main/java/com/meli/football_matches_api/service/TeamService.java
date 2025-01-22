@@ -54,20 +54,20 @@ public class TeamService {
     }
 
     public String delete(Long id) {
-        Team team = Utils.getTeamById(repository, id, false);
+        Team team = getTeamById(id, false);
         team.setIsActive(false);
         repository.save(team);
         return "";
     }
 
     public RetrospectDTO getRetrospect(Long id, String matchLocation, boolean isHammering) {
-        Team team = Utils.getTeamById(repository, id, false);
+        Team team = getTeamById(id, false);
         return Utils.createRetrospectDTO(team, null, matchLocation, isHammering);
     }
 
     public RetrospectDTO getRetrospect(Long id, Long opponentId, String matchLocation, boolean isHammering) {
-        Team team = Utils.getTeamById(repository, id, false);
-        Team opponentTeam = Utils.getTeamById(repository, opponentId, true);
+        Team team = getTeamById(id, false);
+        Team opponentTeam = getTeamById(opponentId, true);
 
         return Utils.createRetrospectDTO(team, opponentId, matchLocation, isHammering);
     }
@@ -94,7 +94,40 @@ public class TeamService {
     public List<TeamDTO> ranking(String rankBy, String matchLocation) {
         TeamFilter filter = Utils.getFilter(rankBy);
         Comparator<TeamDTO> comparator = Utils.getComparator(rankBy, matchLocation);
-        List<Team> teams = Utils.getTeamsByMatchLocation(rankBy, matchLocation, repository);
+        List<Team> teams = getTeamsByMatchLocation(rankBy, matchLocation);
         return Utils.rankTeams(Utils.convertToTeamDTO(teams), comparator, filter);
+    }
+
+    public Team getTeamById(Long id, boolean isOpponent) {
+        Team team = repository.findById(id);
+        if (team == null) {
+            throw new NotFoundException(isOpponent ? "Opponent team not found" : "Team not found");
+        }
+        return team;
+    }
+
+    public List<Team> getTeamsByMatchLocation(String rankBy, String matchLocation) {
+        switch (rankBy) {
+            case "matches":
+            case "score":
+                if ("home".equals(matchLocation)) {
+                    return repository.findByHomeMatchesNotNull();
+                } else if ("away".equals(matchLocation)) {
+                    return repository.findByAwayMatchesNotNull();
+                } else {
+                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
+                }
+            case "wins":
+            case "goals":
+                if ("home".equals(matchLocation)) {
+                    return repository.findByHomeMatchesHomeGoalsNotNull();
+                } else if ("away".equals(matchLocation)) {
+                    return repository.findByAwayMatchesHomeGoalsNotNull();
+                } else {
+                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
+                }
+            default:
+                throw new IllegalArgumentException("Invalid ranking criteria: " + rankBy);
+        }
     }
 }
