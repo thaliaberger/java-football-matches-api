@@ -3,12 +3,10 @@ package com.meli.football_matches_api.service;
 import com.meli.football_matches_api.DTO.MatchDTO;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
-import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.MatchRepository;
 import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.repository.TeamRepository;
 import com.meli.football_matches_api.specification.MatchSpecification;
-import com.meli.football_matches_api.specification.TeamSpecification;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.MatchValidations;
 import org.springframework.data.domain.PageRequest;
@@ -33,15 +31,15 @@ public class MatchService {
     };
 
     public MatchDTO create(MatchDTO matchDTO) {
-        return saveMatch(matchDTO, false);
+        return saveMatch(matchDTO);
     };
 
     public MatchDTO update(MatchDTO matchDTO) {
         MatchValidations.validateIfMatchExists(matchDTO.getId(), matchRepository);
-        return saveMatch(matchDTO, true);
+        return saveMatch(matchDTO);
     }
 
-    private MatchDTO saveMatch(MatchDTO matchDTO, Boolean isUpdate) {
+    private MatchDTO saveMatch(MatchDTO matchDTO) {
         MatchValidations.validateFields(matchDTO, matchRepository, teamRepository, stadiumRepository);
         Match newMatch = new Match(matchDTO);
         return new MatchDTO(matchRepository.save(newMatch));
