@@ -92,7 +92,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw FieldException when Team name is empty or null")
     void createCaseEmptyName() {
-        TeamDTO teamDTO = new TeamDTO(1L, "", "RJ", LocalDate.of(1980, 1, 1), true);
+        teamDTO.setName("");
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             teamService.create(teamDTO);
@@ -104,7 +104,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw FieldException when Team isActive is null")
     void createCaseIsActiveNull() {
-        TeamDTO teamDTO = new TeamDTO(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), null);
+        teamDTO.setIsActive(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             teamService.create(teamDTO);
@@ -116,12 +116,10 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw ConflictException when Team already exists")
     void createCaseTeamAlreadyExists() {
-        TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-
-        when(repository.findByNameAndState(newTeamDTO.getName(), newTeamDTO.getState())).thenReturn(new Team(teamDTO));
+        when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(new Team(teamDTO));
 
         ConflictException exception = assertThrows(ConflictException.class, () -> {
-            teamService.create(newTeamDTO);
+            teamService.create(teamDTO);
         });
 
         assertEquals("Already existing team with name [Flamengo] and state [RJ]", exception.getMessage());
@@ -130,12 +128,12 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw FieldException when dateCreated is null")
     void createCaseDateCreatedNull() {
-        TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", null, true);
+        teamDTO.setDateCreated(null);
 
-        when(repository.findByNameAndState(newTeamDTO.getName(), newTeamDTO.getState())).thenReturn(null);
+        when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
-            teamService.create(newTeamDTO);
+            teamService.create(teamDTO);
         });
 
         assertEquals("[dateCreated] cannot be null", exception.getMessage());
@@ -145,12 +143,12 @@ class TeamServiceTest {
     @DisplayName("Should throw FieldException when dateCreated is in the future")
     void createCaseDateCreatedInTheFuture() {
         int nextYear = Year.now().getValue() + 1;
-        TeamDTO newTeamDTO = new TeamDTO(2L, "Flamengo", "RJ", LocalDate.of(nextYear, 1, 1), true);
+        teamDTO.setDateCreated(LocalDate.of(nextYear, 1, 1));
 
-        when(repository.findByNameAndState(newTeamDTO.getName(), newTeamDTO.getState())).thenReturn(null);
+        when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
-            teamService.create(newTeamDTO);
+            teamService.create(teamDTO);
         });
 
         assertEquals("[dateCreated] cannot be in the future", exception.getMessage());
@@ -159,7 +157,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw FieldException when state is null or empty")
     void createCaseStateIsNullOrEmpty() {
-        TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "", LocalDate.of(2000, 1, 1), true);
+        teamDTO.setState(null);
 
         when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
@@ -173,7 +171,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw FieldException when state length is different than 2")
     void createCaseStateLengthDifferentThan2() {
-        TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "Rio de Janeiro", LocalDate.of(2000, 1, 1), true);
+        teamDTO.setState("Rio de Janeiro");
 
         when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
@@ -187,7 +185,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw FieldException when state is invalid")
     void createCaseInvalidState() {
-        TeamDTO teamDTO = new TeamDTO(2L, "Flamengo", "SS", LocalDate.of(2000, 1, 1), true);
+        teamDTO.setState("SO");
 
         when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
@@ -222,7 +220,8 @@ class TeamServiceTest {
     @DisplayName("Should throw ConflictException when dateCreated is after match date")
     void updateCaseDateCreatedIsAfterMatchDate() {
         long teamId = 2L;
-        TeamDTO teamDTO = new TeamDTO(teamId, "Flamengo", "RJ", LocalDate.of(2025, 1, 1), true);
+        team2.setDateCreated(LocalDate.of(2025, 1, 1));
+        TeamDTO teamDTO = new TeamDTO(team2);
         LocalDateTime dateTime = teamDTO.getDateCreated().atTime(0,0);
 
         when(repository.existsById(teamId)).thenReturn(true);
@@ -239,9 +238,9 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should inactivate Team")
     void deleteCaseSuccess() {
-        when(repository.findById(1L)).thenReturn(team1);
+        when(repository.findById(teamId)).thenReturn(team1);
 
-        String response = teamService.delete(1L);
+        String response = teamService.delete(teamId);
 
         assertEquals( "", response);
         assertEquals(false, team1.getIsActive());
@@ -252,10 +251,10 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException")
     void deleteCaseTeamNotFound() {
-        when(repository.findById(1L)).thenReturn(null);
+        when(repository.findById(5L)).thenReturn(null);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            teamService.delete(1L);
+            teamService.delete(5L);
         });
 
         assertEquals("Team not found", exception.getMessage());
