@@ -19,7 +19,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,16 +36,20 @@ class StadiumServiceTest {
     @InjectMocks
     private StadiumService stadiumService;
 
+    Team team;
+    StadiumDTO stadiumDTO;
+    long stadiumId = 1;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        team = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
+        stadiumDTO = new StadiumDTO(stadiumId, "Maracanã", team, null);
     }
 
     @Test
     @DisplayName("Should create Stadium successfully")
     void createCaseSuccess() {
-        StadiumDTO stadiumDTO = new StadiumDTO(1L, "Maracanã", null, null);
-
         when(stadiumRepository.save(any(Stadium.class))).thenReturn(new Stadium(stadiumDTO));
 
         StadiumDTO response = stadiumService.create(stadiumDTO);
@@ -56,12 +59,12 @@ class StadiumServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw FieldException when stadium name is empty")
+    @DisplayName("Should throw FieldException when stadium name is null or empty")
     void createCaseEmptyStadiumName() {
+        stadiumDTO.setName(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
-            StadiumDTO stadiumDTO = new StadiumDTO(1L, null, null, null);
-            StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, false);
+            stadiumService.create(stadiumDTO);
         });
 
         assertEquals("[name] cannot be null or empty", exception.getMessage());
@@ -70,11 +73,10 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should throw FieldException when stadium name has less then 3 characters")
     void createCaseStadiumNameSmallerThen3Characters() {
+        stadiumDTO.setName("Ma");
 
         FieldException exception = assertThrows(FieldException.class, () -> {
-            Team team = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-            StadiumDTO stadiumDTO = new StadiumDTO(1L, "Ma", team, null);
-            StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, false);
+            stadiumService.create(stadiumDTO);
         });
 
         assertEquals("[name] must be at least 3 characters", exception.getMessage());
@@ -83,13 +85,11 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should throw ConflictException when already exists Stadium with same name")
     void createCaseAlreadyExistingStadiumWithSameName() {
-        StadiumDTO stadiumDTO = new StadiumDTO(1L, "Maracanã", null, null);
-        Stadium newStadium = new Stadium(stadiumDTO);
 
         when(stadiumRepository.existsByName("Maracanã")).thenReturn(true);
 
         ConflictException exception = assertThrows(ConflictException.class, () -> {
-            StadiumValidations.validateName("Maracanã", stadiumRepository, false);
+            stadiumService.create(stadiumDTO);
         });
 
         assertEquals("Stadium with name [Maracanã] already exists", exception.getMessage());
@@ -98,12 +98,12 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should update Stadium successfully")
     void updateCaseSuccess() {
-        StadiumDTO stadiumDTO = new StadiumDTO(1L, "Morumbi", null, null);
+        StadiumDTO newStadiumDTO = new StadiumDTO(1L, "Morumbi", null, null);
 
-        when(stadiumRepository.existsById(1L)).thenReturn(true);
-        when(stadiumRepository.save(any(Stadium.class))).thenReturn(new Stadium(stadiumDTO));
+        when(stadiumRepository.existsById(stadiumId)).thenReturn(true);
+        when(stadiumRepository.save(any(Stadium.class))).thenReturn(new Stadium(newStadiumDTO));
 
-        StadiumDTO response = stadiumService.update(stadiumDTO);
+        StadiumDTO response = stadiumService.update(newStadiumDTO);
 
         assertNotNull(response);
         assertEquals("Morumbi", response.getName());
@@ -112,10 +112,12 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should throw FieldException when stadium name is empty")
     void updateCaseEmptyStadiumName() {
+        stadiumDTO.setName("");
+
+        when(stadiumRepository.existsById(stadiumId)).thenReturn(true);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
-            StadiumDTO stadiumDTO = new StadiumDTO(1L, null, null, null);
-            StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, true);
+            stadiumService.update(stadiumDTO);
         });
 
         assertEquals("[name] cannot be null or empty", exception.getMessage());
@@ -124,10 +126,12 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should throw FieldException when stadium name has less then 3 characters")
     void updateCaseStadiumNameSmallerThen3Characters() {
+        stadiumDTO.setName("Ma");
+
+        when(stadiumRepository.existsById(stadiumId)).thenReturn(true);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
-            StadiumDTO stadiumDTO = new StadiumDTO(1L, "Ma", null, null);
-            StadiumValidations.validateName(stadiumDTO.getName(), stadiumRepository, true);
+            stadiumService.update(stadiumDTO);
         });
 
         assertEquals("[name] must be at least 3 characters", exception.getMessage());
@@ -136,10 +140,10 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should throw FieldException when trying to update a Stadium without passing an id")
     void updateCaseWithoutPassingAnId() {
+        stadiumDTO.setId(null);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
-            StadiumDTO stadiumDTO = new StadiumDTO(null, "Maracanã", null, null);
-            StadiumValidations.validateIfStadiumExists(stadiumDTO, stadiumRepository);
+            stadiumService.update(stadiumDTO);
         });
 
         assertEquals("You need to provide a valid id to update a stadium", exception.getMessage());
@@ -148,10 +152,10 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException when trying to update an non-existing Stadium")
     void updateCaseStadiumDoesNotExists() {
+        when(stadiumRepository.existsById(stadiumId)).thenReturn(false);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            StadiumDTO stadiumDTO = new StadiumDTO(1L, "Maracanã", null, null);
-            StadiumValidations.validateIfStadiumExists(stadiumDTO, stadiumRepository);
+            stadiumService.update(stadiumDTO);
         });
 
         assertEquals("Stadium not found", exception.getMessage());
@@ -160,8 +164,7 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should get Stadium successfully")
     void getCaseSuccess() {
-        Long stadiumId = 1L;
-        Stadium stadium = new Stadium(stadiumId, "Maracanã", null, null);
+        Stadium stadium = new Stadium(stadiumDTO);
         when(stadiumRepository.findById(stadiumId)).thenReturn(stadium);
 
         StadiumDTO response = stadiumService.get(stadiumId);
@@ -174,11 +177,10 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException when stadium does not exist")
     void getStadiumCaseStadiumDoesNotExist() {
-        Long stadiumId = 1L;
-        when(stadiumRepository.findById(stadiumId)).thenReturn(null);
+        when(stadiumRepository.findById(3L)).thenReturn(null);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            stadiumService.get(stadiumId);
+            stadiumService.get(3L);
         });
 
         assertEquals("Stadium not found", exception.getMessage());
@@ -188,7 +190,7 @@ class StadiumServiceTest {
     @DisplayName("Should get all Stadiums successfully")
     void listCaseSuccess() {
         List<Stadium> stadiumList = new ArrayList<>();
-        Stadium stadium = new Stadium(1L, "Maracanã", null, null);
+        Stadium stadium = new Stadium(stadiumDTO);
         Stadium stadium2 = new Stadium(2L, "Morumbi", null, null);
         stadiumList.add(stadium);
         stadiumList.add(stadium2);
