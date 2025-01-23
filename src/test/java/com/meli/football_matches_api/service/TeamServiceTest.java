@@ -48,6 +48,7 @@ class TeamServiceTest {
     List<Match> team1HomeMatches = new ArrayList<>();
     List<Match> team1AwayMatches = new ArrayList<>();
     List<Team> teamsToBeRanked = new ArrayList<>();
+    Pageable pageable;
 
     @BeforeEach
     void setUp() {
@@ -73,6 +74,8 @@ class TeamServiceTest {
         teamsToBeRanked.add(team3);
         teamsToBeRanked.add(team2);
         teamsToBeRanked.add(team1);
+
+        pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
     }
 
     @Test
@@ -272,7 +275,6 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team list successfully")
     void listCaseSuccess() {
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(repository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(teamsToBeRanked));
 
         List<TeamDTO> response = teamService.list(0, 1000, "id,asc", null, null, null);
@@ -286,7 +288,6 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get list of teams by name successfully")
     void listByName() {
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         List<Team> teamList = new ArrayList<>();
         teamList.add(team1);
         when(repository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(teamList));
@@ -302,7 +303,6 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get list of teams by state successfully")
     void listByState() {
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         List<Team> teamList = new ArrayList<>();
         teamList.add(team1);
         teamList.add(team2);
