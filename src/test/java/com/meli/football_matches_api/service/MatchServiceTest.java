@@ -55,6 +55,7 @@ class MatchServiceTest {
     Match newMatch = new Match();
     MatchDTO matchDTO = new MatchDTO();
     long newMatchId = 3;
+    Pageable pageable;
 
     @BeforeEach
     void setUp() {
@@ -69,6 +70,8 @@ class MatchServiceTest {
 
         newMatch = new Match(newMatchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         matchDTO = new MatchDTO(newMatch);
+
+        pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
     }
 
     @Test
@@ -460,9 +463,8 @@ class MatchServiceTest {
     @DisplayName("Should get Match successfully")
     void getCaseSuccess() {
         Long matchId = 1L;
-        Match match = new Match(matchId, 1, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
 
-        when(matchRepository.findById(matchId)).thenReturn(match);
+        when(matchRepository.findById(matchId)).thenReturn(match1);
 
         MatchDTO response = matchService.get(matchId);
 
@@ -487,7 +489,6 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should get all matches successfully")
     void listCaseSuccess() {
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<Match>(matches));
 
         List<MatchDTO> response = matchService.list(0, 1000, "id,asc", null, null, null, false);
@@ -499,15 +500,11 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should get all home matches successfully")
     void listByTeamAndHomeMatchesCaseSuccess() {
-        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
-        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
         Long homeMatchId = 1L;
-        Match match = new Match(homeMatchId, 1, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
         Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team2, team1, stadium);
 
         List<Match> team1HomeMatches = new ArrayList<>();
-        team1HomeMatches.add(match);
+        team1HomeMatches.add(match1);
 
         List<Match> team1AwayMatches = new ArrayList<>();
         team1AwayMatches.add(match2);
@@ -515,8 +512,6 @@ class MatchServiceTest {
         team1.setHomeMatches(team1HomeMatches);
         team1.setAwayMatches(team1AwayMatches);
 
-
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<Match>(team1HomeMatches));
 
         List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), 1L, "home", false);
@@ -528,15 +523,11 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should get all away matches successfully")
     void listByTeamAndAwayMatchesCaseSuccess() {
-        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
-        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
         Long awayMatchId = 2L;
-        Match match = new Match(1L, 1, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
         Match match2 = new Match(awayMatchId, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team2, team1, stadium);
 
         List<Match> team1HomeMatches = new ArrayList<>();
-        team1HomeMatches.add(match);
+        team1HomeMatches.add(match1);
 
         List<Match> team1AwayMatches = new ArrayList<>();
         team1AwayMatches.add(match2);
@@ -544,7 +535,6 @@ class MatchServiceTest {
         team1.setHomeMatches(team1HomeMatches);
         team1.setAwayMatches(team1AwayMatches);
 
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<Match>(team1AwayMatches));
 
         List<MatchDTO> response = matchService.list(0, 1000, "id,asc", team1.getId(), 1L, "away", false);
@@ -556,15 +546,11 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should get all team matches successfully")
     void listByTeamCaseSuccess() {
-        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
-        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
         Long homeMatchId = 1L;
-        Match match = new Match(homeMatchId, 1, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
         Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team2, team1, stadium);
 
         List<Match> team1HomeMatches = new ArrayList<>();
-        team1HomeMatches.add(match);
+        team1HomeMatches.add(match1);
 
         List<Match> team1AwayMatches = new ArrayList<>();
         team1AwayMatches.add(match2);
@@ -573,10 +559,9 @@ class MatchServiceTest {
         team1.setAwayMatches(team1AwayMatches);
 
         List<Match> team1AllMatches = new ArrayList<>();
-        team1AllMatches.add(match);
+        team1AllMatches.add(match1);
         team1AllMatches.add(match2);
 
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
 
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<Match>(team1AllMatches));
 
@@ -589,20 +574,8 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should get all stadium matches successfully")
     void listByStadiumCaseSuccess() {
-        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
         Long stadiumId = 1L;
-        Stadium stadium = new Stadium(stadiumId, "Morumbi", null, null);
-        Match match = new Match(1L, 1, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
-        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team2, team1, stadium);
 
-        List<Match> matches = new ArrayList<>();
-        matches.add(match);
-        matches.add(match2);
-
-        stadium.setMatches(matches);
-
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<Match>(matches));
 
         List<MatchDTO> response = matchService.list(0, 1000, "id,asc",null, stadiumId, null, false);
@@ -613,17 +586,6 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should get all not hammering matches successfully")
     void listNotHammeringCaseSuccess() {
-        Team team1 = new Team(1L, "Flamengo", "RJ", LocalDate.of(1980, 1, 1), true);
-        Team team2 = new Team(2L, "Fluminense", "RJ", LocalDate.of(1980, 1, 1), true);
-        Stadium stadium = new Stadium(1L, "Morumbi", null, null);
-        Long matchId = 1L;
-        List<Match> matches = new ArrayList<>();
-        Match match = new Match(matchId, 1, 0, LocalDateTime.of(2000, 1, 2, 10, 10, 10), team1, team2, stadium);
-        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team1, team2, stadium);
-        matches.add(match);
-        matches.add(match2);
-
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<Match>(matches));
 
         List<MatchDTO> response = matchService.list(0, 1000, "id,asc", null,null, null, false);
@@ -634,11 +596,9 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should get all hammering matches successfully")
     void listHammeringCaseSuccess() {
-        Match match1 = new Match();
         match1.setHomeGoals(5);
         match1.setAwayGoals(0);
 
-        Match match2 = new Match();
         match2.setHomeGoals(2);
         match2.setAwayGoals(1);
 
@@ -646,7 +606,6 @@ class MatchServiceTest {
         match3.setHomeGoals(4);
         match3.setAwayGoals(1);
 
-        Pageable pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<Match>(Arrays.asList(match1, match2, match3)));
 
         List<MatchDTO> response = matchService.list(0, 1000, "id,asc", null,null, null, true);
@@ -658,11 +617,9 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should get all matches successfully paginated and sorted")
     void listWithPaginationAndSortCaseSuccess() {
-        Match match1 = new Match();
         match1.setHomeGoals(3);
         match1.setAwayGoals(1);
 
-        Match match2 = new Match();
         match2.setHomeGoals(2);
         match2.setAwayGoals(2);
 
@@ -672,7 +629,7 @@ class MatchServiceTest {
 
         List<Match> matches = Arrays.asList(match1, match2, match3);
 
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "goals"));
+        pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "goals"));
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(matches));
 
         int page = 0;
