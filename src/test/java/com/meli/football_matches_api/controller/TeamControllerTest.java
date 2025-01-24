@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.meli.football_matches_api.DTO.TeamDTO;
-import com.meli.football_matches_api.model.Match;
-import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.service.TeamService;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
