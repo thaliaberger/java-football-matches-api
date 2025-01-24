@@ -1,68 +1,43 @@
 package com.meli.football_matches_api.specification;
 
-import com.meli.football_matches_api.controller.MatchController;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.meli.football_matches_api.model.Match;
-import com.meli.football_matches_api.repository.MatchRepository;
-import com.meli.football_matches_api.repository.StadiumRepository;
-import com.meli.football_matches_api.repository.TeamRepository;
-import com.meli.football_matches_api.service.MatchService;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+import org.springframework.data.jpa.domain.Specification;
 
 public class MatchSpecificationTest {
 
-    private MockMvc mockMvc;
-
     @Mock
     private Root<Match> root;
-
     @Mock
     private CriteriaQuery<Match> query;
-
     @Mock
     private CriteriaBuilder criteriaBuilder;
 
-    @Mock
-    private MatchRepository matchRepository;
-
-    @Mock
-    private StadiumRepository stadiumRepository;
-
-    @Mock
-    private TeamRepository teamRepository;
-
-    @InjectMocks
-    private MatchService matchService;
-
-    @InjectMocks
-    private MatchController matchController;
-
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     @DisplayName("Should not filter by homeTeam")
     void hasHomeTeamCaseNullId() {
-        Long teamId = null;
-        Specification<Match> spec = MatchSpecification.hasHomeTeam(teamId);
+        Specification<Match> spec = MatchSpecification.hasHomeTeam(null);
         assertEquals(criteriaBuilder.conjunction(), spec.toPredicate(root, query, criteriaBuilder));
     }
 
     @Test
     @DisplayName("Should not filter by awayTeam")
     void hasAwayTeamCaseNullId() {
-        Long teamId = null;
-        Specification<Match> spec = MatchSpecification.hasAwayTeam(teamId);
+        Specification<Match> spec = MatchSpecification.hasAwayTeam(null);
         assertEquals(criteriaBuilder.conjunction(), spec.toPredicate(root, query, criteriaBuilder));
     }
 
@@ -79,8 +54,7 @@ public class MatchSpecificationTest {
     @Test
     @DisplayName("Should not filter by Stadium")
     void hasStadiumCaseNullId() {
-        Long stadiumId = null;
-        Specification<Match> spec = MatchSpecification.hasStadium(stadiumId);
+        Specification<Match> spec = MatchSpecification.hasStadium(null);
         assertEquals(criteriaBuilder.conjunction(), spec.toPredicate(root, query, criteriaBuilder));
     }
 }
