@@ -57,6 +57,7 @@ class MatchControllerTest {
     Match newMatch = new Match();
     MatchDTO matchDTO = new MatchDTO();
     long matchId = 3;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void setup() {
@@ -74,16 +75,15 @@ class MatchControllerTest {
 
         newMatch = new Match(matchId, 0, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         matchDTO = new MatchDTO(newMatch);
+
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Test
     @DisplayName("Should create Match successfully")
     void createCaseSuccess() throws Exception {
         when(matchService.create(any(MatchDTO.class))).thenReturn(matchDTO);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         mockMvc.perform(post("/match")
                         .contentType("application/json")
@@ -97,11 +97,30 @@ class MatchControllerTest {
     void updateCaseSuccess() throws Exception {
         when(matchService.update(any(MatchDTO.class))).thenReturn(matchDTO);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
         mockMvc.perform(put("/match")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(matchDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(matchId));
+    }
+
+    @Test
+    @DisplayName("Should delete Match successfully")
+    void deleteCaseSuccess() throws Exception {
+        when(matchService.delete(matchId)).thenReturn("");
+
+        mockMvc.perform(delete("/match?id=" + matchId)
+                        .contentType("application/json")
+                        .content(""))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Should get Match successfully")
+    void getCaseSuccess() throws Exception {
+        when(matchService.get(matchId)).thenReturn(matchDTO);
+
+        mockMvc.perform(get("/match?id=" + matchId)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(matchDTO)))
                 .andExpect(status().isOk())
