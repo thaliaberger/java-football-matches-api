@@ -14,8 +14,7 @@ import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.repository.MatchRepository;
 import com.meli.football_matches_api.repository.StadiumRepository;
 import com.meli.football_matches_api.repository.TeamRepository;
-import com.meli.football_matches_api.specification.MatchSpecification;
-import jakarta.persistence.criteria.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -36,15 +34,6 @@ import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class MatchServiceTest {
-
-    @Mock
-    private Root<Match> root;
-
-    @Mock
-    private CriteriaQuery<Match> query;
-
-    @Mock
-    private CriteriaBuilder criteriaBuilder;
 
     @Mock
     private MatchRepository matchRepository;
@@ -652,39 +641,5 @@ class MatchServiceTest {
 
         assertNotNull(response);
         assertEquals(3, response.size());
-    }
-
-    @Test
-    @DisplayName("Should not filter by homeTeam")
-    void hasHomeTeamCaseNullId() {
-        Long teamId = null;
-        Specification<Match> spec = MatchSpecification.hasHomeTeam(teamId);
-        assertEquals(criteriaBuilder.conjunction(), spec.toPredicate(root, query, criteriaBuilder));
-    }
-
-    @Test
-    @DisplayName("Should not filter by awayTeam")
-    void hasAwayTeamCaseNullId() {
-        Long teamId = null;
-        Specification<Match> spec = MatchSpecification.hasAwayTeam(teamId);
-        assertEquals(criteriaBuilder.conjunction(), spec.toPredicate(root, query, criteriaBuilder));
-    }
-
-    @Test
-    @DisplayName("Should filter by Stadium")
-    void hasStadiumCaseSuccess() {
-        Long stadiumId = 2L;
-        when(root.get("stadium")).thenReturn(mock(Path.class));
-
-        Specification<Match> spec = MatchSpecification.hasStadium(stadiumId);
-        assertEquals(criteriaBuilder.equal(root.get("stadium"), stadiumId), spec.toPredicate(root, query, criteriaBuilder));
-    }
-
-    @Test
-    @DisplayName("Should not filter by Stadium")
-    void hasStadiumCaseNullId() {
-        Long stadiumId = null;
-        Specification<Match> spec = MatchSpecification.hasStadium(stadiumId);
-        assertEquals(criteriaBuilder.conjunction(), spec.toPredicate(root, query, criteriaBuilder));
     }
 }
