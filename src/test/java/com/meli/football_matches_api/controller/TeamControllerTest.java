@@ -3,6 +3,7 @@ package com.meli.football_matches_api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.meli.football_matches_api.DTO.RetrospectDTO;
 import com.meli.football_matches_api.DTO.TeamDTO;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
@@ -26,6 +27,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -152,5 +154,18 @@ class TeamControllerTest {
                         .content(objectMapper.writeValueAsString(teams)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(2));
+    }
+
+    @Test
+    @DisplayName("Should get Team retrospect successfully")
+    void retrospectCaseSuccess() throws Exception {
+        RetrospectDTO retrospectDTO = new RetrospectDTO(team1HomeMatches, team1AwayMatches);
+        when(teamService.getRetrospect(teamId, "", false)).thenReturn(retrospectDTO);
+
+        mockMvc.perform(get("/team/retrospect?id=" + teamId)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(teams)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.wins").value(1));
     }
 }
