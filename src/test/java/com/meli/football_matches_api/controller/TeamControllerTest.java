@@ -138,4 +138,19 @@ class TeamControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(3));
     }
+
+    @Test
+    @DisplayName("Should get ranked list of Teams successfully")
+    void rankingCaseSuccess() throws Exception {
+        List<Team> rankedTeams = new ArrayList<>();
+        rankedTeams.add(team1);
+        rankedTeams.add(team3);
+        when(teamService.ranking("goals", null)).thenReturn(Utils.convertToTeamDTO(rankedTeams));
+
+        mockMvc.perform(get("/team/ranking?rankBy=goals")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(teams)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(2));
+    }
 }
