@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team, Integer>, JpaSpecificationExecutor<Team> {
 
-    Team findById(Long id);
+   Optional<Team> findById(Long id);
 
     Boolean existsById(Long id);
 

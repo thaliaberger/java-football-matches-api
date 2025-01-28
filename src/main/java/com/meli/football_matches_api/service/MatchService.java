@@ -52,8 +52,7 @@ public class MatchService {
     }
 
     public MatchDTO get(Long id) {
-        Match match = matchRepository.findById(id);
-        if (match == null) throw new NotFoundException("Match not found");
+        Match match = matchRepository.findById(id).orElseThrow(() -> new NotFoundException("Match not found"));
         return new MatchDTO(match);
     }
 

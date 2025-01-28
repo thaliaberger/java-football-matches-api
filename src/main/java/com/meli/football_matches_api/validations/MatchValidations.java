@@ -23,11 +23,8 @@ public class MatchValidations {
 
         validateIds(homeTeamId, awayTeamId);
 
-        Team homeTeam = teamRepository.findById(homeTeamId);
-        if (homeTeam == null) throw new NotFoundException("homeTeam not found");
-
-        Team awayTeam = teamRepository.findById(awayTeamId);
-        if (awayTeam == null) throw new NotFoundException("awayTeam not found");
+        Team homeTeam = teamRepository.findById(homeTeamId).orElseThrow(() -> new NotFoundException("homeTeam not found"));
+        Team awayTeam = teamRepository.findById(awayTeamId).orElseThrow(() -> new NotFoundException("awayTeam not found"));
 
         validateGoals(matchDTO.getHomeGoals(), matchDTO.getAwayGoals());
         validateTeams(homeTeam, awayTeam);
@@ -89,8 +86,7 @@ public class MatchValidations {
         Long stadiumId = stadiumObj.getId();
         if (stadiumId == null) throw new FieldException("[stadium.id] cannot be null");
 
-        Stadium stadium = stadiumRepository.findById(stadiumId);
-        if (stadium == null) throw new NotFoundException("Stadium not found");
+        Stadium stadium = stadiumRepository.findById(stadiumId).orElseThrow(() -> new NotFoundException("Stadium not found"));
 
         List<Match> matches = stadium.getMatches();
 

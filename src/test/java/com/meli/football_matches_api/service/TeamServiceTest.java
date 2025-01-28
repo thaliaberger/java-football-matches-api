@@ -27,6 +27,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -238,7 +239,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should inactivate Team")
     void deleteCaseSuccess() {
-        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
 
         String response = teamService.delete(teamId);
 
@@ -251,7 +252,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException")
     void deleteCaseTeamNotFound() {
-        when(repository.findById(5L)).thenReturn(null);
+        when(repository.findById(5L)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             teamService.delete(5L);
@@ -263,7 +264,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team successfully")
     void getCaseSuccess() {
-        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
 
         TeamDTO response = teamService.get(teamId);
 
@@ -318,7 +319,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException")
     void getCaseTeamNotFound() {
-        when(repository.findById(teamId)).thenReturn(null);
+        when(repository.findById(teamId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             teamService.get(teamId);
@@ -330,7 +331,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team retrospect successfully")
     void getRetrospectCaseSuccess() {
-        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
 
         RetrospectDTO response = teamService.getRetrospect(teamId, "", false);
 
@@ -347,8 +348,8 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team retrospect against opponent successfully")
     void getRetrospectAgainstOpponentCaseSuccess() {
-        when(repository.findById(teamId)).thenReturn(team1);
-        when(repository.findById(3L)).thenReturn(team3);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
+        when(repository.findById(3L)).thenReturn(Optional.ofNullable(team3));
 
         RetrospectDTO response = teamService.getRetrospect(teamId, 3L, "", false);
 
@@ -365,8 +366,8 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException")
     void getRetrospectAgainstOpponentCaseOpponentNotFound() {
-        when(repository.findById(teamId)).thenReturn(team1);
-        when(repository.findById(3L)).thenReturn(null);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
+        when(repository.findById(3L)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             teamService.getRetrospect(teamId, 3L, "", false);
@@ -379,7 +380,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team home matches retrospect successfully")
     void getTeamHomeMatchesRetrospectCaseSuccess() {
-        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
 
         RetrospectDTO response = teamService.getRetrospect(teamId,  "home", false);
 
@@ -396,7 +397,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team away matches retrospect successfully")
     void getTeamAwayMatchesRetrospectCaseSuccess() {
-        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
 
         RetrospectDTO response = teamService.getRetrospect(teamId,  "away", false);
 
@@ -413,7 +414,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team hammering matches retrospect successfully")
     void getHammeringMatchesRetrospectCaseSuccess() {
-        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
 
         RetrospectDTO response = teamService.getRetrospect(teamId,  "", true);
 
@@ -430,7 +431,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Team retrospect against all successfully")
     void getRetrospectAgainstAllCaseSuccess() {
-        when(repository.findById(teamId)).thenReturn(team1);
+        when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
 
         HashMap<String, RetrospectDTO> response = teamService.getRetrospectAgainstAll(teamId);
 
@@ -442,7 +443,7 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException")
     void getRetrospectAgainstAllCaseTeamNotFound() {
-        when(repository.findById(teamId)).thenReturn(null);
+        when(repository.findById(teamId)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             teamService.getRetrospectAgainstAll(teamId);

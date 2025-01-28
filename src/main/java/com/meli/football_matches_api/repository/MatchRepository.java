@@ -7,10 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MatchRepository extends JpaRepository<Match, Integer>, JpaSpecificationExecutor<Match> {
 
-    Match findById(Long id);
+    Optional<Match> findById(Long id);
 
     Boolean existsById(Long id);
 

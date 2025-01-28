@@ -37,8 +37,7 @@ public class StadiumService {
     };
 
     public StadiumDTO get(Long id) {
-        Stadium stadium = stadiumRepository.findById(id);
-        if (stadium == null) throw new NotFoundException("Stadium not found");
+        Stadium stadium = stadiumRepository.findById(id).orElseThrow(() -> new NotFoundException("Stadium not found"));
         return new StadiumDTO(stadium);
     }
 

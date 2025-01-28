@@ -31,6 +31,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class MatchServiceTest {
@@ -78,9 +79,9 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should create Match successfully")
     void createCaseSuccess() {
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
-        when(stadiumRepository.findById(1L)).thenReturn(stadium);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
+        when(stadiumRepository.findById(1L)).thenReturn(Optional.ofNullable(stadium));
         when(matchRepository.save(any(Match.class))).thenReturn(new Match(matchDTO));
 
         MatchDTO response = matchService.create(matchDTO);
@@ -129,7 +130,7 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException: homeTeam not found")
     void createCaseHomeTeamNotFound() {
-        when(teamRepository.findById(1L)).thenReturn(null);
+        when(teamRepository.findById(1L)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             matchService.create(matchDTO);
@@ -141,8 +142,8 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException: awayTeam not found")
     void createCaseAwayTeamNotFound() {
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(null);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             matchService.create(matchDTO);
@@ -157,8 +158,8 @@ class MatchServiceTest {
         newMatch.setHomeGoals(null);
         matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
@@ -173,8 +174,8 @@ class MatchServiceTest {
         newMatch.setAwayGoals(null);
         matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
@@ -189,8 +190,8 @@ class MatchServiceTest {
         newMatch.setHomeGoals(-2);
         matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
@@ -205,8 +206,8 @@ class MatchServiceTest {
         newMatch.setAwayGoals(-2);
         matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
@@ -220,8 +221,8 @@ class MatchServiceTest {
     void createCaseHomeTeamNotActive() {
         team1.setIsActive(false);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
@@ -235,8 +236,8 @@ class MatchServiceTest {
     void createCaseAwayTeamNotActive() {
         team2.setIsActive(false);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
@@ -251,8 +252,8 @@ class MatchServiceTest {
         newMatch.setMatchDateTime(null);
         matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
@@ -268,8 +269,8 @@ class MatchServiceTest {
         newMatch.setMatchDateTime(LocalDateTime.of(nextYear, 1, 6, 10, 10, 10));
         matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         FieldException exception = assertThrows(FieldException.class, () -> {
             matchService.create(matchDTO);
@@ -284,8 +285,8 @@ class MatchServiceTest {
         newMatch.setMatchDateTime(LocalDateTime.of((team1.getDateCreated().getYear() - 1), 1, 6, 10, 10, 10));
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         ConflictException exception = assertThrows(ConflictException.class, () -> {
             matchService.create(matchDTO);
@@ -300,8 +301,8 @@ class MatchServiceTest {
         newMatch.setMatchDateTime(LocalDateTime.of((team2.getDateCreated().getYear() - 1), 1, 6, 10, 10, 10));
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
 
         ConflictException exception = assertThrows(ConflictException.class, () -> {
             matchService.create(matchDTO);
@@ -317,8 +318,8 @@ class MatchServiceTest {
         newMatch.setMatchDateTime(match1.getMatchDateTime());
         matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
 
         ConflictException exception = assertThrows(ConflictException.class, () -> {
@@ -334,8 +335,8 @@ class MatchServiceTest {
         newMatch.setStadium(null);
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
@@ -351,8 +352,8 @@ class MatchServiceTest {
         newMatch.setStadium(new Stadium(null, "Maracanã", null, null));
         MatchDTO matchDTO = new MatchDTO(newMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
 
         FieldException exception = assertThrows(FieldException.class, () -> {
@@ -365,10 +366,10 @@ class MatchServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException: Stadium not found")
     void createCaseStadiumNotFound() {
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches);
-        when(stadiumRepository.findById(1L)).thenReturn(null);
+        when(stadiumRepository.findById(1L)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             matchService.create(matchDTO);
@@ -388,10 +389,10 @@ class MatchServiceTest {
 
         List<Match> matches2 = new ArrayList<>();
 
-        when(teamRepository.findById(3L)).thenReturn(team3);
-        when(teamRepository.findById(4L)).thenReturn(team4);
+        when(teamRepository.findById(3L)).thenReturn(Optional.of(team3));
+        when(teamRepository.findById(4L)).thenReturn(Optional.of(team4));
         when(matchRepository.findAllByHomeTeam(any(Team.class))).thenReturn(matches2);
-        when(stadiumRepository.findById(1L)).thenReturn(stadium);
+        when(stadiumRepository.findById(1L)).thenReturn(Optional.ofNullable(stadium));
         ConflictException exception = assertThrows(ConflictException.class, () -> {
             matchService.create(matchDTO);
         });
@@ -405,9 +406,9 @@ class MatchServiceTest {
         Match updatedMatch = new Match(2L, 4, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
         MatchDTO matchDTO = new MatchDTO(updatedMatch);
 
-        when(teamRepository.findById(1L)).thenReturn(team1);
-        when(teamRepository.findById(2L)).thenReturn(team2);
-        when(stadiumRepository.findById(1L)).thenReturn(stadium);
+        when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
+        when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
+        when(stadiumRepository.findById(1L)).thenReturn(Optional.ofNullable(stadium));
         when(matchRepository.save(any(Match.class))).thenReturn(new Match(matchDTO));
 
         when(matchRepository.existsById(2L)).thenReturn(true);
@@ -465,7 +466,7 @@ class MatchServiceTest {
     void getCaseSuccess() {
         Long matchId = 1L;
 
-        when(matchRepository.findById(matchId)).thenReturn(match1);
+        when(matchRepository.findById(matchId)).thenReturn(Optional.ofNullable(match1));
 
         MatchDTO response = matchService.get(matchId);
 

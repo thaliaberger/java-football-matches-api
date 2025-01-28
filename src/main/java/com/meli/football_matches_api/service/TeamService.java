@@ -41,8 +41,7 @@ public class TeamService {
     }
 
     public TeamDTO get(Long id) {
-        Team team = repository.findById(id);
-        if (team == null) throw new NotFoundException("Team not found");
+        Team team = repository.findById(id).orElseThrow(() -> new NotFoundException("Team not found"));
         return new TeamDTO(team);
     }
 
@@ -73,8 +72,7 @@ public class TeamService {
     }
 
     public HashMap<String, RetrospectDTO> getRetrospectAgainstAll(Long id) {
-        Team team = repository.findById(id);
-        if (team == null) throw new NotFoundException("Team not found");
+        Team team = repository.findById(id).orElseThrow(() -> new NotFoundException("Team not found"));
 
         List<Match> homeMatches = team.getHomeMatches();
         List<Match> awayMatches = team.getAwayMatches();
@@ -100,10 +98,8 @@ public class TeamService {
     }
 
     public Team getTeamById(Long id, boolean isOpponent) {
-        Team team = repository.findById(id);
-        if (team == null) {
-            throw new NotFoundException(isOpponent ? "Opponent team not found" : "Team not found");
-        }
+        String message = isOpponent ? "Opponent team not found" : "Team not found";
+        Team team = repository.findById(id).orElseThrow(() -> new NotFoundException(message));
         return team;
     }
 

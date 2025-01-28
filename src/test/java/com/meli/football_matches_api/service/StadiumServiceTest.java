@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -165,7 +166,7 @@ class StadiumServiceTest {
     @DisplayName("Should get Stadium successfully")
     void getCaseSuccess() {
         Stadium stadium = new Stadium(stadiumDTO);
-        when(stadiumRepository.findById(stadiumId)).thenReturn(stadium);
+        when(stadiumRepository.findById(stadiumId)).thenReturn(Optional.of(stadium));
 
         StadiumDTO response = stadiumService.get(stadiumId);
 
@@ -177,7 +178,7 @@ class StadiumServiceTest {
     @Test
     @DisplayName("Should throw NotFoundException when stadium does not exist")
     void getStadiumCaseStadiumDoesNotExist() {
-        when(stadiumRepository.findById(3L)).thenReturn(null);
+        when(stadiumRepository.findById(3L)).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             stadiumService.get(3L);
