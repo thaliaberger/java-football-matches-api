@@ -2,7 +2,6 @@ package com.meli.football_matches_api.repository;
 
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 

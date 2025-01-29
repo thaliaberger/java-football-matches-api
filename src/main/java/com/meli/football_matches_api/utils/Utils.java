@@ -10,9 +10,10 @@ import com.meli.football_matches_api.model.Team;
 import org.springframework.data.domain.Sort;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Utils {
+
+    private Utils() {}
 
     public static List<TeamDTO> convertToTeamDTO(List<Team> teams) {
         List<TeamDTO> teamDTOs = new ArrayList<>();
@@ -77,7 +78,7 @@ public class Utils {
 
     public static List<Match> filterByOpponent(List<Match> matches, Long opponentId, boolean isHomeMatch) {
         if (matches == null) return List.of();
-        return matches.stream().filter(match -> Objects.equals(isHomeMatch ? match.getAwayTeam().getId() : match.getHomeTeam().getId(), opponentId)).collect(Collectors.toList());
+        return matches.stream().filter(match -> Objects.equals(isHomeMatch ? match.getAwayTeam().getId() : match.getHomeTeam().getId(), opponentId)).toList();
     }
 
     public static Comparator<TeamDTO> getComparator(String rankBy, String matchLocation) {
@@ -153,7 +154,7 @@ public class Utils {
         return filteredTeams;
     }
 
-    public static void populateRetrospectsByOpponentHashMap(List<Match> matches, boolean isHomeMatch, HashMap<String, RetrospectDTO> retrospectsByOpponent) {
+    public static void populateRetrospectsByOpponentHashMap(List<Match> matches, boolean isHomeMatch, Map<String, RetrospectDTO> retrospectsByOpponent) {
         for (Match match : matches) {
             String currentOpponent = isHomeMatch ? match.getAwayTeam().getName() : match.getHomeTeam().getName();
 

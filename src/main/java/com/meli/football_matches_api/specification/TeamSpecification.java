@@ -4,6 +4,9 @@ import com.meli.football_matches_api.model.Team;
 import org.springframework.data.jpa.domain.Specification;
 
 public class TeamSpecification {
+
+    private TeamSpecification() {}
+
     public static Specification<Team> hasIsActive(Boolean isActive) {
         return (root, query, criteriaBuilder) -> {
             if (isActive == null) {

@@ -283,7 +283,7 @@ class MatchServiceTest {
     @DisplayName("Should throw ConflictException: [matchDateTime] cannot be before [homeTeamDateCreated]")
     void createCaseMatchDateTimeCannotBeBeforeHomeTeamDateCreated() {
         newMatch.setMatchDateTime(LocalDateTime.of((team1.getDateCreated().getYear() - 1), 1, 6, 10, 10, 10));
-        MatchDTO matchDTO = new MatchDTO(newMatch);
+        matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
         when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
@@ -299,7 +299,7 @@ class MatchServiceTest {
     @DisplayName("Should throw ConflictException: [matchDateTime] cannot be before [awayTeamDateCreated]")
     void createCaseMatchDateTimeCannotBeBeforeAwayTeamDateCreated() {
         newMatch.setMatchDateTime(LocalDateTime.of((team2.getDateCreated().getYear() - 1), 1, 6, 10, 10, 10));
-        MatchDTO matchDTO = new MatchDTO(newMatch);
+        matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
         when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
@@ -333,7 +333,7 @@ class MatchServiceTest {
     @DisplayName("Should throw FieldException: [stadium] cannot be null")
     void createCaseStadiumIsNull() {
         newMatch.setStadium(null);
-        MatchDTO matchDTO = new MatchDTO(newMatch);
+        matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
         when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
@@ -350,7 +350,7 @@ class MatchServiceTest {
     @DisplayName("Should throw FieldException: [stadium.id] cannot be null")
     void createCaseStadiumIdNull() {
         newMatch.setStadium(new Stadium(null, "Maracanã", null, null));
-        MatchDTO matchDTO = new MatchDTO(newMatch);
+        matchDTO = new MatchDTO(newMatch);
 
         when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
         when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
@@ -404,7 +404,7 @@ class MatchServiceTest {
     @DisplayName("Should update Match successfully")
     void updateCaseSuccess() {
         Match updatedMatch = new Match(2L, 4, 0, LocalDateTime.of(2023, 1, 6, 10, 10, 10), team1, team2, stadium);
-        MatchDTO matchDTO = new MatchDTO(updatedMatch);
+        matchDTO = new MatchDTO(updatedMatch);
 
         when(teamRepository.findById(1L)).thenReturn(Optional.ofNullable(team1));
         when(teamRepository.findById(2L)).thenReturn(Optional.ofNullable(team2));
@@ -479,10 +479,8 @@ class MatchServiceTest {
     void getCaseMatchDoesNotExist() {
         long matchId = 1;
 
-        when(matchRepository.existsById(matchId)).thenReturn(false);
-
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            matchService.delete(matchId);
+            matchService.get(matchId);
         });
 
         assertEquals("Match not found", exception.getMessage());
@@ -503,7 +501,6 @@ class MatchServiceTest {
     @DisplayName("Should get all home matches successfully")
     void listByTeamAndHomeMatchesCaseSuccess() {
         Long homeMatchId = 1L;
-        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team2, team1, stadium);
 
         List<Match> team1HomeMatches = new ArrayList<>();
         team1HomeMatches.add(match1);
@@ -526,7 +523,6 @@ class MatchServiceTest {
     @DisplayName("Should get all away matches successfully")
     void listByTeamAndAwayMatchesCaseSuccess() {
         Long awayMatchId = 2L;
-        Match match2 = new Match(awayMatchId, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team2, team1, stadium);
 
         List<Match> team1HomeMatches = new ArrayList<>();
         team1HomeMatches.add(match1);
@@ -549,7 +545,6 @@ class MatchServiceTest {
     @DisplayName("Should get all team matches successfully")
     void listByTeamCaseSuccess() {
         Long homeMatchId = 1L;
-        Match match2 = new Match(2L, 0, 0, LocalDateTime.of(2000, 1, 3, 10, 10, 10), team2, team1, stadium);
 
         List<Match> team1HomeMatches = new ArrayList<>();
         team1HomeMatches.add(match1);
@@ -629,7 +624,7 @@ class MatchServiceTest {
         match3.setHomeGoals(4);
         match3.setAwayGoals(0);
 
-        List<Match> matches = Arrays.asList(match1, match2, match3);
+        matches = Arrays.asList(match1, match2, match3);
 
         pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "goals"));
         when(matchRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(new PageImpl<>(matches));

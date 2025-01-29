@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 public class TeamValidations {
-    private final static String[] STATES = { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "TO" };
+
+    private TeamValidations() {}
+
+    private static final String[] STATES = { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "TO" };
 
     public static boolean isValidState(String state) {
         return Arrays.asList(STATES).contains(state);
@@ -26,7 +29,7 @@ public class TeamValidations {
 
         validateDateCreated(teamDTO.getDateCreated(), teamRepository, teamDTO.getId(), isUpdate);
         validateState(teamDTO.getState());
-    };
+    }
 
     private static void validateIfTeamAlreadyExists(Long id, String teamName, String state, TeamRepository teamRepository, boolean isUpdate) {
         if (isUpdate) {
@@ -53,7 +56,7 @@ public class TeamValidations {
         LocalDateTime localDateTime = date.atTime(0, 0);
         boolean hasMatchesBeforeDate = teamRepository.existsByIdAndAwayMatchesMatchDateTimeBefore(id, localDateTime) || teamRepository.existsByIdAndHomeMatchesMatchDateTimeBefore(id, localDateTime);
         if (isUpdate && hasMatchesBeforeDate) throw new ConflictException("[dateCreated] cannot be after match date");
-    };
+    }
 
     private static void validateState(String state) {
         if (state == null || state.isEmpty()) throw new FieldException("[state] cannot be empty or null");
@@ -61,6 +64,5 @@ public class TeamValidations {
         if (state.length() != 2) throw new FieldException("[state] must contain 2 characters");
 
         if (!isValidState(state)) throw new FieldException("[state] is not a valid");
-    };
-
+    }
 }

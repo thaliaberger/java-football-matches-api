@@ -28,11 +28,11 @@ public class MatchService {
         this.matchRepository = repository;
         this.teamRepository = teamRepository;
         this.stadiumRepository = stadiumRepository;
-    };
+    }
 
     public MatchDTO create(MatchDTO matchDTO) {
         return saveMatch(matchDTO);
-    };
+    }
 
     public MatchDTO update(MatchDTO matchDTO) {
         MatchValidations.validateIfMatchExists(matchDTO.getId(), matchRepository);

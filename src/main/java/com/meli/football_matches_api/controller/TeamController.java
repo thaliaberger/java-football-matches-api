@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/team")
@@ -64,7 +65,7 @@ public class TeamController {
     }
 
     @GetMapping(value = "/retrospect/all", params = "id")
-    public ResponseEntity<HashMap<String, RetrospectDTO>> retrospectAll(@RequestParam Long id) {
+    public ResponseEntity<Map<String, RetrospectDTO>> retrospectAll(@RequestParam Long id) {
         return  ResponseEntity.status(HttpStatus.OK).body(teamService.getRetrospectAgainstAll(id));
     }
 

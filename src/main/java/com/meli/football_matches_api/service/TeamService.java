@@ -24,7 +24,7 @@ public class TeamService {
 
     public TeamService(TeamRepository repository) {
         this.repository = repository;
-    };
+    }
 
     public TeamDTO create(TeamDTO teamDTO) {
         return saveTeam(teamDTO, false);
@@ -71,7 +71,7 @@ public class TeamService {
         return Utils.createRetrospectDTO(team, opponentId, matchLocation, isHammering);
     }
 
-    public HashMap<String, RetrospectDTO> getRetrospectAgainstAll(Long id) {
+    public Map<String, RetrospectDTO> getRetrospectAgainstAll(Long id) {
         Team team = repository.findById(id).orElseThrow(() -> new NotFoundException("Team not found"));
 
         List<Match> homeMatches = team.getHomeMatches();

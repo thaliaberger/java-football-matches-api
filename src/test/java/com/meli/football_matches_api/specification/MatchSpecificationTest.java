@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.jpa.domain.Specification;
 
-public class MatchSpecificationTest {
+class MatchSpecificationTest {
 
     @Mock
     private Root<Match> root;

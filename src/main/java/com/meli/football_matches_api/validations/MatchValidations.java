@@ -41,7 +41,7 @@ public class MatchValidations {
         validateConflictMatches(matchId, matchDateTime, awayTeamMatches);
 
         validateStadium(matchDTO.getStadium(), stadiumRepository, matchDateTime);
-    };
+    }
 
     public static void validateIfMatchExists(Long matchId, MatchRepository matchRepository) {
         if (!matchRepository.existsById(matchId)) throw new NotFoundException("Match not found");
@@ -70,13 +70,13 @@ public class MatchValidations {
         if (dateTime.isAfter(LocalDateTime.now())) throw new FieldException("[matchDateTime] cannot be in the future");
         if (dateTime.isBefore(homeTeamDate.atStartOfDay())) throw new ConflictException("[matchDateTime] cannot be before [homeTeamDateCreated]");
         if (dateTime.isBefore(awayTeamDate.atStartOfDay())) throw new ConflictException("[matchDateTime] cannot be before [awayTeamDateCreated]");
-    };
+    }
 
     private static void validateConflictMatches(Long matchId, LocalDateTime dateTime, List<Match> matches) {
         matches.forEach(match -> {
             if (Math.abs(Duration.between(dateTime, match.getMatchDateTime()).toHours()) < 48 && (!Objects.equals(match.getId(), matchId))) {
                 throw new ConflictException("Cannot create a match when one of the teams already has a match in less than 48 hours");
-            };
+            }
         });
     }
 

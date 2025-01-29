@@ -24,10 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -220,9 +217,9 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should throw ConflictException when dateCreated is after match date")
     void updateCaseDateCreatedIsAfterMatchDate() {
-        long teamId = 2L;
+        teamId = 2L;
         team2.setDateCreated(LocalDate.of(2025, 1, 1));
-        TeamDTO teamDTO = new TeamDTO(team2);
+        teamDTO = new TeamDTO(team2);
         LocalDateTime dateTime = teamDTO.getDateCreated().atTime(0,0);
 
         when(repository.existsById(teamId)).thenReturn(true);
@@ -433,7 +430,7 @@ class TeamServiceTest {
     void getRetrospectAgainstAllCaseSuccess() {
         when(repository.findById(teamId)).thenReturn(Optional.ofNullable(team1));
 
-        HashMap<String, RetrospectDTO> response = teamService.getRetrospectAgainstAll(teamId);
+        Map<String, RetrospectDTO> response = teamService.getRetrospectAgainstAll(teamId);
 
         assertNotNull(response);
         assertEquals(0, response.get("Figueirense").getWins());

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team, Integer>, JpaSpecificationExecutor<Team> {
 
-   Optional<Team> findById(Long id);
+    Optional<Team> findById(Long id);
 
     Boolean existsById(Long id);
 
