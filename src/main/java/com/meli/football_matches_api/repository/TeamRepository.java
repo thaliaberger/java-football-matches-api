@@ -26,6 +26,8 @@ public interface TeamRepository extends JpaRepository<Team, Integer>, JpaSpecifi
 
     List<Team> findByAwayMatchesHomeGoalsNotNull();
 
+    List<Team> findByAwayMatchesAwayGoalsNotNull();
+
     Boolean existsByIdAndHomeMatchesMatchDateTimeBefore(Long id, LocalDateTime date);
 
     Boolean existsByIdAndAwayMatchesMatchDateTimeBefore(Long id, LocalDateTime date);
