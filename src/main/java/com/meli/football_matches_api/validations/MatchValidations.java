@@ -1,6 +1,6 @@
 package com.meli.football_matches_api.validations;
 
-import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.dto.MatchDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class MatchValidations {
+
+    private MatchValidations() {}
 
     public static void validateFields(MatchDTO matchDTO, MatchRepository matchRepository, TeamRepository teamRepository, StadiumRepository stadiumRepository) {
         Long homeTeamId = matchDTO.getHomeTeam().getId();

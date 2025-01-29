@@ -1,6 +1,6 @@
 package com.meli.football_matches_api.validations;
 
-import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.dto.TeamDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;

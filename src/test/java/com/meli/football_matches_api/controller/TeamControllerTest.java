@@ -3,8 +3,8 @@ package com.meli.football_matches_api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.meli.football_matches_api.DTO.RetrospectDTO;
-import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.dto.RetrospectDTO;
+import com.meli.football_matches_api.dto.TeamDTO;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
@@ -27,7 +27,6 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

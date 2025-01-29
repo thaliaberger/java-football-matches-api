@@ -1,4 +1,4 @@
-package com.meli.football_matches_api.DTO;
+package com.meli.football_matches_api.dto;
 
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;

@@ -1,5 +1,5 @@
 package com.meli.football_matches_api.handler;
-import com.meli.football_matches_api.DTO.ErrorDTO;
+import com.meli.football_matches_api.dto.ErrorDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;

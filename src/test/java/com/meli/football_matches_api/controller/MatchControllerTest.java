@@ -3,7 +3,7 @@ package com.meli.football_matches_api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.dto.MatchDTO;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;

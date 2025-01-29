@@ -1,8 +1,7 @@
 package com.meli.football_matches_api.controller;
 
-import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.dto.MatchDTO;
 import com.meli.football_matches_api.service.MatchService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +12,7 @@ import java.util.List;
 @RequestMapping("/match")
 public class MatchController {
 
-    @Autowired
-    private MatchService matchService;
+    private final MatchService matchService;
 
     public MatchController(MatchService matchService) {
         this.matchService = matchService;

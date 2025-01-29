@@ -1,10 +1,9 @@
-package com.meli.football_matches_api.DTO;
+package com.meli.football_matches_api.dto;
 
 import com.meli.football_matches_api.model.Match;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RetrospectDTO {
@@ -28,7 +27,7 @@ public class RetrospectDTO {
         List<Match> allMatches = Stream.of(homeMatches, awayMatches)
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .toList();
 
         setMatches(allMatches);
     }

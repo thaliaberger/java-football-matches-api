@@ -1,7 +1,7 @@
 package com.meli.football_matches_api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.dto.TeamDTO;
 import jakarta.persistence.*;
 import org.springframework.beans.BeanUtils;
 

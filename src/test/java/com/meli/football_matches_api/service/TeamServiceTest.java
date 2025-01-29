@@ -1,7 +1,7 @@
 package com.meli.football_matches_api.service;
 
-import com.meli.football_matches_api.DTO.RetrospectDTO;
-import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.dto.RetrospectDTO;
+import com.meli.football_matches_api.dto.TeamDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
@@ -12,6 +12,8 @@ import com.meli.football_matches_api.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -152,10 +155,19 @@ class TeamServiceTest {
         assertEquals("[dateCreated] cannot be in the future", exception.getMessage());
     }
 
-    @Test
-    @DisplayName("Should throw FieldException when state is null or empty")
-    void createCaseStateIsNullOrEmpty() {
-        teamDTO.setState(null);
+    static Stream<CaseTestInvalidState> createCaseStateParamProvider() {
+        return Stream.of(
+                new CaseTestInvalidState(null, "[state] cannot be empty or null"),
+                new CaseTestInvalidState("Rio de Janeiro", "[state] must contain 2 characters"),
+                new CaseTestInvalidState("SO", "[state] is not a valid")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("createCaseStateParamProvider")
+    @DisplayName("Should throw FieldException for invalid state")
+    void createCaseStateInvalid(CaseTestInvalidState testData) {
+        teamDTO.setState(testData.state);
 
         when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
 
@@ -163,36 +175,10 @@ class TeamServiceTest {
             teamService.create(teamDTO);
         });
 
-        assertEquals("[state] cannot be empty or null", exception.getMessage());
+        assertEquals(testData.expectedMessage, exception.getMessage());
     }
 
-    @Test
-    @DisplayName("Should throw FieldException when state length is different than 2")
-    void createCaseStateLengthDifferentThan2() {
-        teamDTO.setState("Rio de Janeiro");
-
-        when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
-
-        FieldException exception = assertThrows(FieldException.class, () -> {
-            teamService.create(teamDTO);
-        });
-
-        assertEquals("[state] must contain 2 characters", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Should throw FieldException when state is invalid")
-    void createCaseInvalidState() {
-        teamDTO.setState("SO");
-
-        when(repository.findByNameAndState(teamDTO.getName(), teamDTO.getState())).thenReturn(null);
-
-        FieldException exception = assertThrows(FieldException.class, () -> {
-            teamService.create(teamDTO);
-        });
-
-        assertEquals("[state] is not a valid", exception.getMessage());
-    }
+    private record CaseTestInvalidState(String state, String expectedMessage) {}
 
     @Test
     @DisplayName("Should update Team successfully")

@@ -1,9 +1,9 @@
 package com.meli.football_matches_api.utils;
 
-import com.meli.football_matches_api.DTO.MatchDTO;
-import com.meli.football_matches_api.DTO.RetrospectDTO;
-import com.meli.football_matches_api.DTO.StadiumDTO;
-import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.dto.MatchDTO;
+import com.meli.football_matches_api.dto.RetrospectDTO;
+import com.meli.football_matches_api.dto.StadiumDTO;
+import com.meli.football_matches_api.dto.TeamDTO;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;

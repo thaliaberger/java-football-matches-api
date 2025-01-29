@@ -1,6 +1,6 @@
 package com.meli.football_matches_api.service;
 
-import com.meli.football_matches_api.DTO.MatchDTO;
+import com.meli.football_matches_api.dto.MatchDTO;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.repository.MatchRepository;

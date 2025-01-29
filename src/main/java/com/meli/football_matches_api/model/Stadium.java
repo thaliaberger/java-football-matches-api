@@ -1,6 +1,6 @@
 package com.meli.football_matches_api.model;
 
-import com.meli.football_matches_api.DTO.StadiumDTO;
+import com.meli.football_matches_api.dto.StadiumDTO;
 import jakarta.persistence.*;
 import org.springframework.beans.BeanUtils;
 

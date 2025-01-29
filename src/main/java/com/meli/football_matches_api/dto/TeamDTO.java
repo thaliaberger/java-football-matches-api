@@ -1,4 +1,4 @@
-package com.meli.football_matches_api.DTO;
+package com.meli.football_matches_api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.meli.football_matches_api.model.Match;

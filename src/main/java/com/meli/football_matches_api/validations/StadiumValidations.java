@@ -1,12 +1,14 @@
 package com.meli.football_matches_api.validations;
 
-import com.meli.football_matches_api.DTO.StadiumDTO;
+import com.meli.football_matches_api.dto.StadiumDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.repository.StadiumRepository;
 
 public class StadiumValidations {
+
+    private StadiumValidations() {}
 
     public static void validateName(String name, StadiumRepository stadiumRepository, Boolean isUpdate) {
         if (name == null || name.isEmpty()) throw new FieldException("[name] cannot be null or empty");

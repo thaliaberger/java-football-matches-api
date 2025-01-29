@@ -1,14 +1,12 @@
 package com.meli.football_matches_api.service;
 
-import com.meli.football_matches_api.DTO.StadiumDTO;
+import com.meli.football_matches_api.dto.StadiumDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
 import com.meli.football_matches_api.exception.NotFoundException;
-import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.repository.StadiumRepository;
-import com.meli.football_matches_api.validations.StadiumValidations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

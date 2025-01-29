@@ -1,8 +1,7 @@
 package com.meli.football_matches_api.controller;
 
-import com.meli.football_matches_api.DTO.StadiumDTO;
+import com.meli.football_matches_api.dto.StadiumDTO;
 import com.meli.football_matches_api.service.StadiumService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +12,7 @@ import java.util.List;
 @RequestMapping("/stadium")
 public class StadiumController {
 
-    @Autowired
-    private StadiumService stadiumService;
+    private final StadiumService stadiumService;
 
     public StadiumController(StadiumService stadiumService) {
         this.stadiumService = stadiumService;

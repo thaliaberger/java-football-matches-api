@@ -1,7 +1,7 @@
 package com.meli.football_matches_api.service;
 
-import com.meli.football_matches_api.DTO.RetrospectDTO;
-import com.meli.football_matches_api.DTO.TeamDTO;
+import com.meli.football_matches_api.dto.RetrospectDTO;
+import com.meli.football_matches_api.dto.TeamDTO;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
@@ -19,6 +19,8 @@ import java.util.*;
 
 @Service
 public class TeamService {
+
+    private static final String TEAM_NOT_FOUND_MESSAGE = "Team not found";
 
     private final TeamRepository repository;
 
@@ -41,7 +43,7 @@ public class TeamService {
     }
 
     public TeamDTO get(Long id) {
-        Team team = repository.findById(id).orElseThrow(() -> new NotFoundException("Team not found"));
+        Team team = repository.findById(id).orElseThrow(() -> new NotFoundException(TEAM_NOT_FOUND_MESSAGE));
         return new TeamDTO(team);
     }
 
@@ -66,13 +68,13 @@ public class TeamService {
 
     public RetrospectDTO getRetrospect(Long id, Long opponentId, String matchLocation, boolean isHammering) {
         Team team = getTeamById(id, false);
-        Team opponentTeam = getTeamById(opponentId, true);
+        getTeamById(opponentId, true);
 
         return Utils.createRetrospectDTO(team, opponentId, matchLocation, isHammering);
     }
 
     public Map<String, RetrospectDTO> getRetrospectAgainstAll(Long id) {
-        Team team = repository.findById(id).orElseThrow(() -> new NotFoundException("Team not found"));
+        Team team = repository.findById(id).orElseThrow(() -> new NotFoundException(TEAM_NOT_FOUND_MESSAGE));
 
         List<Match> homeMatches = team.getHomeMatches();
         List<Match> awayMatches = team.getAwayMatches();
@@ -98,29 +100,30 @@ public class TeamService {
     }
 
     public Team getTeamById(Long id, boolean isOpponent) {
-        String message = isOpponent ? "Opponent team not found" : "Team not found";
-        Team team = repository.findById(id).orElseThrow(() -> new NotFoundException(message));
-        return team;
+        String message = isOpponent ? "Opponent team not found" : TEAM_NOT_FOUND_MESSAGE;
+        return repository.findById(id).orElseThrow(() -> new NotFoundException(message));
     }
 
     public List<Team> getTeamsByMatchLocation(String rankBy, String matchLocation) {
         switch (rankBy) {
-            case "matches":
-            case "score":
+            case "matches", "score":
                 if ("home".equals(matchLocation)) {
                     return repository.findByHomeMatchesNotNull();
                 } else if ("away".equals(matchLocation)) {
                     return repository.findByAwayMatchesNotNull();
+                } else {
+                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
                 }
-            case "wins":
-            case "goals":
+            case "wins", "goals":
                 if ("home".equals(matchLocation)) {
                     return repository.findByHomeMatchesHomeGoalsNotNull();
                 } else if ("away".equals(matchLocation)) {
                     return repository.findByAwayMatchesHomeGoalsNotNull();
+                } else {
+                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
                 }
             default:
-                throw new IllegalArgumentException("Invalid ranking criteria: " + rankBy);
+                return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
         }
     }
 }

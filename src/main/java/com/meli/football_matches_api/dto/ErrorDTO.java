@@ -1,4 +1,4 @@
-package com.meli.football_matches_api.DTO;
+package com.meli.football_matches_api.dto;
 
 public class ErrorDTO {
     private String message;
