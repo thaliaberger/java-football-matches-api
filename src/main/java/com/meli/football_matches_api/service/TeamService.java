@@ -5,9 +5,9 @@ import com.meli.football_matches_api.dto.TeamDTO;
 import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Team;
+import com.meli.football_matches_api.ranking.RankingGenerator;
 import com.meli.football_matches_api.repository.TeamRepository;
 import com.meli.football_matches_api.specification.TeamSpecification;
-import com.meli.football_matches_api.utils.TeamFilter;
 import com.meli.football_matches_api.utils.Utils;
 import com.meli.football_matches_api.validations.TeamValidations;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +24,11 @@ public class TeamService {
 
     private final TeamRepository repository;
 
-    public TeamService(TeamRepository repository) {
+    private final RankingGenerator rankingGenerator;
+
+    public TeamService(TeamRepository repository, RankingGenerator rankingGenerator) {
         this.repository = repository;
+        this.rankingGenerator = rankingGenerator;
     }
 
     public TeamDTO create(TeamDTO teamDTO) {
@@ -88,42 +91,12 @@ public class TeamService {
     }
 
     public List<TeamDTO> ranking(String rankBy, String matchLocation) {
-        TeamFilter filter = Utils.getFilter(rankBy);
-        Comparator<TeamDTO> comparator = Utils.getComparator(rankBy, matchLocation);
-        List<Team> teams;
-        if (matchLocation != null) {
-            teams = getTeamsByMatchLocation(rankBy, matchLocation);
-        } else {
-            teams = repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
-        }
-        return Utils.rankTeams(Utils.convertToTeamDTO(teams), comparator, filter);
+        if (matchLocation == null) return rankingGenerator.createGenerator(rankBy).execute();
+        return rankingGenerator.createGenerator(rankBy, matchLocation).execute();
     }
 
     public Team getTeamById(Long id, boolean isOpponent) {
         String message = isOpponent ? "Opponent team not found" : TEAM_NOT_FOUND_MESSAGE;
         return repository.findById(id).orElseThrow(() -> new NotFoundException(message));
-    }
-
-    public List<Team> getTeamsByMatchLocation(String rankBy, String matchLocation) {
-        switch (rankBy) {
-            case "matches", "score":
-                if ("home".equals(matchLocation)) {
-                    return repository.findByHomeMatchesNotNull();
-                } else if ("away".equals(matchLocation)) {
-                    return repository.findByAwayMatchesNotNull();
-                } else {
-                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
-                }
-            case "wins", "goals":
-                if ("home".equals(matchLocation)) {
-                    return repository.findByHomeMatchesHomeGoalsNotNull();
-                } else if ("away".equals(matchLocation)) {
-                    return repository.findByAwayMatchesHomeGoalsNotNull();
-                } else {
-                    return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
-                }
-            default:
-                return repository.findByHomeMatchesNotNullOrAwayMatchesNotNull();
-        }
     }
 }

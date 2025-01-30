@@ -53,19 +53,6 @@ public class Utils {
         return sortParams[1].equalsIgnoreCase("asc") ? Sort.by(sortParams[0]).ascending() : Sort.by(sortParams[0]).descending();
     }
 
-    public static TeamFilter getFilter(String rankBy) {
-        switch (rankBy) {
-            case "wins":
-                return filterByWins();
-            case "goals":
-                return filterByScoredGoals();
-            case "score":
-                return filterByScore();
-            default:
-                return null;
-        }
-    }
-
     public static List<Match> getHammeringMatches(List<Match> matches) {
         List<Match> hammeringMatches = new ArrayList<>();
 
@@ -79,45 +66,6 @@ public class Utils {
     public static List<Match> filterByOpponent(List<Match> matches, Long opponentId, boolean isHomeMatch) {
         if (matches == null) return List.of();
         return matches.stream().filter(match -> Objects.equals(isHomeMatch ? match.getAwayTeam().getId() : match.getHomeTeam().getId(), opponentId)).toList();
-    }
-
-    public static Comparator<TeamDTO> getComparator(String rankBy, String matchLocation) {
-        switch (rankBy) {
-            case "matches":
-                return getComparatorByMatches(matchLocation);
-            case "wins":
-                return getComparatorByWins(matchLocation);
-            case "goals":
-                return getComparatorByGoals(matchLocation);
-            case "score":
-                return getComparatorByScore(matchLocation);
-            default:
-                throw new IllegalArgumentException("Invalid rank type: " + rankBy);
-        }
-    }
-
-    private static Comparator<TeamDTO> getComparatorByMatches(String matchLocation) {
-        if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getNumberOfMatches).reversed();
-        if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getNumberOfHomeMatches).reversed();
-        return Comparator.comparing(TeamDTO::getNumberOfAwayMatches).reversed();
-    }
-
-    private static Comparator<TeamDTO> getComparatorByWins(String matchLocation) {
-        if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getWins).reversed();
-        if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeWins).reversed();
-        return Comparator.comparing(TeamDTO::getAwayWins).reversed();
-    }
-
-    private static Comparator<TeamDTO> getComparatorByGoals(String matchLocation) {
-        if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getAllScoredGoals).reversed();
-        if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getHomeScoredGoals).reversed();
-        return Comparator.comparing(TeamDTO::getAwayScoredGoals).reversed();
-    }
-
-    private static Comparator<TeamDTO> getComparatorByScore(String matchLocation) {
-        if (matchLocation == null || matchLocation.isEmpty()) return Comparator.comparing(TeamDTO::getScore).reversed();
-        if (matchLocation.equals("home")) return Comparator.comparing(TeamDTO::getScoreFromHomeMatches).reversed();
-        return Comparator.comparing(TeamDTO::getScoreFromAwayMatches).reversed();
     }
 
     public static RetrospectDTO createRetrospectDTO(Team team, Long opponentId, String matchLocation, boolean isHammering) {
@@ -142,18 +90,6 @@ public class Utils {
         }
     }
 
-    public static List<TeamDTO> rankTeams(List<TeamDTO> teams, Comparator<TeamDTO> comparator, TeamFilter filter) {
-        List<TeamDTO> filteredTeams = new ArrayList<>();
-
-        for (TeamDTO team : teams) {
-            if (filter == null || filter.filter(team)) filteredTeams.add(team);
-        }
-
-        filteredTeams.sort(comparator);
-
-        return filteredTeams;
-    }
-
     public static void populateRetrospectsByOpponentHashMap(List<Match> matches, boolean isHomeMatch, Map<String, RetrospectDTO> retrospectsByOpponent) {
         for (Match match : matches) {
             String currentOpponent = isHomeMatch ? match.getAwayTeam().getName() : match.getHomeTeam().getName();
@@ -170,15 +106,5 @@ public class Utils {
 
             retrospectsByOpponent.put(currentOpponent, newDTO);
         }
-    }
-
-    private static TeamFilter filterByWins() {
-        return team -> team.getWins() != 0;
-    }
-
-    private static TeamFilter filterByScoredGoals() { return team -> team.getAllScoredGoals() != 0; }
-
-    private static TeamFilter filterByScore() {
-        return team -> team.getScore() != 0;
     }
 }
