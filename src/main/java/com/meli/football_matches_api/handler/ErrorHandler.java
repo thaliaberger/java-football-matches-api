@@ -2,6 +2,7 @@ package com.meli.football_matches_api.handler;
 import com.meli.football_matches_api.dto.ErrorDTO;
 import com.meli.football_matches_api.exception.ConflictException;
 import com.meli.football_matches_api.exception.FieldException;
+import com.meli.football_matches_api.exception.InvalidValueException;
 import com.meli.football_matches_api.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -36,6 +37,15 @@ public class ErrorHandler {
         return new ErrorDTO(
                 ex.getMessage(),
                 HttpStatus.NOT_FOUND.value()
+        );
+    }
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    @ResponseBody
+    @ExceptionHandler(InvalidValueException.class)
+    public ErrorDTO handler(InvalidValueException ex) {
+        return new ErrorDTO(
+                ex.getMessage(),
+                HttpStatus.NOT_ACCEPTABLE.value()
         );
     }
 }
