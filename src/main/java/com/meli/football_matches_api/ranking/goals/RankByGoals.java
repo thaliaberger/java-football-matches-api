@@ -1,6 +1,8 @@
 package com.meli.football_matches_api.ranking.goals;
 
 import com.meli.football_matches_api.dto.TeamDTO;
+import com.meli.football_matches_api.enums.MatchLocation;
+import com.meli.football_matches_api.enums.RankBy;
 import com.meli.football_matches_api.ranking.Ranking;
 import com.meli.football_matches_api.repository.TeamRepository;
 import com.meli.football_matches_api.utils.TeamFilter;
@@ -25,12 +27,12 @@ public class RankByGoals implements Ranking {
     }
 
     @Override
-    public String getRankBy() {
-        return "goals";
+    public RankBy getRankBy() {
+        return RankBy.GOALS;
     }
 
     @Override
-    public String getMatchLocation() { return ""; }
+    public MatchLocation getMatchLocation() { return MatchLocation.ALL; }
 
     @Override
     public Comparator<TeamDTO> getComparator() {

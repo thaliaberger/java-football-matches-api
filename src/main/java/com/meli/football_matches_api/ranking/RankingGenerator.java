@@ -1,5 +1,7 @@
 package com.meli.football_matches_api.ranking;
 
+import com.meli.football_matches_api.enums.MatchLocation;
+import com.meli.football_matches_api.enums.RankBy;
 import com.meli.football_matches_api.ranking.score.RankByScore;
 import org.springframework.stereotype.Component;
 
@@ -18,14 +20,17 @@ public class RankingGenerator {
     }
 
     public Ranking createGenerator(String rankBy, String matchLocation) {
+        RankBy rankByEnum = RankBy.convertStringToEnum(rankBy);
+        MatchLocation matchLocationEnum = MatchLocation.convertStringToEnum(matchLocation);
+
         for (Ranking ranking : this.rankings) {
-            if (rankBy.equals(ranking.getRankBy()) && matchLocation.equals(ranking.getMatchLocation())) return ranking;
+            if (rankByEnum.equals(ranking.getRankBy()) && matchLocationEnum.equals(ranking.getMatchLocation())) return ranking;
         }
 
         return defaultRanking;
     }
 
     public Ranking createGenerator(String rankBy) {
-        return createGenerator(rankBy, "");
+        return createGenerator(rankBy, "ALL");
     }
 }
