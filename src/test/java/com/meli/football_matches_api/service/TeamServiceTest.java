@@ -8,6 +8,19 @@ import com.meli.football_matches_api.exception.NotFoundException;
 import com.meli.football_matches_api.model.Match;
 import com.meli.football_matches_api.model.Stadium;
 import com.meli.football_matches_api.model.Team;
+import com.meli.football_matches_api.ranking.RankingGenerator;
+import com.meli.football_matches_api.ranking.goals.RankByAwayGoals;
+import com.meli.football_matches_api.ranking.goals.RankByGoals;
+import com.meli.football_matches_api.ranking.goals.RankByHomeGoals;
+import com.meli.football_matches_api.ranking.matches.RankByAwayMatches;
+import com.meli.football_matches_api.ranking.matches.RankByHomeMatches;
+import com.meli.football_matches_api.ranking.matches.RankByMatches;
+import com.meli.football_matches_api.ranking.score.RankByAwayScore;
+import com.meli.football_matches_api.ranking.score.RankByHomeScore;
+import com.meli.football_matches_api.ranking.score.RankByScore;
+import com.meli.football_matches_api.ranking.wins.RankByAwayWins;
+import com.meli.football_matches_api.ranking.wins.RankByHomeWins;
+import com.meli.football_matches_api.ranking.wins.RankByWins;
 import com.meli.football_matches_api.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +51,37 @@ class TeamServiceTest {
     @Mock
     private TeamRepository repository;
 
+    @Mock
+    private RankingGenerator rankingGenerator;
+
+    @Mock
+    private RankByHomeScore rankByHomeScore;
+    @Mock
+    private RankByAwayScore rankByAwayScore;
+    @Mock
+    private RankByScore rankByScore;
+
+    @Mock
+    private RankByAwayGoals rankByAwayGoals;
+    @Mock
+    private RankByHomeGoals rankByHomeGoals;
+    @Mock
+    private RankByGoals rankByGoals;
+
+    @Mock
+    private RankByAwayMatches rankByAwayMatches;
+    @Mock
+    private RankByHomeMatches rankByHomeMatches;
+    @Mock
+    private RankByMatches rankByMatches;
+
+    @Mock
+    private RankByAwayWins rankByAwayWins;
+    @Mock
+    private RankByHomeWins rankByHomeWins;
+    @Mock
+    private RankByWins rankByWins;
+
     @InjectMocks
     private TeamService teamService;
 
@@ -49,6 +93,7 @@ class TeamServiceTest {
     List<Match> team1HomeMatches = new ArrayList<>();
     List<Match> team1AwayMatches = new ArrayList<>();
     List<Team> teamsToBeRanked = new ArrayList<>();
+    List<TeamDTO> ranking;
     Pageable pageable;
 
     @BeforeEach
@@ -75,6 +120,8 @@ class TeamServiceTest {
         teamsToBeRanked.add(team3);
         teamsToBeRanked.add(team2);
         teamsToBeRanked.add(team1);
+
+        ranking = new ArrayList<>();
 
         pageable = PageRequest.of(0, 1000, Sort.by(Sort.Direction.ASC, "id"));
     }
@@ -438,9 +485,14 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by goals successfully")
     void getRankingByGoalsCaseSuccess() {
-        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "goals";
+        ranking.add(teamDTO);
+        ranking.add(new TeamDTO(team3));
 
-        List<TeamDTO> response = teamService.ranking("goals", null);
+        when(rankingGenerator.createGenerator(rankBy)).thenReturn(rankByGoals);
+        when(rankByGoals.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, null);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -451,9 +503,15 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by matches successfully")
     void getRankingByMatchesCaseSuccess() {
-        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "matches";
+        ranking.add(teamDTO);
+        ranking.add(new TeamDTO(team2));
+        ranking.add(new TeamDTO(team3));
 
-        List<TeamDTO> response = teamService.ranking("matches", null);
+        when(rankingGenerator.createGenerator(rankBy)).thenReturn(rankByMatches);
+        when(rankByMatches.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, null);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -462,11 +520,55 @@ class TeamServiceTest {
     }
 
     @Test
+    @DisplayName("Should get Teams ranked by home matches successfully")
+    void getRankingByHomeMatchesCaseSuccess() {
+        String rankBy = "matches";
+        String matchLocation = "home";
+        ranking.add(teamDTO);
+        ranking.add(new TeamDTO(team3));
+
+        when(rankingGenerator.createGenerator(rankBy, matchLocation)).thenReturn(rankByHomeMatches);
+        when(rankByHomeMatches.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, matchLocation);
+
+        assertNotNull(response);
+        assertEquals(1L, response.getFirst().getId());
+        assertEquals(3L, response.getLast().getId());
+        assertEquals(2, response.size());
+    }
+
+    @Test
+    @DisplayName("Should get Teams ranked by away matches successfully")
+    void getRankingByAwayMatchesCaseSuccess() {
+        String rankBy = "matches";
+        String matchLocation = "away";
+        ranking.add(new TeamDTO(team2));
+        ranking.add(teamDTO);
+
+        when(rankingGenerator.createGenerator(rankBy, matchLocation)).thenReturn(rankByAwayMatches);
+        when(rankByAwayMatches.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, matchLocation);
+
+        assertNotNull(response);
+        assertEquals(2L, response.getFirst().getId());
+        assertEquals(1L, response.getLast().getId());
+        assertEquals(2, response.size());
+    }
+
+    @Test
     @DisplayName("Should get Teams ranked by score successfully")
     void getRankingByScoreCaseSuccess() {
-        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "score";
+        ranking.add(teamDTO);
+        ranking.add(new TeamDTO(team3));
+        ranking.add(new TeamDTO(team2));
 
-        List<TeamDTO> response = teamService.ranking("score", null);
+        when(rankingGenerator.createGenerator(rankBy)).thenReturn(rankByScore);
+        when(rankByScore.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, null);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -477,9 +579,14 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by wins successfully")
     void getRankingByWinsCaseSuccess() {
-        when(repository.findByHomeMatchesNotNullOrAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "wins";
+        ranking.add(new TeamDTO(team3));
+        ranking.add(teamDTO);
 
-        List<TeamDTO> response = teamService.ranking("wins", null);
+        when(rankingGenerator.createGenerator(rankBy)).thenReturn(rankByWins);
+        when(rankByWins.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, null);
 
         assertNotNull(response);
         assertEquals(3L, response.getFirst().getId());
@@ -490,9 +597,15 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by home wins successfully")
     void getRankingByHomeWinsCaseSuccess() {
-        when(repository.findByHomeMatchesHomeGoalsNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "wins";
+        String matchLocation = "home";
+        ranking.add(new TeamDTO(team3));
+        ranking.add(teamDTO);
 
-        List<TeamDTO> response = teamService.ranking("wins", "home");
+        when(rankingGenerator.createGenerator(rankBy, matchLocation)).thenReturn(rankByHomeWins);
+        when(rankByHomeWins.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, matchLocation);
 
         assertNotNull(response);
         assertEquals(3L, response.getFirst().getId());
@@ -503,9 +616,15 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by away wins successfully")
     void getRankingByAwayWinsCaseSuccess() {
-        when(repository.findByAwayMatchesHomeGoalsNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "wins";
+        String matchLocation = "away";
+        ranking.add(new TeamDTO(team3));
+        ranking.add(teamDTO);
 
-        List<TeamDTO> response = teamService.ranking("wins", "away");
+        when(rankingGenerator.createGenerator(rankBy, matchLocation)).thenReturn(rankByAwayWins);
+        when(rankByAwayWins.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, matchLocation);
 
         assertNotNull(response);
         assertEquals(3L, response.getFirst().getId());
@@ -516,9 +635,15 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by home goals successfully")
     void getRankingByHomeGoalsCaseSuccess() {
-        when(repository.findByHomeMatchesHomeGoalsNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "goals";
+        String matchLocation = "home";
+        ranking.add(teamDTO);
+        ranking.add(new TeamDTO(team3));
 
-        List<TeamDTO> response = teamService.ranking("goals", "home");
+        when(rankingGenerator.createGenerator(rankBy, matchLocation)).thenReturn(rankByHomeGoals);
+        when(rankByHomeGoals.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, matchLocation);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -529,9 +654,15 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by away goals successfully")
     void getRankingByAwayGoalsCaseSuccess() {
-        when(repository.findByAwayMatchesHomeGoalsNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "goals";
+        String matchLocation = "away";
+        ranking.add(teamDTO);
+        ranking.add(new TeamDTO(team3));
 
-        List<TeamDTO> response = teamService.ranking("goals", "away");
+        when(rankingGenerator.createGenerator(rankBy, matchLocation)).thenReturn(rankByAwayGoals);
+        when(rankByAwayGoals.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, matchLocation);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -542,10 +673,15 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by home score successfully")
     void getRankingByHomeScoreCaseSuccess() {
-        teamsToBeRanked.remove(team2);
-        when(repository.findByHomeMatchesNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "score";
+        String matchLocation = "home";
+        ranking.add(teamDTO);
+        ranking.add(new TeamDTO(team3));
 
-        List<TeamDTO> response = teamService.ranking("score", "home");
+        when(rankingGenerator.createGenerator(rankBy, matchLocation)).thenReturn(rankByHomeScore);
+        when(rankByHomeScore.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, matchLocation);
 
         assertNotNull(response);
         assertEquals(1L, response.getFirst().getId());
@@ -556,10 +692,15 @@ class TeamServiceTest {
     @Test
     @DisplayName("Should get Teams ranked by away score successfully")
     void getRankingByAwayScoreCaseSuccess() {
-        teamsToBeRanked.remove(team3);
-        when(repository.findByAwayMatchesNotNull()).thenReturn(teamsToBeRanked);
+        String rankBy = "score";
+        String matchLocation = "away";
+        ranking.add(new TeamDTO(team2));
+        ranking.add(teamDTO);
 
-        List<TeamDTO> response = teamService.ranking("score", "away");
+        when(rankingGenerator.createGenerator(rankBy, matchLocation)).thenReturn(rankByAwayScore);
+        when(rankByAwayScore.execute()).thenReturn(ranking);
+
+        List<TeamDTO> response = teamService.ranking(rankBy, matchLocation);
 
         assertNotNull(response);
         assertEquals(2L, response.getFirst().getId());
